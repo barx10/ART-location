@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stedskart — Lag vakre kartplakater av dine favorittplasser</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400;500&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700;800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Raleway:wght@400;500;600;700;800&family=Abril+Fatface&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #18181f;
+            --bg-elevated: #1f1f28;
+            --border: #2a2a35;
+            --border-hover: #3a3a48;
+            --text-primary: #f5f5f7;
+            --text-secondary: #8e8e93;
+            --text-muted: #636366;
+            --accent: #c9a962;
+            --accent-hover: #d4b872;
+            --accent-glow: rgba(201, 169, 98, 0.15);
+            --success: #34c759;
+            --danger: #ff453a;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
+            --shadow-lg: 0 16px 48px rgba(0,0,0,0.5);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Ambient background */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 20% 0%, rgba(201, 169, 98, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(120, 100, 180, 0.06) 0%, transparent 50%);
+        }
+
+        /* Layout */
+        .app-container {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent), #8b7355);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-primary);
+            flex-shrink: 0;
+        }
+
+        .logo-text-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: -0.3px;
+            line-height: 1.1;
+        }
+
+        .logo-tagline {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        /* Scrollbar */
+        .sidebar-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidebar-content::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        .sidebar-content::-webkit-scrollbar-thumb:hover {
+            background: var(--border-hover);
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 28px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+        }
+
+        .section-badge {
+            font-size: 10px;
+            padding: 3px 8px;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border-radius: 100px;
+            font-weight: 500;
+        }
+
+        /* Input styles */
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .input {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-icon-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .input-icon-wrapper .input {
+            padding-left: 42px;
+        }
+
+        /* Search results */
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-top: 4px;
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            display: none;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover {
+            background: var(--bg-elevated);
+        }
+
+        .search-result-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .search-result-region {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Style cards */
+        .style-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .style-card {
+            position: relative;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .style-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .style-card.active {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .style-preview {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+
+        .style-color {
+            flex: 1;
+            height: 32px;
+            border-radius: 6px;
+        }
+
+        .style-name {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .style-desc {
+            font-size: 10px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .style-check {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: var(--transition);
+        }
+
+        .style-card.active .style-check {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Perspective buttons */
+        .perspective-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .perspective-btn {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .perspective-btn:hover {
+            border-color: var(--border-hover);
+        }
+
+        .perspective-btn.active {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .perspective-icon {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .perspective-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        /* Sliders */
+        .slider-container {
+            margin-bottom: 16px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .slider-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .slider-value {
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            background: var(--accent-glow);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: var(--bg-elevated);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(201, 169, 98, 0.3);
+            transition: var(--transition);
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        /* Color picker */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        .color-swatch {
+            aspect-ratio: 1;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+
+        .color-swatch.active {
+            border-color: var(--text-primary);
+            box-shadow: 0 0 0 2px var(--bg-primary);
+        }
+
+        .custom-color-wrapper {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .color-input-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 8px 12px;
+        }
+
+        .color-picker {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .color-hex {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            outline: none;
+            text-transform: uppercase;
+        }
+
+        /* Font selector */
+        .font-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .font-btn {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .font-btn:hover {
+            border-color: var(--border-hover);
+            background: var(--bg-elevated);
+        }
+
+        .font-btn.active {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .font-preview {
+            font-size: 18px;
+            color: var(--text-primary);
+            letter-spacing: 0.05em;
+        }
+
+        .font-name {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-family: 'DM Sans', sans-serif !important;
+        }
+
+        .font-btn.active .font-name {
+            color: var(--accent);
+        }
+
+        /* Frame selector */
+        .frame-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .frame-btn {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 6px 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .frame-btn:hover {
+            border-color: var(--border-hover);
+        }
+
+        .frame-btn.active {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .frame-preview {
+            width: 36px;
+            height: 48px;
+            background: var(--bg-elevated);
+            border-radius: 3px;
+            padding: 4px;
+        }
+
+        .frame-preview-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        .frame-btn span {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .frame-btn.active span {
+            color: var(--accent);
+        }
+
+        /* Toggle switch */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toggle-row:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-info {
+            flex: 1;
+        }
+
+        .toggle-label {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .toggle-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toggle-switch.active {
+            background: var(--accent);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: var(--text-primary);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .toggle-switch.active::after {
+            left: 22px;
+        }
+
+        /* Export buttons */
+        .export-section {
+            padding: 20px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+        }
+
+        .export-quality {
+            margin-bottom: 16px;
+        }
+
+        .quality-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .quality-btn {
+            background: var(--bg-elevated);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .quality-btn:hover {
+            border-color: var(--border-hover);
+        }
+
+        .quality-btn.active {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .quality-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .quality-btn.active .quality-name {
+            color: var(--accent);
+        }
+
+        .quality-size {
+            font-size: 9px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .export-btn {
+            width: 100%;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, var(--accent), #8b7355);
+            border: none;
+            border-radius: var(--radius-md);
+            color: var(--bg-primary);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(201, 169, 98, 0.3);
+        }
+
+        .export-btn:active {
+            transform: translateY(0);
+        }
+
+        .export-btn.secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+        }
+
+        .export-btn.secondary:hover {
+            background: var(--border);
+            box-shadow: var(--shadow-md);
+        }
+
+        .export-info {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* Main canvas area */
+        .canvas-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: 
+                linear-gradient(90deg, var(--border) 1px, transparent 1px),
+                linear-gradient(var(--border) 1px, transparent 1px);
+            background-size: 20px 20px;
+            position: relative;
+        }
+
+        /* Toolbar */
+        .canvas-toolbar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+            background: var(--bg-card);
+            padding: 8px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-md);
+        }
+
+        .toolbar-btn {
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+        }
+
+        .toolbar-btn.active {
+            background: var(--accent-glow);
+            color: var(--accent);
+        }
+
+        .toolbar-divider {
+            width: 1px;
+            background: var(--border);
+            margin: 4px 4px;
+        }
+
+        /* Poster frame */
+        .poster-container {
+            position: relative;
+            filter: drop-shadow(0 32px 64px rgba(0,0,0,0.5));
+        }
+
+        .poster-frame {
+            position: relative;
+            width: 400px;
+            aspect-ratio: 2/3;
+            background: #f5f5f0;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .poster-frame.landscape {
+            aspect-ratio: 3/2;
+            width: 550px;
+        }
+
+        .poster-frame.square {
+            aspect-ratio: 1/1;
+            width: 450px;
+        }
+
+        /* Frame styles */
+        .poster-inner {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .poster-frame.frame-thin .poster-inner {
+            inset: 16px;
+        }
+
+        .poster-frame.frame-thin .poster-inner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 2px solid var(--frame-color, #2C2C2C);
+            pointer-events: none;
+        }
+
+        .poster-frame.frame-thick .poster-inner {
+            inset: 24px;
+        }
+
+        .poster-frame.frame-thick .poster-inner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 8px solid var(--frame-color, #2C2C2C);
+            pointer-events: none;
+        }
+
+        .poster-frame.frame-double .poster-inner {
+            inset: 20px;
+        }
+
+        .poster-frame.frame-double .poster-inner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 4px double var(--frame-color, #2C2C2C);
+            pointer-events: none;
+        }
+
+        .poster-frame.frame-vintage .poster-inner {
+            inset: 28px;
+        }
+
+        .poster-frame.frame-vintage .poster-inner::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border: 3px solid var(--frame-color, #2C2C2C);
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        .poster-frame.frame-vintage .poster-inner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 3px solid var(--frame-color, #2C2C2C);
+            pointer-events: none;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(0,0,0,0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(0,0,0,0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.02) 100%);
+        }
+
+        .poster-frame.frame-ornate .poster-inner {
+            inset: 32px;
+        }
+
+        .poster-frame.frame-ornate .poster-inner::before {
+            content: '';
+            position: absolute;
+            inset: -12px;
+            border: 1px solid var(--frame-color, #2C2C2C);
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .poster-frame.frame-ornate .poster-inner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 3px solid var(--frame-color, #2C2C2C);
+            box-shadow: 
+                inset 0 0 0 6px transparent,
+                inset 0 0 0 7px var(--frame-color, #2C2C2C);
+            pointer-events: none;
+        }
+
+        /* Corner decorations for ornate */
+        .poster-frame.frame-ornate .corner-decor {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--frame-color, #2C2C2C);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .poster-frame.frame-ornate .corner-decor.top-left {
+            top: 20px;
+            left: 20px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .poster-frame.frame-ornate .corner-decor.top-right {
+            top: 20px;
+            right: 20px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .poster-frame.frame-ornate .corner-decor.bottom-left {
+            bottom: 20px;
+            left: 20px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .poster-frame.frame-ornate .corner-decor.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* Map container - now fills entire frame */
+        .map-wrapper {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .leaflet-control-attribution,
+        .leaflet-control-zoom {
+            display: none !important;
+        }
+
+        /* Text overlay - now on top of map */
+        .poster-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            z-index: 1000;
+        }
+
+        .text-gradient {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 50%;
+            pointer-events: none;
+        }
+
+        .poster-text {
+            position: relative;
+            padding: 28px 32px;
+            text-align: center;
+        }
+
+        .poster-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 38px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            line-height: 1.1;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+        }
+
+        .poster-subtitle-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 6px;
+        }
+
+        .poster-line {
+            width: 36px;
+            height: 1.5px;
+            opacity: 0.5;
+        }
+
+        .poster-subtitle {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            opacity: 0.9;
+            text-shadow: 0 1px 8px rgba(0,0,0,0.3);
+        }
+
+        .poster-coords {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            opacity: 0.7;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.3);
+        }
+
+        /* Attribution */
+        .poster-attribution {
+            position: absolute;
+            bottom: 6px;
+            right: 10px;
+            font-size: 7px;
+            opacity: 0.4;
+            font-family: 'DM Sans', sans-serif;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+            z-index: 1001;
+        }
+
+        /* Loading state */
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 10, 15, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .poster-frame {
+                width: 340px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                height: auto;
+                max-height: 50vh;
+            }
+            
+            .canvas-area {
+                min-height: 60vh;
+            }
+            
+            .poster-frame {
+                width: min(90%, 360px);
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section {
+            animation: fadeIn 0.4s ease-out backwards;
+        }
+
+        .section:nth-child(1) { animation-delay: 0.05s; }
+        .section:nth-child(2) { animation-delay: 0.1s; }
+        .section:nth-child(3) { animation-delay: 0.15s; }
+        .section:nth-child(4) { animation-delay: 0.2s; }
+        .section:nth-child(5) { animation-delay: 0.25s; }
+        .section:nth-child(6) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="ambient-bg"></div>
+    
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <header class="sidebar-header">
+                <div class="logo">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                </div>
+                <div class="logo-text-wrapper">
+                    <span class="logo-text">Stedskart</span>
+                    <span class="logo-tagline">Ditt sted, din kunst</span>
+                </div>
+            </header>
+            
+            <div class="sidebar-content">
+                <!-- Location Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">📍 Lokasjon</span>
+                        <button class="section-badge" onclick="randomLocation()">🎲 Tilfeldig</button>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-icon-wrapper" style="position: relative;">
+                            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            <input type="text" class="input" id="searchInput" placeholder="Søk etter by eller sted..." autocomplete="off">
+                            <div class="search-results" id="searchResults"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Style Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">🎨 Kartstil</span>
+                        <span class="section-badge">13 stiler</span>
+                    </div>
+                    <div class="style-grid" id="styleGrid">
+                        <!-- Styles injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Perspective Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">🔭 Perspektiv</span>
+                    </div>
+                    <div class="perspective-grid">
+                        <button class="perspective-btn active" data-aspect="portrait" onclick="setAspect('portrait')">
+                            <div class="perspective-icon">📱</div>
+                            <div class="perspective-label">Portrett</div>
+                        </button>
+                        <button class="perspective-btn" data-aspect="landscape" onclick="setAspect('landscape')">
+                            <div class="perspective-icon">🖥️</div>
+                            <div class="perspective-label">Landskap</div>
+                        </button>
+                        <button class="perspective-btn" data-aspect="square" onclick="setAspect('square')">
+                            <div class="perspective-icon">⬜</div>
+                            <div class="perspective-label">Kvadrat</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Zoom & Details -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">⚙️ Innstillinger</span>
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Zoomnivå</span>
+                            <span class="slider-value" id="zoomValue">12</span>
+                        </div>
+                        <input type="range" class="slider" id="zoomSlider" min="8" max="16" value="12" step="0.5">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Tekststørrelse</span>
+                            <span class="slider-value" id="textSizeValue">100%</span>
+                        </div>
+                        <input type="range" class="slider" id="textSizeSlider" min="70" max="130" value="100" step="5">
+                    </div>
+                </div>
+
+                <!-- Text Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">✏️ Tekst</span>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Tittel</label>
+                        <input type="text" class="input" id="titleInput" value="Oslo" placeholder="Hovedtittel">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Undertittel</label>
+                        <input type="text" class="input" id="subtitleInput" value="Norge" placeholder="Undertekst">
+                    </div>
+                </div>
+
+                <!-- Font Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">🔤 Skrifttype</span>
+                    </div>
+                    <div class="font-grid" id="fontGrid">
+                        <!-- Fonts injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Colors Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">🖌️ Bakgrunnsfarge</span>
+                    </div>
+                    <div class="color-grid" id="colorGrid">
+                        <!-- Colors injected by JS -->
+                    </div>
+                    <div class="custom-color-wrapper">
+                        <div class="color-input-wrapper">
+                            <input type="color" class="color-picker" id="customColorPicker" value="#f5f5f0">
+                            <input type="text" class="color-hex" id="customColorHex" value="#F5F5F0" maxlength="7">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Frame Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">🖼️ Ramme</span>
+                    </div>
+                    <div class="frame-grid" id="frameGrid">
+                        <button class="frame-btn active" data-frame="none" onclick="setFrame('none')">
+                            <div class="frame-preview">
+                                <div class="frame-preview-inner"></div>
+                            </div>
+                            <span>Ingen</span>
+                        </button>
+                        <button class="frame-btn" data-frame="thin" onclick="setFrame('thin')">
+                            <div class="frame-preview">
+                                <div class="frame-preview-inner" style="border: 1px solid var(--text-secondary);"></div>
+                            </div>
+                            <span>Tynn</span>
+                        </button>
+                        <button class="frame-btn" data-frame="thick" onclick="setFrame('thick')">
+                            <div class="frame-preview">
+                                <div class="frame-preview-inner" style="border: 3px solid var(--text-secondary);"></div>
+                            </div>
+                            <span>Tykk</span>
+                        </button>
+                        <button class="frame-btn" data-frame="double" onclick="setFrame('double')">
+                            <div class="frame-preview">
+                                <div class="frame-preview-inner" style="border: 2px double var(--text-secondary);"></div>
+                            </div>
+                            <span>Dobbel</span>
+                        </button>
+                        <button class="frame-btn" data-frame="vintage" onclick="setFrame('vintage')">
+                            <div class="frame-preview">
+                                <div class="frame-preview-inner" style="border: 2px solid var(--text-secondary); box-shadow: inset 0 0 0 1px var(--text-secondary), inset 0 0 0 4px transparent, inset 0 0 0 5px var(--text-secondary);"></div>
+                            </div>
+                            <span>Vintage</span>
+                        </button>
+                        <button class="frame-btn" data-frame="ornate" onclick="setFrame('ornate')">
+                            <div class="frame-preview">
+                                <div class="frame-preview-inner" style="border: 1px solid var(--text-secondary); box-shadow: inset 0 0 0 2px transparent, inset 0 0 0 3px var(--text-secondary);"></div>
+                            </div>
+                            <span>Ornament</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Toggles Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">🔘 Visning</span>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <div class="toggle-label">Vis stedsnavn</div>
+                            <div class="toggle-desc">Byer, tettsteder, bydeler</div>
+                        </div>
+                        <div class="toggle-switch active" id="toggleLabels" onclick="toggleOption('labels')"></div>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <div class="toggle-label">Vis koordinater</div>
+                            <div class="toggle-desc">Lat/Long under tittel</div>
+                        </div>
+                        <div class="toggle-switch active" id="toggleCoords" onclick="toggleOption('coords')"></div>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <div class="toggle-label">Vis skillelinjer</div>
+                            <div class="toggle-desc">Dekorative linjer</div>
+                        </div>
+                        <div class="toggle-switch active" id="toggleLines" onclick="toggleOption('lines')"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Section -->
+            <div class="export-section">
+                <div class="export-quality">
+                    <label class="input-label" style="margin-bottom: 10px; display: block;">Oppløsning</label>
+                    <div class="quality-grid">
+                        <button class="quality-btn" data-scale="2" onclick="setExportScale(2)">
+                            <span class="quality-name">Standard</span>
+                            <span class="quality-size">~2400×3600</span>
+                        </button>
+                        <button class="quality-btn active" data-scale="4" onclick="setExportScale(4)">
+                            <span class="quality-name">Høy</span>
+                            <span class="quality-size">~4800×7200</span>
+                        </button>
+                        <button class="quality-btn" data-scale="6" onclick="setExportScale(6)">
+                            <span class="quality-name">Print</span>
+                            <span class="quality-size">~7200×10800</span>
+                        </button>
+                    </div>
+                </div>
+                <button class="export-btn" onclick="exportPoster('png')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 15V3m0 12-4-4m4 4 4-4"></path>
+                        <path d="M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"></path>
+                    </svg>
+                    Last ned PNG
+                </button>
+                <div class="export-info">Gratis • Ingen vannmerke • Print-klar kvalitet</div>
+            </div>
+        </aside>
+
+        <!-- Canvas Area -->
+        <main class="canvas-area">
+            <!-- Toolbar -->
+            <div class="canvas-toolbar">
+                <button class="toolbar-btn" onclick="zoomMap(-1)" title="Zoom ut">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="M21 21l-4.35-4.35M8 11h6"></path>
+                    </svg>
+                </button>
+                <button class="toolbar-btn" onclick="zoomMap(1)" title="Zoom inn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="M21 21l-4.35-4.35M11 8v6M8 11h6"></path>
+                    </svg>
+                </button>
+                <div class="toolbar-divider"></div>
+                <button class="toolbar-btn" onclick="resetMap()" title="Tilbakestill kart">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <path d="M3 3v5h5"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Poster -->
+            <div class="poster-container">
+                <div class="poster-frame" id="posterFrame">
+                    <!-- Corner decorations for ornate frame -->
+                    <div class="corner-decor top-left"></div>
+                    <div class="corner-decor top-right"></div>
+                    <div class="corner-decor bottom-left"></div>
+                    <div class="corner-decor bottom-right"></div>
+                    
+                    <div class="poster-inner" id="posterInner">
+                        <div class="map-wrapper" id="mapWrapper">
+                            <div id="map"></div>
+                        </div>
+                        
+                        <div class="poster-overlay">
+                            <div class="text-gradient" id="textGradient"></div>
+                            <div class="poster-text">
+                                <h1 class="poster-title" id="posterTitle">Oslo</h1>
+                                <div class="poster-subtitle-wrapper" id="subtitleWrapper">
+                                    <div class="poster-line" id="posterLine1"></div>
+                                    <span class="poster-subtitle" id="posterSubtitle">Norge</span>
+                                    <div class="poster-line" id="posterLine2"></div>
+                                </div>
+                                <p class="poster-coords" id="posterCoords">59.91° N, 10.75° E</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="poster-attribution" id="posterAttribution">© OpenStreetMap</div>
+                    
+                    <!-- Loading overlay -->
+                    <div class="loading-overlay" id="loadingOverlay">
+                        <div class="spinner"></div>
+                        <div class="loading-text">Laster kart...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // ============================================
+        // Configuration
+        // ============================================
+        
+        const MAP_STYLES = [
+            {
+                id: 'minimal',
+                name: 'Minimal',
+                desc: 'Ren, minimalistisk stil',
+                colors: ['#F7F5F0', '#2C2C2C', '#E0E7ED', '#EDEEE8'],
+                url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#2C2C2C',
+                bgColor: '#F7F5F0'
+            },
+            {
+                id: 'dark',
+                name: 'Mørk Modus',
+                desc: 'Dramatisk mørk stil',
+                colors: ['#0A0A0F', '#C9A432', '#06080D', '#0A0F0A'],
+                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#F5F5F0',
+                bgColor: '#0A0A0F'
+            },
+            {
+                id: 'midnight',
+                name: 'Midnatt',
+                desc: 'Dyp blå med hvite gater',
+                colors: ['#0D1B2A', '#C0C1BD', '#1B263B', '#1B263B'],
+                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#E8E8E8',
+                bgColor: '#0D1B2A'
+            },
+            {
+                id: 'blueprint',
+                name: 'Blueprint',
+                desc: 'Arkitektonisk blåkopi-stil',
+                colors: ['#0A2647', '#E8F1F5', '#072035', '#0A3040'],
+                url: 'https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png',
+                urlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_toner_background/{z}/{x}/{y}{r}.png',
+                textColor: '#E8F1F5',
+                bgColor: '#0A2647'
+            },
+            {
+                id: 'vintage',
+                name: 'Vintage',
+                desc: 'Varm, nostalgisk stil',
+                colors: ['#F4E4C8', '#4A3A28', '#B8C5C0', '#D4D4B8'],
+                url: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
+                urlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
+                textColor: '#4A3A28',
+                bgColor: '#F4E4C8'
+            },
+            {
+                id: 'topographic',
+                name: 'Topografisk',
+                desc: 'Terreng med høydekurver',
+                colors: ['#F5F2E8', '#6E5840', '#B8D4E8', '#D8E4D0'],
+                url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+                urlNoLabels: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+                textColor: '#4A3A28',
+                bgColor: '#F5F2E8'
+            },
+            {
+                id: 'watercolor',
+                name: 'Akvarell',
+                desc: 'Myk, malt estetikk',
+                colors: ['#FAF8F5', '#787880', '#7BA3B8', '#A8B89C'],
+                url: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
+                urlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
+                textColor: '#4A4A4A',
+                bgColor: '#FAF8F5'
+            },
+            {
+                id: 'osm',
+                name: 'Klassisk',
+                desc: 'Standard OpenStreetMap',
+                colors: ['#F5F5F0', '#3A3A3A', '#5090C0', '#70A870'],
+                url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#2C2C2C',
+                bgColor: '#F5F5F0'
+            },
+            {
+                id: 'atmospheric',
+                name: 'Atmosfærisk',
+                desc: 'Myk gradient med varme toner',
+                colors: ['#2A1B2D', '#F4D4B0', '#1A1020', '#1A2F1A'],
+                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#F4D4B0',
+                bgColor: '#2A1B2D'
+            },
+            {
+                id: 'nature',
+                name: 'Natur',
+                desc: 'Skog og hav',
+                colors: ['#030810', '#60D8F8', '#010408', '#1A2F1A'],
+                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#60D8F8',
+                bgColor: '#030810'
+            },
+            {
+                id: 'retro',
+                name: 'Retro',
+                desc: '70-talls jordtoner',
+                colors: ['#F5E6D3', '#4A2E15', '#A8967C', '#E8F0E8'],
+                url: 'https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png',
+                urlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png',
+                textColor: '#4A2E15',
+                bgColor: '#F5E6D3'
+            },
+            {
+                id: 'voyager',
+                name: 'Voyager',
+                desc: 'Moderne og fargerik',
+                colors: ['#FAFAF8', '#4A4A4A', '#7ABACC', '#8BC78B'],
+                url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#2C2C2C',
+                bgColor: '#FAFAF8'
+            },
+            {
+                id: 'positron',
+                name: 'Positron',
+                desc: 'Lys og elegant',
+                colors: ['#E6E6E6', '#505050', '#AADAFF', '#C8E6C8'],
+                url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#2C2C2C',
+                bgColor: '#E6E6E6'
+            }
+        ];
+
+        const FONTS = [
+            { id: 'playfair', name: 'Playfair Display', family: "'Playfair Display', serif", style: 'Elegant serif' },
+            { id: 'bebas', name: 'Bebas Neue', family: "'Bebas Neue', sans-serif", style: 'Kondensert' },
+            { id: 'oswald', name: 'Oswald', family: "'Oswald', sans-serif", style: 'Moderne' },
+            { id: 'cormorant', name: 'Cormorant', family: "'Cormorant Garamond', serif", style: 'Klassisk' },
+            { id: 'montserrat', name: 'Montserrat', family: "'Montserrat', sans-serif", style: 'Geometrisk' },
+            { id: 'baskerville', name: 'Libre Baskerville', family: "'Libre Baskerville', serif", style: 'Tradisjonell' },
+            { id: 'raleway', name: 'Raleway', family: "'Raleway', sans-serif", style: 'Elegant sans' },
+            { id: 'abril', name: 'Abril Fatface', family: "'Abril Fatface', serif", style: 'Display' }
+        ];
+
+        const PRESET_COLORS = [
+            '#F7F5F0', '#E8E4DE', '#FFFFFF', '#F5F2E8',
+            '#0A0A0F', '#1A1A24', '#0D1B2A', '#2A1B2D',
+            '#F4E4C8', '#D4C4A8', '#B8A888', '#968868'
+        ];
+
+        const NORWEGIAN_LOCATIONS = [
+            { name: 'Oslo', region: 'Oslo', lat: 59.9139, lng: 10.7522 },
+            { name: 'Bergen', region: 'Vestland', lat: 60.3913, lng: 5.3221 },
+            { name: 'Trondheim', region: 'Trøndelag', lat: 63.4305, lng: 10.3951 },
+            { name: 'Stavanger', region: 'Rogaland', lat: 58.9700, lng: 5.7331 },
+            { name: 'Tromsø', region: 'Troms og Finnmark', lat: 69.6496, lng: 18.9560 },
+            { name: 'Kristiansand', region: 'Agder', lat: 58.1467, lng: 7.9956 },
+            { name: 'Drammen', region: 'Viken', lat: 59.7439, lng: 10.2045 },
+            { name: 'Fredrikstad', region: 'Viken', lat: 59.2181, lng: 10.9298 },
+            { name: 'Sandnes', region: 'Rogaland', lat: 58.8524, lng: 5.7352 },
+            { name: 'Ålesund', region: 'Møre og Romsdal', lat: 62.4722, lng: 6.1549 },
+            { name: 'Bodø', region: 'Nordland', lat: 67.2804, lng: 14.4049 },
+            { name: 'Sandefjord', region: 'Vestfold og Telemark', lat: 59.1318, lng: 10.2167 },
+            { name: 'Tønsberg', region: 'Vestfold og Telemark', lat: 59.2676, lng: 10.4076 },
+            { name: 'Moss', region: 'Viken', lat: 59.4350, lng: 10.6590 },
+            { name: 'Haugesund', region: 'Rogaland', lat: 59.4138, lng: 5.2680 },
+            { name: 'Lofoten', region: 'Nordland', lat: 68.2000, lng: 14.0000 },
+            { name: 'Geiranger', region: 'Møre og Romsdal', lat: 62.1008, lng: 7.2060 },
+            { name: 'Flåm', region: 'Vestland', lat: 60.8628, lng: 7.1130 },
+            { name: 'Nordkapp', region: 'Troms og Finnmark', lat: 71.1690, lng: 25.7836 },
+            { name: 'Lillehammer', region: 'Innlandet', lat: 61.1153, lng: 10.4662 },
+            { name: 'Svalbard', region: 'Svalbard', lat: 78.2232, lng: 15.6267 },
+            { name: 'Preikestolen', region: 'Rogaland', lat: 58.9863, lng: 6.1863 },
+            { name: 'Røros', region: 'Trøndelag', lat: 62.5745, lng: 11.3850 },
+            { name: 'Sognefjord', region: 'Vestland', lat: 61.2000, lng: 6.8000 },
+            { name: 'Hardangerfjord', region: 'Vestland', lat: 60.4000, lng: 6.5000 }
+        ];
+
+        // ============================================
+        // State
+        // ============================================
+        
+        let state = {
+            location: { name: 'Oslo', lat: 59.9139, lng: 10.7522 },
+            style: MAP_STYLES[0],
+            font: FONTS[0],
+            zoom: 12,
+            margin: 5,
+            bgColor: '#F7F5F0',
+            textColor: '#2C2C2C',
+            aspect: 'portrait',
+            showCoords: true,
+            showLines: true,
+            frameStyle: 'none',
+            showLabels: true,
+            exportScale: 4
+        };
+
+        let map = null;
+        let tileLayer = null;
+
+        // ============================================
+        // Initialization
+        // ============================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            initMap();
+            renderStyleGrid();
+            renderColorGrid();
+            renderFontGrid();
+            setupEventListeners();
+            updatePoster();
+        });
+
+        function initMap() {
+            map = L.map('map', {
+                zoomControl: false,
+                attributionControl: false,
+                dragging: true,
+                scrollWheelZoom: false
+            }).setView([state.location.lat, state.location.lng], state.zoom);
+
+            tileLayer = L.tileLayer(state.style.url, {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            map.on('moveend', updateCoords);
+            map.on('zoomend', () => {
+                state.zoom = map.getZoom();
+                document.getElementById('zoomSlider').value = state.zoom;
+                document.getElementById('zoomValue').textContent = state.zoom;
+            });
+        }
+
+        // ============================================
+        // Render Functions
+        // ============================================
+        
+        function renderStyleGrid() {
+            const grid = document.getElementById('styleGrid');
+            grid.innerHTML = MAP_STYLES.map(style => `
+                <div class="style-card ${state.style.id === style.id ? 'active' : ''}" 
+                     onclick="selectStyle('${style.id}')">
+                    <div class="style-preview">
+                        ${style.colors.map(c => `<div class="style-color" style="background: ${c}"></div>`).join('')}
+                    </div>
+                    <div class="style-name">${style.name}</div>
+                    <div class="style-desc">${style.desc}</div>
+                    <div class="style-check">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderColorGrid() {
+            const grid = document.getElementById('colorGrid');
+            grid.innerHTML = PRESET_COLORS.map(color => `
+                <div class="color-swatch ${state.bgColor === color ? 'active' : ''}" 
+                     style="background: ${color}"
+                     onclick="selectColor('${color}')"></div>
+            `).join('');
+        }
+
+        function renderFontGrid() {
+            const grid = document.getElementById('fontGrid');
+            grid.innerHTML = FONTS.map(font => `
+                <button class="font-btn ${state.font.id === font.id ? 'active' : ''}" 
+                        data-font="${font.id}"
+                        onclick="selectFont('${font.id}')">
+                    <span class="font-preview" style="font-family: ${font.family}">Aa</span>
+                    <span class="font-name">${font.name}</span>
+                </button>
+            `).join('');
+        }
+
+        function selectFont(fontId) {
+            state.font = FONTS.find(f => f.id === fontId);
+            document.getElementById('posterTitle').style.fontFamily = state.font.family;
+            renderFontGrid();
+        }
+
+        // ============================================
+        // Style & Color Functions
+        // ============================================
+        
+        function selectStyle(styleId) {
+            state.style = MAP_STYLES.find(s => s.id === styleId);
+            state.bgColor = state.style.bgColor;
+            state.textColor = state.style.textColor;
+            
+            // Update map tiles respecting labels setting
+            updateMapTiles();
+            
+            updatePoster();
+            renderStyleGrid();
+            renderColorGrid();
+            
+            // Update color pickers
+            document.getElementById('customColorPicker').value = state.bgColor;
+            document.getElementById('customColorHex').value = state.bgColor.toUpperCase();
+        }
+
+        function selectColor(color) {
+            state.bgColor = color;
+            
+            // Auto-detect text color
+            const brightness = getBrightness(color);
+            state.textColor = brightness > 128 ? '#2C2C2C' : '#F5F5F0';
+            
+            updatePoster();
+            renderColorGrid();
+            
+            document.getElementById('customColorPicker').value = color;
+            document.getElementById('customColorHex').value = color.toUpperCase();
+        }
+
+        function getBrightness(hex) {
+            const r = parseInt(hex.slice(1,3), 16);
+            const g = parseInt(hex.slice(3,5), 16);
+            const b = parseInt(hex.slice(5,7), 16);
+            return (r * 299 + g * 587 + b * 114) / 1000;
+        }
+
+        // ============================================
+        // Location Functions
+        // ============================================
+        
+        function setupEventListeners() {
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                if (query.length < 2) {
+                    searchResults.classList.remove('active');
+                    return;
+                }
+
+                const matches = NORWEGIAN_LOCATIONS.filter(loc => 
+                    loc.name.toLowerCase().includes(query) || 
+                    loc.region.toLowerCase().includes(query)
+                ).slice(0, 6);
+
+                if (matches.length > 0) {
+                    searchResults.innerHTML = matches.map(loc => `
+                        <div class="search-result-item" onclick="selectLocation(${loc.lat}, ${loc.lng}, '${loc.name}')">
+                            <div class="search-result-name">${loc.name}</div>
+                            <div class="search-result-region">${loc.region}</div>
+                        </div>
+                    `).join('');
+                    searchResults.classList.add('active');
+                } else {
+                    searchResults.classList.remove('active');
+                }
+            });
+
+            searchInput.addEventListener('blur', () => {
+                setTimeout(() => searchResults.classList.remove('active'), 200);
+            });
+
+            // Sliders
+            document.getElementById('zoomSlider').addEventListener('input', (e) => {
+                state.zoom = parseFloat(e.target.value);
+                document.getElementById('zoomValue').textContent = state.zoom;
+                map.setZoom(state.zoom);
+            });
+
+            document.getElementById('textSizeSlider').addEventListener('input', (e) => {
+                const size = parseInt(e.target.value);
+                document.getElementById('textSizeValue').textContent = size + '%';
+                const scale = size / 100;
+                document.getElementById('posterTitle').style.fontSize = (38 * scale) + 'px';
+                document.getElementById('posterSubtitle').style.fontSize = (13 * scale) + 'px';
+                document.getElementById('posterCoords').style.fontSize = (10 * scale) + 'px';
+            });
+
+            // Text inputs
+            document.getElementById('titleInput').addEventListener('input', (e) => {
+                document.getElementById('posterTitle').textContent = e.target.value || 'Tittel';
+            });
+
+            document.getElementById('subtitleInput').addEventListener('input', (e) => {
+                document.getElementById('posterSubtitle').textContent = e.target.value || '';
+            });
+
+            // Color picker
+            document.getElementById('customColorPicker').addEventListener('input', (e) => {
+                selectColor(e.target.value);
+            });
+
+            document.getElementById('customColorHex').addEventListener('input', (e) => {
+                let value = e.target.value;
+                if (!value.startsWith('#')) value = '#' + value;
+                if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                    selectColor(value);
+                }
+            });
+        }
+
+        function selectLocation(lat, lng, name) {
+            state.location = { lat, lng, name };
+            map.setView([lat, lng], state.zoom);
+            
+            document.getElementById('searchInput').value = name;
+            document.getElementById('titleInput').value = name;
+            document.getElementById('posterTitle').textContent = name;
+            document.getElementById('searchResults').classList.remove('active');
+            
+            updateCoords();
+        }
+
+        function randomLocation() {
+            const loc = NORWEGIAN_LOCATIONS[Math.floor(Math.random() * NORWEGIAN_LOCATIONS.length)];
+            selectLocation(loc.lat, loc.lng, loc.name);
+        }
+
+        function updateCoords() {
+            const center = map.getCenter();
+            const latDir = center.lat >= 0 ? 'N' : 'S';
+            const lngDir = center.lng >= 0 ? 'E' : 'W';
+            const coords = `${Math.abs(center.lat).toFixed(2)}° ${latDir}, ${Math.abs(center.lng).toFixed(2)}° ${lngDir}`;
+            document.getElementById('posterCoords').textContent = coords;
+        }
+
+        // ============================================
+        // Poster Functions
+        // ============================================
+        
+        function updatePoster() {
+            const frame = document.getElementById('posterFrame');
+            const inner = document.getElementById('posterInner');
+            const gradient = document.getElementById('textGradient');
+            const title = document.getElementById('posterTitle');
+            const subtitle = document.getElementById('posterSubtitle');
+            const coords = document.getElementById('posterCoords');
+            const line1 = document.getElementById('posterLine1');
+            const line2 = document.getElementById('posterLine2');
+            const attribution = document.getElementById('posterAttribution');
+
+            // Background
+            frame.style.background = state.bgColor;
+
+            // Text gradient - softer blend
+            gradient.style.background = `linear-gradient(to bottom, transparent 0%, ${state.bgColor}aa 50%, ${state.bgColor} 85%)`;
+
+            // Text colors
+            title.style.color = state.textColor;
+            subtitle.style.color = state.textColor;
+            coords.style.color = state.textColor;
+            line1.style.backgroundColor = state.textColor;
+            line2.style.backgroundColor = state.textColor;
+            attribution.style.color = state.textColor;
+
+            // Frame color via CSS variable
+            frame.style.setProperty('--frame-color', state.textColor);
+
+            // Corner decorations color
+            document.querySelectorAll('.corner-decor').forEach(el => {
+                el.style.borderColor = state.textColor;
+            });
+
+            updateMapWrapper();
+        }
+
+        function updateMapWrapper() {
+            setTimeout(() => map.invalidateSize(), 100);
+        }
+
+        function setAspect(aspect) {
+            state.aspect = aspect;
+            const frame = document.getElementById('posterFrame');
+            
+            frame.classList.remove('portrait', 'landscape', 'square');
+            if (aspect !== 'portrait') frame.classList.add(aspect);
+
+            document.querySelectorAll('.perspective-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.aspect === aspect);
+            });
+
+            updateMapWrapper();
+            setTimeout(() => map.invalidateSize(), 300);
+        }
+
+        function toggleOption(option) {
+            const toggle = document.getElementById(`toggle${option.charAt(0).toUpperCase() + option.slice(1)}`);
+            
+            if (option === 'coords') {
+                state.showCoords = !state.showCoords;
+                document.getElementById('posterCoords').style.display = state.showCoords ? 'block' : 'none';
+            } else if (option === 'lines') {
+                state.showLines = !state.showLines;
+                document.getElementById('subtitleWrapper').style.display = state.showLines ? 'flex' : 'none';
+            } else if (option === 'labels') {
+                state.showLabels = !state.showLabels;
+                updateMapTiles();
+            }
+            
+            toggle.classList.toggle('active');
+        }
+
+        function setFrame(frameStyle) {
+            state.frameStyle = frameStyle;
+            const frame = document.getElementById('posterFrame');
+            
+            // Remove all frame classes
+            frame.classList.remove('frame-none', 'frame-thin', 'frame-thick', 'frame-double', 'frame-vintage', 'frame-ornate');
+            
+            // Add new frame class
+            if (frameStyle !== 'none') {
+                frame.classList.add(`frame-${frameStyle}`);
+            }
+            
+            // Update button states
+            document.querySelectorAll('.frame-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.frame === frameStyle);
+            });
+            
+            // Update frame color via CSS variable
+            frame.style.setProperty('--frame-color', state.textColor);
+            
+            setTimeout(() => map.invalidateSize(), 100);
+        }
+
+        function updateMapTiles() {
+            const tileUrl = state.showLabels ? state.style.url : (state.style.urlNoLabels || state.style.url);
+            map.removeLayer(tileLayer);
+            tileLayer = L.tileLayer(tileUrl, {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+        }
+
+        // ============================================
+        // Map Controls
+        // ============================================
+        
+        function zoomMap(delta) {
+            state.zoom = Math.max(8, Math.min(16, state.zoom + delta * 0.5));
+            map.setZoom(state.zoom);
+            document.getElementById('zoomSlider').value = state.zoom;
+            document.getElementById('zoomValue').textContent = state.zoom;
+        }
+
+        function resetMap() {
+            map.setView([state.location.lat, state.location.lng], 12);
+            state.zoom = 12;
+            document.getElementById('zoomSlider').value = 12;
+            document.getElementById('zoomValue').textContent = 12;
+        }
+
+        function setExportScale(scale) {
+            state.exportScale = scale;
+            document.querySelectorAll('.quality-btn').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.scale) === scale);
+            });
+        }
+
+        // ============================================
+        // Export Functions
+        // ============================================
+        
+        async function exportPoster(format) {
+            const loading = document.getElementById('loadingOverlay');
+            loading.classList.add('active');
+            
+            const scaleNames = { 2: 'Standard', 4: 'Høy', 6: 'Print' };
+            loading.querySelector('.loading-text').textContent = `Genererer ${scaleNames[state.exportScale]} oppløsning...`;
+
+            try {
+                // Wait for map tiles to load
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                const poster = document.getElementById('posterFrame');
+
+                const canvas = await html2canvas(poster, {
+                    scale: state.exportScale,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: state.bgColor,
+                    logging: false
+                });
+
+                const link = document.createElement('a');
+                link.download = `stedskart-${state.location.name.toLowerCase()}-${state.exportScale}x.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Beklager, det oppstod en feil ved eksport. Prøv igjen.');
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>
