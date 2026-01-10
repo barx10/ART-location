@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400;500&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700;800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Raleway:wght@400;500;600;700;800&family=Abril+Fatface&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
@@ -81,42 +82,49 @@
         }
 
         .sidebar-header {
-            padding: 24px;
+            padding: 32px 24px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 18px;
+            background: linear-gradient(180deg, rgba(201, 169, 98, 0.08) 0%, transparent 100%);
         }
 
         .logo {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, var(--accent), #8b7355);
-            border-radius: var(--radius-md);
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--accent) 0%, #d4b872 50%, #8b7355 100%);
+            border-radius: var(--radius-lg);
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--bg-primary);
             flex-shrink: 0;
+            box-shadow: 0 4px 16px rgba(201, 169, 98, 0.3);
         }
 
         .logo-text-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 1px;
+            gap: 5px;
         }
 
         .logo-text {
-            font-weight: 700;
-            font-size: 18px;
-            letter-spacing: -0.3px;
+            font-weight: 800;
+            font-size: 30px;
+            letter-spacing: -0.5px;
             line-height: 1.1;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .logo-tagline {
-            font-size: 11px;
-            color: var(--text-muted);
-            letter-spacing: 0.02em;
+            font-size: 14px;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            font-style: italic;
         }
 
         .sidebar-content {
@@ -149,20 +157,20 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
         }
 
         .section-title {
-            font-size: 11px;
+            font-size: 14px;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: var(--text-muted);
+            letter-spacing: 1px;
+            color: var(--text-primary);
         }
 
         .section-badge {
-            font-size: 10px;
-            padding: 3px 8px;
+            font-size: 11px;
+            padding: 4px 10px;
             background: var(--accent-glow);
             color: var(--accent);
             border-radius: 100px;
@@ -266,6 +274,33 @@
         .search-result-region {
             font-size: 12px;
             color: var(--text-muted);
+        }
+
+        /* Quick location buttons */
+        .quick-locations {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .quick-loc-btn {
+            padding: 6px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .quick-loc-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-glow);
         }
 
         /* Style cards */
@@ -648,11 +683,11 @@
             left: 22px;
         }
 
-        /* Export buttons */
+        /* Export section (inside scroll area) */
         .export-section {
-            padding: 20px;
-            background: var(--bg-card);
-            border-top: 1px solid var(--border);
+            padding: 0;
+            background: transparent;
+            margin-top: 8px;
         }
 
         .export-quality {
@@ -703,6 +738,44 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
+        .toggle-btn {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-btn:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+
+        .text-input {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 13px;
+            transition: var(--transition);
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .text-input::placeholder {
+            color: var(--text-muted);
+        }
+
         .export-btn {
             width: 100%;
             padding: 14px 20px;
@@ -745,6 +818,68 @@
             font-size: 11px;
             color: var(--text-muted);
             text-align: center;
+        }
+
+        .keyboard-hints {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .hint {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        kbd {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--text-secondary);
+        }
+
+        /* Sidebar Footer */
+        .sidebar-footer {
+            padding: 14px 20px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-brand {
+            font-size: 13px;
+            color: var(--accent);
+        }
+
+        .footer-brand a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-brand a:hover {
+            color: var(--accent-hover);
+        }
+
+        .footer-shortcuts {
+            display: flex;
+            gap: 8px;
         }
 
         /* Main canvas area */
@@ -847,6 +982,7 @@
             inset: 0;
             border: 2px solid var(--frame-color, #2C2C2C);
             pointer-events: none;
+            z-index: 1001;
         }
 
         .poster-frame.frame-thick .poster-inner {
@@ -859,6 +995,7 @@
             inset: 0;
             border: 8px solid var(--frame-color, #2C2C2C);
             pointer-events: none;
+            z-index: 1001;
         }
 
         .poster-frame.frame-double .poster-inner {
@@ -871,6 +1008,7 @@
             inset: 0;
             border: 4px double var(--frame-color, #2C2C2C);
             pointer-events: none;
+            z-index: 1001;
         }
 
         .poster-frame.frame-vintage .poster-inner {
@@ -884,6 +1022,7 @@
             border: 3px solid var(--frame-color, #2C2C2C);
             pointer-events: none;
             opacity: 0.4;
+            z-index: 1001;
         }
 
         .poster-frame.frame-vintage .poster-inner::after {
@@ -893,9 +1032,24 @@
             border: 3px solid var(--frame-color, #2C2C2C);
             pointer-events: none;
             background: 
-                radial-gradient(ellipse at 20% 20%, rgba(0,0,0,0.03) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(0,0,0,0.03) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.02) 100%);
+                /* Krakelering/sprekk-effekt */
+                repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 3px),
+                repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px),
+                repeating-linear-gradient(22deg, transparent, transparent 4px, rgba(0,0,0,0.04) 4px, rgba(0,0,0,0.04) 5px),
+                repeating-linear-gradient(-67deg, transparent, transparent 5px, rgba(0,0,0,0.05) 5px, rgba(0,0,0,0.05) 6px),
+                /* Slitasje og patina */
+                radial-gradient(ellipse at 20% 20%, rgba(0,0,0,0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(0,0,0,0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.03) 100%);
+            background-size: 
+                20px 20px,
+                25px 25px,
+                15px 15px,
+                30px 30px,
+                100% 100%,
+                100% 100%,
+                100% 100%;
+            z-index: 1001;
         }
 
         .poster-frame.frame-ornate .poster-inner {
@@ -909,6 +1063,7 @@
             border: 1px solid var(--frame-color, #2C2C2C);
             pointer-events: none;
             opacity: 0.3;
+            z-index: 1001;
         }
 
         .poster-frame.frame-ornate .poster-inner::after {
@@ -920,6 +1075,7 @@
                 inset 0 0 0 6px transparent,
                 inset 0 0 0 7px var(--frame-color, #2C2C2C);
             pointer-events: none;
+            z-index: 1001;
         }
 
         /* Corner decorations for ornate */
@@ -967,9 +1123,41 @@
             overflow: hidden;
         }
 
+        /* Vintage map effect overlay */
+        .map-wrapper.vintage-map::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 500;
+            background: 
+                /* Krakelering/sprekker - gammelt kart effekt */
+                repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(40, 30, 20, 0.03) 3px, rgba(40, 30, 20, 0.03) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(40, 30, 20, 0.03) 3px, rgba(40, 30, 20, 0.03) 4px),
+                repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(40, 30, 20, 0.02) 8px, rgba(40, 30, 20, 0.02) 10px),
+                repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(40, 30, 20, 0.02) 8px, rgba(40, 30, 20, 0.02) 10px),
+                /* Generell patina og slitasje */
+                radial-gradient(ellipse at 30% 20%, rgba(80, 60, 40, 0.08) 0%, transparent 40%),
+                radial-gradient(ellipse at 70% 80%, rgba(60, 50, 30, 0.06) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(50, 40, 30, 0.04) 70%),
+                /* Sepia-aktig tone */
+                linear-gradient(135deg, rgba(139, 119, 101, 0.08) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .map-wrapper.vintage-map::before {
+            opacity: 1;
+        }
+
         #map {
             width: 100%;
             height: 100%;
+        }
+
+        /* Vintage map sepia filter */
+        .vintage-map #map {
+            filter: sepia(0.15) contrast(0.95) brightness(1.05);
         }
 
         .leaflet-control-attribution,
@@ -977,30 +1165,44 @@
             display: none !important;
         }
 
+        /* Map label styling */
+        #map {
+            --label-size: 100%;
+            --label-color: #000000;
+            --label-shadow: 2px;
+        }
+
+        .leaflet-tile-pane {
+            filter: var(--map-label-filter, none);
+        }
+
+        /* Custom label overlay styling - increases contrast */
+        .map-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            mix-blend-mode: var(--label-blend-mode, normal);
+            background: var(--label-overlay-color, transparent);
+            opacity: var(--label-overlay-opacity, 0);
+        }
+
         /* Text overlay - now on top of map */
         .poster-overlay {
             position: absolute;
             inset: 0;
             pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
             z-index: 1000;
         }
 
-        .text-gradient {
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 50%;
-            pointer-events: none;
-        }
-
         .poster-text {
-            position: relative;
-            padding: 28px 32px;
+            position: absolute;
+            left: 50%;
+            top: 85%;
+            transform: translate(-50%, -50%);
             text-align: center;
+            padding: 20px 40px;
+            border-radius: 8px;
         }
 
         .poster-title {
@@ -1011,7 +1213,10 @@
             text-transform: uppercase;
             line-height: 1.1;
             margin-bottom: 10px;
-            text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+            text-shadow: 
+                0 0 var(--text-blur-amount, 20px) var(--text-blur-color, rgba(0,0,0,0.5)),
+                0 0 calc(var(--text-blur-amount, 20px) * 2) var(--text-blur-color, rgba(0,0,0,0.3)),
+                0 0 calc(var(--text-blur-amount, 20px) * 3) var(--text-blur-color, rgba(0,0,0,0.2));
         }
 
         .poster-subtitle-wrapper {
@@ -1026,6 +1231,8 @@
             width: 36px;
             height: 1.5px;
             opacity: 0.5;
+            box-shadow: 
+                0 0 var(--text-blur-amount, 20px) var(--text-blur-color, rgba(0,0,0,0.5));
         }
 
         .poster-subtitle {
@@ -1035,7 +1242,9 @@
             letter-spacing: 0.2em;
             text-transform: uppercase;
             opacity: 0.9;
-            text-shadow: 0 1px 8px rgba(0,0,0,0.3);
+            text-shadow: 
+                0 0 var(--text-blur-amount, 20px) var(--text-blur-color, rgba(0,0,0,0.5)),
+                0 0 calc(var(--text-blur-amount, 20px) * 2) var(--text-blur-color, rgba(0,0,0,0.3));
         }
 
         .poster-coords {
@@ -1043,19 +1252,22 @@
             font-size: 10px;
             letter-spacing: 0.1em;
             opacity: 0.7;
-            text-shadow: 0 1px 6px rgba(0,0,0,0.3);
+            text-shadow: 
+                0 0 var(--text-blur-amount, 20px) var(--text-blur-color, rgba(0,0,0,0.5)),
+                0 0 calc(var(--text-blur-amount, 20px) * 2) var(--text-blur-color, rgba(0,0,0,0.3));
         }
 
-        /* Attribution */
-        .poster-attribution {
-            position: absolute;
-            bottom: 6px;
-            right: 10px;
-            font-size: 7px;
-            opacity: 0.4;
+        .poster-date {
             font-family: 'DM Sans', sans-serif;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.5);
-            z-index: 1001;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            opacity: 0.85;
+            margin-top: 10px;
+            text-shadow: 
+                0 0 var(--text-blur-amount, 20px) var(--text-blur-color, rgba(0,0,0,0.5)),
+                0 0 calc(var(--text-blur-amount, 20px) * 2) var(--text-blur-color, rgba(0,0,0,0.3));
         }
 
         /* Loading state */
@@ -1129,6 +1341,16 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(20px); }
+        }
+
         .section {
             animation: fadeIn 0.4s ease-out backwards;
         }
@@ -1139,6 +1361,249 @@
         .section:nth-child(4) { animation-delay: 0.2s; }
         .section:nth-child(5) { animation-delay: 0.25s; }
         .section:nth-child(6) { animation-delay: 0.3s; }
+        .section:nth-child(7) { animation-delay: 0.35s; }
+        .section:nth-child(8) { animation-delay: 0.4s; }
+        .section:nth-child(9) { animation-delay: 0.45s; }
+        .section:nth-child(10) { animation-delay: 0.5s; }
+
+        /* Info Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            max-width: 560px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 28px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-header h2 svg {
+            color: var(--accent);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+        }
+
+        .modal-body {
+            padding: 28px;
+        }
+
+        .modal-section {
+            margin-bottom: 28px;
+        }
+
+        .modal-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-section h3 svg {
+            color: var(--accent);
+            width: 18px;
+            height: 18px;
+        }
+
+        .modal-section p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .modal-section ul {
+            list-style: none;
+            margin-top: 12px;
+        }
+
+        .modal-section ul li {
+            color: var(--text-secondary);
+            padding: 8px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+
+        .modal-section ul li::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            margin-top: 8px;
+            flex-shrink: 0;
+        }
+
+        .keyboard-shortcut {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 3px 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-primary);
+        }
+
+        .about-creator {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+        }
+
+        .creator-logo {
+            width: 100px;
+            height: auto;
+            max-height: 72px;
+            border-radius: var(--radius-md);
+            object-fit: contain;
+            border: 2px solid var(--border);
+            flex-shrink: 0;
+            background: var(--bg-card);
+            padding: 8px;
+        }
+
+        .creator-info h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .creator-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .creator-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .creator-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+
+        .creator-link:hover {
+            color: var(--accent-hover);
+        }
+
+        .creator-link svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .info-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent) 0%, #d4b872 100%);
+            border: none;
+            color: var(--bg-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(201, 169, 98, 0.4);
+        }
+
+        .info-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 28px rgba(201, 169, 98, 0.6);
+        }
+
+        .info-btn svg {
+            width: 24px;
+            height: 24px;
+        }
     </style>
 </head>
 <body>
@@ -1149,7 +1614,7 @@
         <aside class="sidebar">
             <header class="sidebar-header">
                 <div class="logo">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
                         <circle cx="12" cy="10" r="3"/>
                     </svg>
@@ -1176,6 +1641,15 @@
                             <input type="text" class="input" id="searchInput" placeholder="Søk etter by eller sted..." autocomplete="off">
                             <div class="search-results" id="searchResults"></div>
                         </div>
+                    </div>
+                    
+                    <!-- Quick presets for popular Norwegian cities -->
+                    <div class="quick-locations">
+                        <button class="quick-loc-btn" onclick="selectLocation(59.9139, 10.7522, 'Oslo')">Oslo</button>
+                        <button class="quick-loc-btn" onclick="selectLocation(60.3913, 5.3221, 'Bergen')">Bergen</button>
+                        <button class="quick-loc-btn" onclick="selectLocation(63.4305, 10.3951, 'Trondheim')">Trondheim</button>
+                        <button class="quick-loc-btn" onclick="selectLocation(69.6496, 18.9560, 'Tromsø')">Tromsø</button>
+                        <button class="quick-loc-btn" onclick="selectLocation(68.2000, 14.0000, 'Lofoten')">Lofoten</button>
                     </div>
                 </div>
 
@@ -1316,6 +1790,48 @@
                             <span>Ornament</span>
                         </button>
                     </div>
+                    <div class="input-group" style="margin-top: 16px;">
+                        <label class="input-label">🎨 Rammefarge</label>
+                        <div class="color-input-wrapper">
+                            <input type="color" class="color-picker" id="frameColorPicker" value="#2C2C2C">
+                            <input type="text" class="color-hex" id="frameColorHex" value="#2C2C2C" maxlength="7">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map Labels Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">� Kartjusteringer</span>
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Fargemetning</span>
+                            <span class="slider-value" id="mapSaturationValue">100%</span>
+                        </div>
+                        <input type="range" class="slider" id="mapSaturationSlider" min="0" max="200" value="100" step="10">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Kontrast</span>
+                            <span class="slider-value" id="mapContrastValue">100%</span>
+                        </div>
+                        <input type="range" class="slider" id="mapContrastSlider" min="50" max="150" value="100" step="5">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Lysstyrke</span>
+                            <span class="slider-value" id="mapBrightnessValue">100%</span>
+                        </div>
+                        <input type="range" class="slider" id="mapBrightnessSlider" min="50" max="150" value="100" step="5">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Hvit glød (for mørke kart)</span>
+                            <span class="slider-value" id="labelShadowValue">0px</span>
+                        </div>
+                        <input type="range" class="slider" id="labelShadowSlider" min="0" max="8" value="0" step="1">
+                    </div>
                 </div>
 
                 <!-- Toggles Section -->
@@ -1344,60 +1860,161 @@
                         </div>
                         <div class="toggle-switch active" id="toggleLines" onclick="toggleOption('lines')"></div>
                     </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <div class="toggle-label">Vis dato</div>
+                            <div class="toggle-desc">Spesiell dato under koordinater</div>
+                        </div>
+                        <div class="toggle-switch" id="toggleDate" onclick="toggleOption('date')"></div>
+                    </div>
+                    <div id="dateInputWrapper" style="display: none; margin-top: 8px;">
+                        <input type="date" class="input" id="dateInput" onchange="updateDate()" oninput="updateDate()">
+                    </div>
                 </div>
-            </div>
 
-            <!-- Export Section -->
-            <div class="export-section">
-                <div class="export-quality">
-                    <label class="input-label" style="margin-bottom: 10px; display: block;">Oppløsning</label>
-                    <div class="quality-grid">
-                        <button class="quality-btn" data-scale="2" onclick="setExportScale(2)">
-                            <span class="quality-name">Standard</span>
-                            <span class="quality-size">~2400×3600</span>
+                <!-- Text Styling Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">✏️ Tekststyling</span>
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Tittelstørrelse</span>
+                            <span class="slider-value" id="titleSizeValue">38px</span>
+                        </div>
+                        <input type="range" class="slider" id="titleSizeSlider" min="24" max="60" value="38" step="2">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Horisontal posisjon</span>
+                            <span class="slider-value" id="textXValue">50%</span>
+                        </div>
+                        <input type="range" class="slider" id="textXSlider" min="10" max="90" value="50" step="1">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Vertikal posisjon</span>
+                            <span class="slider-value" id="textYValue">85%</span>
+                        </div>
+                        <input type="range" class="slider" id="textYSlider" min="10" max="95" value="85" step="1">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Tekst-glød (bakgrunn)</span>
+                            <span class="slider-value" id="textBlurValue">20px</span>
+                        </div>
+                        <input type="range" class="slider" id="textBlurSlider" min="0" max="60" value="20" step="5">
+                    </div>
+                </div>
+
+                <!-- Export Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">💾 Eksporter</span>
+                    </div>
+                    <div class="export-section">
+                        <!-- API Key Input -->
+                        <div class="input-group" style="margin-bottom: 16px;">
+                            <label class="input-label">Geoapify API-nøkkel (gratis)</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="password" id="apiKeyInput" class="text-input" 
+                                    placeholder="Din API-nøkkel..." 
+                                    style="flex: 1; font-size: 12px;"
+                                    onchange="saveApiKey(this.value)">
+                                <button class="toggle-btn" onclick="toggleApiKeyVisibility()" title="Vis/skjul">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </div>
+                            <a href="https://myprojects.geoapify.com/" target="_blank" 
+                                style="font-size: 11px; color: var(--accent); margin-top: 6px; display: inline-block;">
+                                Få gratis API-nøkkel (3000 kreditter/dag) →
+                            </a>
+                        </div>
+                        
+                        <div class="export-quality">
+                            <label class="input-label" style="margin-bottom: 10px; display: block;">Oppløsning</label>
+                            <div class="quality-grid">
+                                <button class="quality-btn" data-scale="2" onclick="setExportScale(2)">
+                                    <span class="quality-name">Standard</span>
+                                    <span class="quality-size">~2400×3600</span>
+                                </button>
+                                <button class="quality-btn active" data-scale="4" onclick="setExportScale(4)">
+                                    <span class="quality-name">Høy ⚡</span>
+                                    <span class="quality-size">~4800×7200</span>
+                                </button>
+                                <button class="quality-btn" data-scale="6" onclick="setExportScale(6)">
+                                    <span class="quality-name">Print ⚡</span>
+                                    <span class="quality-size">~7200×10800</span>
+                                </button>
+                            </div>
+                            <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px; line-height: 1.4;">⚡ Høy og Print krever API-nøkkel for beste kvalitet. Standard fungerer uten.</p>
+                        </div>
+                        <button class="export-btn" onclick="exportPoster('png')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 15V3m0 12-4-4m4 4 4-4"></path>
+                                <path d="M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"></path>
+                            </svg>
+                            Last ned PNG (Høy kvalitet)
                         </button>
-                        <button class="quality-btn active" data-scale="4" onclick="setExportScale(4)">
-                            <span class="quality-name">Høy</span>
-                            <span class="quality-size">~4800×7200</span>
-                        </button>
-                        <button class="quality-btn" data-scale="6" onclick="setExportScale(6)">
-                            <span class="quality-name">Print</span>
-                            <span class="quality-size">~7200×10800</span>
+                        <button class="export-btn secondary" onclick="exportSimple()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 15V3m0 12-4-4m4 4 4-4"></path>
+                                <path d="M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"></path>
+                            </svg>
+                            Rask eksport (uten API)
                         </button>
                     </div>
                 </div>
-                <button class="export-btn" onclick="exportPoster('png')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 15V3m0 12-4-4m4 4 4-4"></path>
-                        <path d="M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"></path>
-                    </svg>
-                    Last ned PNG
-                </button>
-                <div class="export-info">Gratis • Ingen vannmerke • Print-klar kvalitet</div>
+            </div>
+
+            <!-- Sidebar Footer -->
+            <div class="sidebar-footer">
+                <span class="footer-brand"><a href="https://www.laererliv.no/" target="_blank">Lærerliv</a> © 2026</span>
             </div>
         </aside>
 
         <!-- Canvas Area -->
         <main class="canvas-area">
+            <!-- Info Button -->
+            <button class="info-btn" onclick="openInfoModal()" title="Om Stedskart (I)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 16v-4M12 8h.01"></path>
+                </svg>
+            </button>
+
             <!-- Toolbar -->
             <div class="canvas-toolbar">
-                <button class="toolbar-btn" onclick="zoomMap(-1)" title="Zoom ut">
+                <button class="toolbar-btn" onclick="zoomMap(-1)" title="Zoom ut (-)">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="8"></circle>
                         <path d="M21 21l-4.35-4.35M8 11h6"></path>
                     </svg>
                 </button>
-                <button class="toolbar-btn" onclick="zoomMap(1)" title="Zoom inn">
+                <button class="toolbar-btn" onclick="zoomMap(1)" title="Zoom inn (+)">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="8"></circle>
                         <path d="M21 21l-4.35-4.35M11 8v6M8 11h6"></path>
                     </svg>
                 </button>
                 <div class="toolbar-divider"></div>
-                <button class="toolbar-btn" onclick="resetMap()" title="Tilbakestill kart">
+                <button class="toolbar-btn" onclick="resetMap()" title="Tilbakestill kart (R)">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
                         <path d="M3 3v5h5"></path>
+                    </svg>
+                </button>
+                <div class="toolbar-divider"></div>
+                <button class="toolbar-btn" onclick="shareDesign()" title="Del design">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                     </svg>
                 </button>
             </div>
@@ -1417,8 +2034,7 @@
                         </div>
                         
                         <div class="poster-overlay">
-                            <div class="text-gradient" id="textGradient"></div>
-                            <div class="poster-text">
+                            <div class="poster-text" id="posterText">
                                 <h1 class="poster-title" id="posterTitle">Oslo</h1>
                                 <div class="poster-subtitle-wrapper" id="subtitleWrapper">
                                     <div class="poster-line" id="posterLine1"></div>
@@ -1426,11 +2042,10 @@
                                     <div class="poster-line" id="posterLine2"></div>
                                 </div>
                                 <p class="poster-coords" id="posterCoords">59.91° N, 10.75° E</p>
+                                <p class="poster-date" id="posterDate" style="display: none;"></p>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="poster-attribution" id="posterAttribution">© OpenStreetMap</div>
                     
                     <!-- Loading overlay -->
                     <div class="loading-overlay" id="loadingOverlay">
@@ -1442,10 +2057,116 @@
         </main>
     </div>
 
+    <!-- Info Modal -->
+    <div class="modal-overlay" id="infoModal" onclick="closeInfoModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4M12 8h.01"></path>
+                    </svg>
+                    Om Stedskart
+                </h2>
+                <button class="modal-close" onclick="closeInfoModal()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                        Hva er Stedskart?
+                    </h3>
+                    <p>Stedskart lar deg lage vakre, personlige kartplakater av dine favorittplasser. Perfekt som gave, minne fra en spesiell reise, eller som unik veggdekorasjon.</p>
+                    <p style="margin-top: 12px; font-size: 0.85rem; opacity: 0.7;">Kartdata © <a href="https://www.openstreetmap.org/copyright" target="_blank" style="color: var(--accent);">OpenStreetMap</a> bidragsytere</p>
+                </div>
+
+                <div class="modal-section">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                        </svg>
+                        Slik bruker du Stedskart
+                    </h3>
+                    <ul>
+                        <li>Søk etter et sted eller velg fra hurtigknappene</li>
+                        <li>Dra i kartet for å justere posisjonen</li>
+                        <li>Bruk scroll eller knappene for å zoome</li>
+                        <li>Velg kartstil, farger og ramme etter smak</li>
+                        <li>Tilpass tekst, tittelstørrelse og plassering</li>
+                        <li>Eksporter som høyoppløselig PNG (4x)</li>
+                    </ul>
+                </div>
+
+                <div class="modal-section">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        Hurtigtaster
+                    </h3>
+                    <ul>
+                        <li><span class="keyboard-shortcut">+</span> / <span class="keyboard-shortcut">-</span> — Zoom inn/ut</li>
+                        <li><span class="keyboard-shortcut">R</span> — Tilbakestill kart</li>
+                        <li><span class="keyboard-shortcut">E</span> — Eksporter plakat</li>
+                        <li><span class="keyboard-shortcut">C</span> — Kopier til utklippstavle</li>
+                        <li><span class="keyboard-shortcut">I</span> — Åpne denne infoen</li>
+                        <li><span class="keyboard-shortcut">Esc</span> — Lukk dialog</li>
+                    </ul>
+                </div>
+
+                <div class="modal-section">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        Om skaperen
+                    </h3>
+                    <div class="about-creator">
+                        <img src="logo.png" alt="Lærerliv logo" class="creator-logo" onerror="this.style.display='none'">
+                        <div class="creator-info">
+                            <h4>Kenneth Bareksten</h4>
+                            <p>Lærer og hobbyprogrammerer som lager digitale verktøy for å gjøre hverdagen litt enklere og mer kreativ.</p>
+                            <div class="creator-links">
+                                <a href="https://www.laererliv.no/" target="_blank" class="creator-link">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                    </svg>
+                                    www.laererliv.no
+                                </a>
+                                <a href="mailto:kenneth@laererliv.no" class="creator-link">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                    kenneth@laererliv.no
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ============================================
         // Configuration
         // ============================================
+        
+        // Geoapify API key - get your free key at https://myprojects.geoapify.com/
+        let GEOAPIFY_API_KEY = localStorage.getItem('geoapify_api_key') || '';
         
         const MAP_STYLES = [
             {
@@ -1456,7 +2177,8 @@
                 url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
                 urlNoLabels: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
                 textColor: '#2C2C2C',
-                bgColor: '#F7F5F0'
+                bgColor: '#F7F5F0',
+                geoapifyStyle: 'positron'
             },
             {
                 id: 'dark',
@@ -1466,7 +2188,8 @@
                 url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
                 urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
                 textColor: '#F5F5F0',
-                bgColor: '#0A0A0F'
+                bgColor: '#0A0A0F',
+                geoapifyStyle: 'dark-matter-yellow-roads'
             },
             {
                 id: 'midnight',
@@ -1476,7 +2199,8 @@
                 url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
                 urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
                 textColor: '#E8E8E8',
-                bgColor: '#0D1B2A'
+                bgColor: '#0D1B2A',
+                geoapifyStyle: 'dark-matter'
             },
             {
                 id: 'blueprint',
@@ -1486,17 +2210,19 @@
                 url: 'https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png',
                 urlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_toner_background/{z}/{x}/{y}{r}.png',
                 textColor: '#E8F1F5',
-                bgColor: '#0A2647'
+                bgColor: '#0A2647',
+                geoapifyStyle: 'toner'
             },
             {
                 id: 'vintage',
                 name: 'Vintage',
-                desc: 'Varm, nostalgisk stil',
-                colors: ['#F4E4C8', '#4A3A28', '#B8C5C0', '#D4D4B8'],
-                url: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
-                urlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
-                textColor: '#4A3A28',
-                bgColor: '#F4E4C8'
+                desc: 'Gammelt kart med patina',
+                colors: ['#E8DCC8', '#5A4A3A', '#C8B8A0', '#B0A090'],
+                url: 'https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png',
+                urlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_toner_background/{z}/{x}/{y}{r}.png',
+                textColor: '#3A2A1A',
+                bgColor: '#E8DCC8',
+                geoapifyStyle: 'toner-grey'
             },
             {
                 id: 'topographic',
@@ -1506,7 +2232,8 @@
                 url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
                 urlNoLabels: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
                 textColor: '#4A3A28',
-                bgColor: '#F5F2E8'
+                bgColor: '#F5F2E8',
+                geoapifyStyle: 'osm-bright'
             },
             {
                 id: 'watercolor',
@@ -1516,7 +2243,8 @@
                 url: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
                 urlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
                 textColor: '#4A4A4A',
-                bgColor: '#FAF8F5'
+                bgColor: '#FAF8F5',
+                geoapifyStyle: 'osm-bright-smooth'
             },
             {
                 id: 'osm',
@@ -1526,7 +2254,8 @@
                 url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                 urlNoLabels: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
                 textColor: '#2C2C2C',
-                bgColor: '#F5F5F0'
+                bgColor: '#F5F5F0',
+                geoapifyStyle: 'osm-carto'
             },
             {
                 id: 'atmospheric',
@@ -1536,7 +2265,8 @@
                 url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
                 urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
                 textColor: '#F4D4B0',
-                bgColor: '#2A1B2D'
+                bgColor: '#2A1B2D',
+                geoapifyStyle: 'dark-matter-brown'
             },
             {
                 id: 'nature',
@@ -1546,7 +2276,8 @@
                 url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
                 urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
                 textColor: '#60D8F8',
-                bgColor: '#030810'
+                bgColor: '#030810',
+                geoapifyStyle: 'dark-matter-dark-purple'
             },
             {
                 id: 'retro',
@@ -1556,7 +2287,8 @@
                 url: 'https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png',
                 urlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png',
                 textColor: '#4A2E15',
-                bgColor: '#F5E6D3'
+                bgColor: '#F5E6D3',
+                geoapifyStyle: 'klokantech-basic'
             },
             {
                 id: 'voyager',
@@ -1566,7 +2298,8 @@
                 url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
                 urlNoLabels: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
                 textColor: '#2C2C2C',
-                bgColor: '#FAFAF8'
+                bgColor: '#FAFAF8',
+                geoapifyStyle: 'osm-bright-grey'
             },
             {
                 id: 'positron',
@@ -1576,7 +2309,74 @@
                 url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
                 urlNoLabels: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
                 textColor: '#2C2C2C',
-                bgColor: '#E6E6E6'
+                bgColor: '#E6E6E6',
+                geoapifyStyle: 'positron'
+            },
+            {
+                id: 'positron-blue',
+                name: 'Positron Blå',
+                desc: 'Lys med blå aksenter',
+                colors: ['#EAEFF5', '#3D5A80', '#98C1D9', '#D0E8F2'],
+                url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#3D5A80',
+                bgColor: '#EAEFF5',
+                geoapifyStyle: 'positron-blue'
+            },
+            {
+                id: 'positron-red',
+                name: 'Positron Rød',
+                desc: 'Lys med røde veier',
+                colors: ['#F5EAEA', '#8B4049', '#D89090', '#E8D0D0'],
+                url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#8B4049',
+                bgColor: '#F5EAEA',
+                geoapifyStyle: 'positron-red'
+            },
+            {
+                id: 'dark-grey',
+                name: 'Mørk Grå',
+                desc: 'Sofistikert mørk grå',
+                colors: ['#1A1A1A', '#B0B0B0', '#2A2A2A', '#252525'],
+                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#D0D0D0',
+                bgColor: '#1A1A1A',
+                geoapifyStyle: 'dark-matter-dark-grey'
+            },
+            {
+                id: 'purple-roads',
+                name: 'Lilla Veier',
+                desc: 'Mørk med lilla aksenter',
+                colors: ['#1A1020', '#C8A0E0', '#251830', '#1F1228'],
+                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#E0D0F0',
+                bgColor: '#1A1020',
+                geoapifyStyle: 'dark-matter-purple-roads'
+            },
+            {
+                id: 'osm-liberty',
+                name: 'Liberty',
+                desc: 'Klassisk OpenStreetMap',
+                colors: ['#F0F0E8', '#404040', '#7090B0', '#90A080'],
+                url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#303030',
+                bgColor: '#F0F0E8',
+                geoapifyStyle: 'osm-liberty'
+            },
+            {
+                id: 'maptiler-3d',
+                name: 'Maptiler 3D',
+                desc: 'Moderne med dybde',
+                colors: ['#F8F8F5', '#505050', '#80B8D0', '#90C090'],
+                url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#383838',
+                bgColor: '#F8F8F5',
+                geoapifyStyle: 'maptiler-3d'
             }
         ];
 
@@ -1637,12 +2437,23 @@
             margin: 5,
             bgColor: '#F7F5F0',
             textColor: '#2C2C2C',
+            frameColor: '#2C2C2C',
             aspect: 'portrait',
             showCoords: true,
             showLines: true,
+            showDate: false,
+            dateValue: '',
             frameStyle: 'none',
             showLabels: true,
-            exportScale: 4
+            exportScale: 4,
+            labelShadow: 2,
+            mapSaturation: 100,
+            mapContrast: 100,
+            mapBrightness: 100,
+            titleSize: 38,
+            textX: 50,
+            textY: 85,
+            textBlur: 20
         };
 
         let map = null;
@@ -1659,6 +2470,7 @@
             renderFontGrid();
             setupEventListeners();
             updatePoster();
+            loadApiKey();
         });
 
         function initMap() {
@@ -1666,7 +2478,9 @@
                 zoomControl: false,
                 attributionControl: false,
                 dragging: true,
-                scrollWheelZoom: false
+                scrollWheelZoom: true,
+                doubleClickZoom: true,
+                touchZoom: true
             }).setView([state.location.lat, state.location.lng], state.zoom);
 
             tileLayer = L.tileLayer(state.style.url, {
@@ -1680,6 +2494,11 @@
                 document.getElementById('zoomSlider').value = state.zoom;
                 document.getElementById('zoomValue').textContent = state.zoom;
             });
+
+            // Initialize label styling after map loads
+            setTimeout(() => {
+                updateLabelShadow(state.labelShadow);
+            }, 500);
         }
 
         // ============================================
@@ -1743,6 +2562,14 @@
             
             // Update map tiles respecting labels setting
             updateMapTiles();
+            
+            // Apply vintage effect if vintage style
+            const mapWrapper = document.getElementById('mapWrapper');
+            if (styleId === 'vintage') {
+                mapWrapper.classList.add('vintage-map');
+            } else {
+                mapWrapper.classList.remove('vintage-map');
+            }
             
             updatePoster();
             renderStyleGrid();
@@ -1848,6 +2675,55 @@
                     selectColor(value);
                 }
             });
+
+            // Frame color picker
+            document.getElementById('frameColorPicker').addEventListener('input', (e) => {
+                updateFrameColor(e.target.value);
+            });
+
+            document.getElementById('frameColorHex').addEventListener('input', (e) => {
+                let value = e.target.value;
+                if (!value.startsWith('#')) value = '#' + value;
+                if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                    updateFrameColor(value);
+                }
+            });
+
+            // White glow control
+            document.getElementById('labelShadowSlider').addEventListener('input', (e) => {
+                updateLabelShadow(parseInt(e.target.value));
+            });
+
+            // Map adjustment controls
+            document.getElementById('mapSaturationSlider').addEventListener('input', (e) => {
+                updateMapFilters();
+            });
+
+            document.getElementById('mapContrastSlider').addEventListener('input', (e) => {
+                updateMapFilters();
+            });
+
+            document.getElementById('mapBrightnessSlider').addEventListener('input', (e) => {
+                updateMapFilters();
+            });
+
+            // Title size slider
+            document.getElementById('titleSizeSlider').addEventListener('input', (e) => {
+                updateTitleSize(parseInt(e.target.value));
+            });
+
+            // Text position sliders
+            document.getElementById('textXSlider').addEventListener('input', (e) => {
+                updateTextX(e.target.value);
+            });
+
+            document.getElementById('textYSlider').addEventListener('input', (e) => {
+                updateTextY(e.target.value);
+            });
+
+            document.getElementById('textBlurSlider').addEventListener('input', (e) => {
+                updateTextBlur(e.target.value);
+            });
         }
 
         function selectLocation(lat, lng, name) {
@@ -1882,27 +2758,35 @@
         function updatePoster() {
             const frame = document.getElementById('posterFrame');
             const inner = document.getElementById('posterInner');
-            const gradient = document.getElementById('textGradient');
+            const posterText = document.querySelector('.poster-text');
             const title = document.getElementById('posterTitle');
             const subtitle = document.getElementById('posterSubtitle');
             const coords = document.getElementById('posterCoords');
+            const dateEl = document.getElementById('posterDate');
             const line1 = document.getElementById('posterLine1');
             const line2 = document.getElementById('posterLine2');
-            const attribution = document.getElementById('posterAttribution');
 
             // Background
             frame.style.background = state.bgColor;
 
-            // Text gradient - softer blend
-            gradient.style.background = `linear-gradient(to bottom, transparent 0%, ${state.bgColor}aa 50%, ${state.bgColor} 85%)`;
+            // Text position
+            posterText.style.left = `${state.textX}%`;
+            posterText.style.top = `${state.textY}%`;
+            
+            // Text blur/glow - based on text color for a glow effect
+            const isLightText = isColorLight(state.textColor);
+            // Use contrasting color for glow (dark glow for light text, light glow for dark text)
+            const blurColor = isLightText ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)';
+            posterText.style.setProperty('--text-blur-color', blurColor);
+            posterText.style.setProperty('--text-blur-amount', `${state.textBlur}px`);
 
             // Text colors
             title.style.color = state.textColor;
             subtitle.style.color = state.textColor;
             coords.style.color = state.textColor;
+            dateEl.style.color = state.textColor;
             line1.style.backgroundColor = state.textColor;
             line2.style.backgroundColor = state.textColor;
-            attribution.style.color = state.textColor;
 
             // Frame color via CSS variable
             frame.style.setProperty('--frame-color', state.textColor);
@@ -1913,6 +2797,15 @@
             });
 
             updateMapWrapper();
+        }
+        
+        function isColorLight(color) {
+            const hex = color.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            return brightness > 128;
         }
 
         function updateMapWrapper() {
@@ -1946,9 +2839,48 @@
             } else if (option === 'labels') {
                 state.showLabels = !state.showLabels;
                 updateMapTiles();
+            } else if (option === 'date') {
+                state.showDate = !state.showDate;
+                document.getElementById('posterDate').style.display = state.showDate ? 'block' : 'none';
+                document.getElementById('dateInputWrapper').style.display = state.showDate ? 'block' : 'none';
             }
             
             toggle.classList.toggle('active');
+        }
+
+        function updateDate() {
+            const dateInput = document.getElementById('dateInput');
+            if (dateInput.value) {
+                const date = new Date(dateInput.value);
+                const options = { day: 'numeric', month: 'long', year: 'numeric' };
+                const formattedDate = date.toLocaleDateString('nb-NO', options);
+                state.dateValue = formattedDate;
+                document.getElementById('posterDate').textContent = formattedDate;
+            }
+        }
+
+        function updateTitleSize(size) {
+            state.titleSize = size;
+            document.getElementById('posterTitle').style.fontSize = `${size}px`;
+            document.getElementById('titleSizeValue').textContent = `${size}px`;
+        }
+
+        function updateTextX(value) {
+            state.textX = parseInt(value);
+            document.getElementById('textXValue').textContent = `${value}%`;
+            updatePoster();
+        }
+
+        function updateTextY(value) {
+            state.textY = parseInt(value);
+            document.getElementById('textYValue').textContent = `${value}%`;
+            updatePoster();
+        }
+
+        function updateTextBlur(value) {
+            state.textBlur = parseInt(value);
+            document.getElementById('textBlurValue').textContent = `${value}px`;
+            updatePoster();
         }
 
         function setFrame(frameStyle) {
@@ -1969,9 +2901,67 @@
             });
             
             // Update frame color via CSS variable
-            frame.style.setProperty('--frame-color', state.textColor);
+            frame.style.setProperty('--frame-color', state.frameColor);
             
             setTimeout(() => map.invalidateSize(), 100);
+        }
+
+        function updateFrameColor(color) {
+            state.frameColor = color;
+            const frame = document.getElementById('posterFrame');
+            frame.style.setProperty('--frame-color', color);
+            
+            // Update both picker and hex input
+            document.getElementById('frameColorPicker').value = color;
+            document.getElementById('frameColorHex').value = color.toUpperCase();
+        }
+
+        function updateLabelShadow(size) {
+            state.labelShadow = size;
+            document.getElementById('labelShadowValue').textContent = `${size}px`;
+            updateMapFilters();
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function updateMapFilters() {
+            const mapEl = document.getElementById('map');
+            const saturation = parseInt(document.getElementById('mapSaturationSlider').value);
+            const contrast = parseInt(document.getElementById('mapContrastSlider').value);
+            const brightness = parseInt(document.getElementById('mapBrightnessSlider').value);
+            
+            state.mapSaturation = saturation;
+            state.mapContrast = contrast;
+            state.mapBrightness = brightness;
+            
+            // Build filter string
+            let filters = [];
+            
+            // Add label shadow if active
+            if (state.labelShadow > 0) {
+                for (let i = 0; i < 3; i++) {
+                    filters.push(`drop-shadow(0 0 ${state.labelShadow}px white)`);
+                }
+            }
+            
+            // Add color adjustments
+            filters.push(`saturate(${saturation}%)`);
+            filters.push(`contrast(${contrast}%)`);
+            filters.push(`brightness(${brightness}%)`);
+            
+            mapEl.style.filter = filters.join(' ');
+            
+            // Update display values
+            document.getElementById('mapSaturationValue').textContent = `${saturation}%`;
+            document.getElementById('mapContrastValue').textContent = `${contrast}%`;
+            document.getElementById('mapBrightnessValue').textContent = `${brightness}%`;
         }
 
         function updateMapTiles() {
@@ -2012,39 +3002,492 @@
         // Export Functions
         // ============================================
         
+        function saveApiKey(key) {
+            GEOAPIFY_API_KEY = key;
+            localStorage.setItem('geoapify_api_key', key);
+        }
+        
+        function toggleApiKeyVisibility() {
+            const input = document.getElementById('apiKeyInput');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+        
+        function loadApiKey() {
+            const savedKey = localStorage.getItem('geoapify_api_key');
+            if (savedKey) {
+                GEOAPIFY_API_KEY = savedKey;
+                const input = document.getElementById('apiKeyInput');
+                if (input) input.value = savedKey;
+            }
+        }
+        
         async function exportPoster(format) {
+            // Check if API key is available
+            if (!GEOAPIFY_API_KEY) {
+                showNotification('Vennligst legg inn Geoapify API-nøkkel for høykvalitetseksport', 'error');
+                document.getElementById('apiKeyInput').focus();
+                return;
+            }
+            
             const loading = document.getElementById('loadingOverlay');
             loading.classList.add('active');
             
-            const scaleNames = { 2: 'Standard', 4: 'Høy', 6: 'Print' };
-            loading.querySelector('.loading-text').textContent = `Genererer ${scaleNames[state.exportScale]} oppløsning...`;
+            const scaleNames = { 2: 'Standard', 4: 'Høy (4K)', 6: 'Print (6K)' };
+            loading.querySelector('.loading-text').textContent = `Forbereder ${scaleNames[state.exportScale]} eksport...`;
 
             try {
-                // Wait for map tiles to load
-                await new Promise(resolve => setTimeout(resolve, 1500));
-
+                // Get poster dimensions
                 const poster = document.getElementById('posterFrame');
+                const posterRect = poster.getBoundingClientRect();
+                const scale = state.exportScale;
+                
+                // Final poster size
+                const posterWidth = Math.round(posterRect.width * scale);
+                const posterHeight = Math.round(posterRect.height * scale);
+                
+                // Calculate map area dimensions (accounting for margin)
+                const marginPercent = state.margin / 100;
+                const mapAreaWidth = Math.round(posterWidth * (1 - marginPercent * 2));
+                const mapAreaHeight = Math.round(posterHeight * (1 - marginPercent * 2));
+                
+                // Get map bounds for API
+                const bounds = map.getBounds();
+                const sw = bounds.getSouthWest();
+                const ne = bounds.getNorthEast();
+                
+                loading.querySelector('.loading-text').textContent = 'Henter høyoppløselig kart fra Geoapify...';
+                
+                // Geoapify max is 4096x4096, with scaleFactor=2 we get 8192x8192
+                // We may need to tile for very large exports
+                const maxGeoapifySize = 4096;
+                const scaleFactor = 2; // Double resolution
+                
+                // Calculate how to best fit within Geoapify limits
+                let requestWidth, requestHeight;
+                const aspectRatio = mapAreaWidth / mapAreaHeight;
+                
+                if (mapAreaWidth > mapAreaHeight) {
+                    requestWidth = Math.min(maxGeoapifySize, Math.round(mapAreaWidth / scaleFactor));
+                    requestHeight = Math.round(requestWidth / aspectRatio);
+                    if (requestHeight > maxGeoapifySize) {
+                        requestHeight = maxGeoapifySize;
+                        requestWidth = Math.round(requestHeight * aspectRatio);
+                    }
+                } else {
+                    requestHeight = Math.min(maxGeoapifySize, Math.round(mapAreaHeight / scaleFactor));
+                    requestWidth = Math.round(requestHeight * aspectRatio);
+                    if (requestWidth > maxGeoapifySize) {
+                        requestWidth = maxGeoapifySize;
+                        requestHeight = Math.round(requestWidth / aspectRatio);
+                    }
+                }
+                
+                // Get Geoapify style from current map style
+                const geoapifyStyle = state.style.geoapifyStyle || 'osm-bright';
+                
+                // Build Geoapify Static Map URL
+                const geoapifyUrl = `https://maps.geoapify.com/v1/staticmap?` +
+                    `style=${geoapifyStyle}` +
+                    `&width=${requestWidth}` +
+                    `&height=${requestHeight}` +
+                    `&area=rect:${sw.lng},${sw.lat},${ne.lng},${ne.lat}` +
+                    `&scaleFactor=${scaleFactor}` +
+                    `&format=png` +
+                    `&apiKey=${GEOAPIFY_API_KEY}`;
+                
+                console.log('Fetching map from:', geoapifyUrl);
+                
+                // Fetch the map image
+                const response = await fetch(geoapifyUrl);
+                if (!response.ok) {
+                    throw new Error(`Geoapify API feil: ${response.status} ${response.statusText}`);
+                }
+                
+                const mapBlob = await response.blob();
+                const mapImg = await createImageBitmap(mapBlob);
+                
+                loading.querySelector('.loading-text').textContent = 'Bygger poster med høyoppløselig kart...';
+                
+                // Create final canvas
+                const canvas = document.createElement('canvas');
+                canvas.width = posterWidth;
+                canvas.height = posterHeight;
+                const ctx = canvas.getContext('2d');
+                
+                // Draw background
+                ctx.fillStyle = state.bgColor;
+                ctx.fillRect(0, 0, posterWidth, posterHeight);
+                
+                // Calculate map position (centered with margin)
+                const mapX = Math.round(posterWidth * marginPercent);
+                const mapY = Math.round(posterHeight * marginPercent);
+                
+                // Draw the map image, scaled to fit
+                ctx.drawImage(mapImg, mapX, mapY, mapAreaWidth, mapAreaHeight);
+                
+                // Draw text overlay
+                loading.querySelector('.loading-text').textContent = 'Legger til tekst...';
+                
+                // Text styling
+                const titleSize = state.titleSize * scale;
+                const subtitleSize = 13 * scale;
+                const coordsSize = 10 * scale;
+                const dateSize = 12 * scale;
+                const padding = 28 * scale;
+                const lineWidth = 36 * scale;
+                const lineHeight = 1.5 * scale;
+                
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // Calculate text position using free positioning
+                const textX = mapX + (mapAreaWidth * state.textX / 100);
+                const textY = mapY + (mapAreaHeight * state.textY / 100);
+                
+                // Draw text blur/glow background
+                if (state.textBlur > 0) {
+                    const isLightBg = isColorLight(state.bgColor);
+                    const blurColor = isLightBg ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.4)';
+                    const blurRadius = state.textBlur * scale;
+                    
+                    // Draw ellipse blur behind text
+                    ctx.save();
+                    ctx.filter = `blur(${blurRadius}px)`;
+                    ctx.fillStyle = blurColor;
+                    ctx.beginPath();
+                    ctx.ellipse(textX, textY, 120 * scale, 60 * scale, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+                
+                // Text shadow
+                const shadowBlur = state.labelShadow * scale;
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = shadowBlur;
+                ctx.shadowOffsetY = shadowBlur / 2;
+                
+                // Draw title
+                ctx.fillStyle = state.textColor;
+                ctx.font = `700 ${titleSize}px ${state.font.family.replace(/'/g, '')}`;
+                ctx.letterSpacing = `${titleSize * 0.08}px`;
+                ctx.fillText(state.location.name.toUpperCase(), textX, textY);
+                
+                // Draw subtitle with lines
+                const subtitleY = textY + titleSize * 0.8;
+                ctx.font = `500 ${subtitleSize}px 'DM Sans', sans-serif`;
+                ctx.letterSpacing = `${subtitleSize * 0.2}px`;
+                
+                if (state.showLines) {
+                    // Measure subtitle
+                    const subtitleText = 'NORGE';
+                    const subtitleWidth = ctx.measureText(subtitleText).width;
+                    
+                    // Draw lines
+                    ctx.beginPath();
+                    ctx.strokeStyle = state.textColor;
+                    ctx.lineWidth = lineHeight;
+                    ctx.globalAlpha = 0.5;
+                    
+                    // Left line
+                    ctx.moveTo(textX - subtitleWidth / 2 - 14 * scale - lineWidth, subtitleY);
+                    ctx.lineTo(textX - subtitleWidth / 2 - 14 * scale, subtitleY);
+                    
+                    // Right line
+                    ctx.moveTo(textX + subtitleWidth / 2 + 14 * scale, subtitleY);
+                    ctx.lineTo(textX + subtitleWidth / 2 + 14 * scale + lineWidth, subtitleY);
+                    
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+                }
+                
+                ctx.globalAlpha = 0.9;
+                ctx.fillText('NORGE', textX, subtitleY);
+                ctx.globalAlpha = 1;
+                
+                // Draw coordinates
+                if (state.showCoords) {
+                    const coordsY = subtitleY + subtitleSize + 6 * scale;
+                    ctx.font = `400 ${coordsSize}px 'JetBrains Mono', monospace`;
+                    ctx.letterSpacing = `${coordsSize * 0.1}px`;
+                    ctx.globalAlpha = 0.7;
+                    
+                    const lat = state.location.lat.toFixed(2);
+                    const lng = state.location.lng.toFixed(2);
+                    const latDir = state.location.lat >= 0 ? 'N' : 'S';
+                    const lngDir = state.location.lng >= 0 ? 'E' : 'W';
+                    ctx.fillText(`${Math.abs(lat)}° ${latDir}, ${Math.abs(lng)}° ${lngDir}`, textX, coordsY);
+                    ctx.globalAlpha = 1;
+                }
+                
+                // Draw date if enabled
+                if (state.showDate && state.dateValue) {
+                    const dateY = subtitleY + subtitleSize + coordsSize + 16 * scale;
+                    ctx.font = `500 ${dateSize}px 'DM Sans', sans-serif`;
+                    ctx.letterSpacing = `${dateSize * 0.15}px`;
+                    ctx.globalAlpha = 0.85;
+                    ctx.fillText(state.dateValue.toUpperCase(), textX, dateY);
+                    ctx.globalAlpha = 1;
+                }
+                
+                // Reset shadow
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetY = 0;
+                
+                // Draw frame if enabled
+                if (state.frameStyle !== 'none') {
+                    ctx.strokeStyle = state.frameColor;
+                    const frameOffset = 8 * scale;
+                    const frameBorderWidth = 2 * scale;
+                    ctx.lineWidth = frameBorderWidth;
+                    ctx.strokeRect(
+                        mapX + frameOffset,
+                        mapY + frameOffset,
+                        mapAreaWidth - frameOffset * 2,
+                        mapAreaHeight - frameOffset * 2
+                    );
+                }
+                
+                loading.querySelector('.loading-text').textContent = 'Genererer fil...';
+                
+                // Download
+                const link = document.createElement('a');
+                link.download = `stedskart-${state.location.name.toLowerCase()}-${posterWidth}x${posterHeight}.png`;
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+                
+                loading.classList.remove('active');
+                showNotification(`Eksportert ${posterWidth}×${posterHeight}px i print-kvalitet!`, 'success');
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                loading.classList.remove('active');
+                
+                if (error.message.includes('API')) {
+                    showNotification('API-feil: Sjekk at API-nøkkelen er korrekt', 'error');
+                } else {
+                    showNotification('Det oppstod en feil ved eksport. Prøv igjen.', 'error');
+                }
+            }
+        }
+
+        // Simple export without API (lower quality but works without key)
+        async function exportSimple() {
+            const loading = document.getElementById('loadingOverlay');
+            loading.classList.add('active');
+            loading.querySelector('.loading-text').textContent = 'Forbereder rask eksport...';
+
+            try {
+                const poster = document.getElementById('posterFrame');
+                const originalTransform = poster.style.transform;
+                poster.style.transform = 'none';
+                
+                map.invalidateSize();
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                loading.querySelector('.loading-text').textContent = 'Genererer bilde...';
+                
+                loading.classList.remove('active');
+                await new Promise(resolve => setTimeout(resolve, 100));
 
                 const canvas = await html2canvas(poster, {
                     scale: state.exportScale,
                     useCORS: true,
                     allowTaint: true,
                     backgroundColor: state.bgColor,
-                    logging: false
+                    logging: false,
+                    imageTimeout: 30000
                 });
 
+                poster.style.transform = originalTransform;
+                
+                const width = canvas.width;
+                const height = canvas.height;
+
                 const link = document.createElement('a');
-                link.download = `stedskart-${state.location.name.toLowerCase()}-${state.exportScale}x.png`;
-                link.href = canvas.toDataURL('image/png');
+                link.download = `stedskart-${state.location.name.toLowerCase()}-${width}x${height}.png`;
+                link.href = canvas.toDataURL('image/png', 1.0);
                 link.click();
                 
+                showNotification(`Eksportert ${width}×${height}px (bruk API for høyere kvalitet)`, 'success');
+                
             } catch (error) {
-                console.error('Export error:', error);
-                alert('Beklager, det oppstod en feil ved eksport. Prøv igjen.');
-            } finally {
+                console.error('Simple export error:', error);
                 loading.classList.remove('active');
+                showNotification('Det oppstod en feil ved eksport.', 'error');
             }
         }
+
+        async function copyToClipboard() {
+            const loading = document.getElementById('loadingOverlay');
+            loading.classList.add('active');
+            loading.querySelector('.loading-text').textContent = 'Forbereder kopi...';
+
+            try {
+                const poster = document.getElementById('posterFrame');
+                const originalTransform = poster.style.transform;
+                poster.style.transform = 'none';
+                
+                map.invalidateSize();
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                loading.classList.remove('active');
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+                const canvas = await html2canvas(poster, {
+                    scale: state.exportScale,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: state.bgColor,
+                    logging: false,
+                    imageTimeout: 30000
+                });
+
+                poster.style.transform = originalTransform;
+                
+                const width = canvas.width;
+                const height = canvas.height;
+
+                canvas.toBlob(async (blob) => {
+                    try {
+                        await navigator.clipboard.write([
+                            new ClipboardItem({ 'image/png': blob })
+                        ]);
+                        showNotification(`Kopiert ${width}×${height}px til utklippstavle!`, 'success');
+                    } catch (err) {
+                        console.error('Clipboard error:', err);
+                        showNotification('Kunne ikke kopiere. Prøv å laste ned i stedet.', 'error');
+                    }
+                }, 'image/png', 1.0);
+                
+            } catch (error) {
+                console.error('Copy error:', error);
+                showNotification('Det oppstod en feil. Prøv igjen.', 'error');
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 24px;
+                right: 24px;
+                padding: 14px 24px;
+                background: ${type === 'success' ? 'var(--success)' : 'var(--danger)'};
+                color: white;
+                border-radius: var(--radius-md);
+                font-weight: 500;
+                font-size: 14px;
+                box-shadow: var(--shadow-lg);
+                z-index: 9999;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out forwards';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        async function shareDesign() {
+            if (navigator.share) {
+                try {
+                    const poster = document.getElementById('posterFrame');
+                    const canvas = await html2canvas(poster, {
+                        scale: 2,
+                        useCORS: true,
+                        allowTaint: true,
+                        backgroundColor: state.bgColor,
+                        logging: false
+                    });
+                    
+                    canvas.toBlob(async (blob) => {
+                        const file = new File([blob], `stedskart-${state.location.name}.png`, { type: 'image/png' });
+                        try {
+                            await navigator.share({
+                                title: `Stedskart: ${state.location.name}`,
+                                text: `Sjekk ut denne vakre kartplakaten av ${state.location.name}! Lag din egen på Stedskart.`,
+                                files: [file]
+                            });
+                        } catch (err) {
+                            if (err.name !== 'AbortError') {
+                                fallbackShare();
+                            }
+                        }
+                    }, 'image/png');
+                } catch (error) {
+                    fallbackShare();
+                }
+            } else {
+                fallbackShare();
+            }
+        }
+
+        function fallbackShare() {
+            copyToClipboard();
+            showNotification('Bildet er kopiert - lim inn for å dele!', 'success');
+        }
+
+        // Info Modal functions
+        function openInfoModal() {
+            document.getElementById('infoModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeInfoModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('infoModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Don't trigger shortcuts when typing in input fields
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            
+            // Close modal on Escape
+            if (e.key === 'Escape') {
+                closeInfoModal();
+                return;
+            }
+            
+            switch(e.key) {
+                case '+':
+                case '=':
+                    zoomMap(1);
+                    break;
+                case '-':
+                    zoomMap(-1);
+                    break;
+                case 'r':
+                case 'R':
+                    if (!e.metaKey && !e.ctrlKey) resetMap();
+                    break;
+                case 'e':
+                case 'E':
+                    if (!e.metaKey && !e.ctrlKey) exportPoster('png');
+                    break;
+                case 'c':
+                case 'C':
+                    if (!e.metaKey && !e.ctrlKey) copyToClipboard();
+                    break;
+                case 'i':
+                case 'I':
+                    if (!e.metaKey && !e.ctrlKey) openInfoModal();
+                    break;
+                case 's':
+                case 'S':
+                    if (e.metaKey || e.ctrlKey) {
+                        e.preventDefault();
+                        exportPoster('png');
+                    }
+                    break;
+            }
+        });
     </script>
 </body>
 </html>
