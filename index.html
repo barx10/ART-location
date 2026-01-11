@@ -1129,6 +1129,24 @@
             opacity: 1;
         }
 
+        /* Hvit glød-effekt overlay */
+        .map-glow-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 400;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0) 40%,
+                rgba(255, 255, 255, 0.3) 70%,
+                rgba(255, 255, 255, 0.6) 90%,
+                rgba(255, 255, 255, 0.8) 100%
+            );
+        }
+
         #map {
             width: 100%;
             height: 100%;
@@ -1171,7 +1189,7 @@
             position: absolute;
             inset: 0;
             pointer-events: none;
-            z-index: 1000;
+            z-index: 1050;
         }
 
         .poster-text {
@@ -1182,7 +1200,7 @@
             text-align: center;
             padding: 20px 40px;
             border-radius: 0;
-            z-index: 10; /* Above theme pseudo-elements */
+            z-index: 1100; /* Above frame borders */
         }
 
         .poster-title {
@@ -1242,8 +1260,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            height: var(--theme-size, 50%);
-            background: linear-gradient(to bottom, transparent 0%, var(--theme-color, #ffffff) 70%);
+            height: var(--theme-size, 30%);
+            background: linear-gradient(to bottom, transparent 0%, var(--theme-color, #ffffff) 100%);
             pointer-events: none;
         }
         
@@ -1918,7 +1936,7 @@
                     </div>
                     <div class="slider-container">
                         <div class="slider-header">
-                            <span class="slider-label">Hvit glød (for mørke kart)</span>
+                            <span class="slider-label">Lys vignette</span>
                             <span class="slider-value" id="labelShadowValue">0px</span>
                         </div>
                         <input type="range" class="slider" id="labelShadowSlider" min="0" max="8" value="0" step="1">
@@ -2087,6 +2105,7 @@
                     <div class="poster-inner" id="posterInner">
                         <div class="map-wrapper" id="mapWrapper">
                             <div id="map"></div>
+                            <div class="map-glow-overlay" id="mapGlowOverlay"></div>
                         </div>
                         
                         <div class="poster-overlay">
@@ -2437,14 +2456,65 @@
         document.addEventListener('DOMContentLoaded', () => {
             initMap();
             renderStyleGrid();
-            renderColorGrid();
             renderFontGrid();
             setupEventListeners();
+            initializeSliders();
             updatePoster();
             updateMapFilters();
             updateThemeColors();
             loadApiKey();
         });
+
+        // Synkroniser alle slider-verdier fra state til DOM
+        function initializeSliders() {
+            // Zoom
+            document.getElementById('zoomSlider').value = state.zoom;
+            document.getElementById('zoomValue').textContent = state.zoom;
+            
+            // Tekststørrelse - oppdater slider, display og anvend på poster
+            document.getElementById('textSizeSlider').value = state.textSize;
+            document.getElementById('textSizeValue').textContent = state.textSize + '%';
+            const scale = state.textSize / 100;
+            document.getElementById('posterTitle').style.fontSize = (38 * scale) + 'px';
+            document.getElementById('posterSubtitle').style.fontSize = (13 * scale) + 'px';
+            document.getElementById('posterCoords').style.fontSize = (10 * scale) + 'px';
+            
+            // Tekstposisjon - oppdater slider, display og anvend på poster
+            document.getElementById('textXSlider').value = state.textX;
+            document.getElementById('textXValue').textContent = state.textX + '%';
+            document.getElementById('textYSlider').value = state.textY;
+            document.getElementById('textYValue').textContent = state.textY + '%';
+            const posterText = document.querySelector('.poster-text');
+            if (posterText) {
+                posterText.style.left = state.textX + '%';
+                posterText.style.top = state.textY + '%';
+            }
+            
+            // Kartjusteringer
+            document.getElementById('mapSaturationSlider').value = state.mapSaturation;
+            document.getElementById('mapSaturationValue').textContent = state.mapSaturation + '%';
+            document.getElementById('mapContrastSlider').value = state.mapContrast;
+            document.getElementById('mapContrastValue').textContent = state.mapContrast + '%';
+            document.getElementById('mapBrightnessSlider').value = state.mapBrightness;
+            document.getElementById('mapBrightnessValue').textContent = state.mapBrightness + '%';
+            
+            // Hvit glød / Lys vignette
+            document.getElementById('labelShadowSlider').value = state.labelShadow;
+            document.getElementById('labelShadowValue').textContent = state.labelShadow + 'px';
+            // Anvend glød-effekten ved oppstart
+            const glowOverlay = document.getElementById('mapGlowOverlay');
+            if (glowOverlay) {
+                glowOverlay.style.opacity = state.labelShadow / 10;
+            }
+            
+            // Tema-høyde
+            document.getElementById('themeSizeSlider').value = state.themeSize;
+            document.getElementById('themeSizeValue').textContent = state.themeSize + '%';
+            
+            // Rammefarge
+            document.getElementById('frameColorPicker').value = state.frameColor;
+            document.getElementById('frameColorHex').value = state.frameColor.toUpperCase();
+        }
 
         function initMap() {
             map = L.map('map', {
@@ -2608,6 +2678,7 @@
 
             document.getElementById('textSizeSlider').addEventListener('input', (e) => {
                 const size = parseInt(e.target.value);
+                state.textSize = size;
                 document.getElementById('textSizeValue').textContent = size + '%';
                 const scale = size / 100;
                 document.getElementById('posterTitle').style.fontSize = (38 * scale) + 'px';
@@ -2644,14 +2715,17 @@
 
             // Map adjustment controls
             document.getElementById('mapSaturationSlider').addEventListener('input', (e) => {
+                state.mapSaturation = parseInt(e.target.value);
                 updateMapFilters();
             });
 
             document.getElementById('mapContrastSlider').addEventListener('input', (e) => {
+                state.mapContrast = parseInt(e.target.value);
                 updateMapFilters();
             });
 
             document.getElementById('mapBrightnessSlider').addEventListener('input', (e) => {
+                state.mapBrightness = parseInt(e.target.value);
                 updateMapFilters();
             });
 
@@ -2944,7 +3018,14 @@
         function updateLabelShadow(size) {
             state.labelShadow = size;
             document.getElementById('labelShadowValue').textContent = `${size}px`;
-            updateMapFilters();
+            
+            // Oppdater hvit glød-overlay
+            const glowOverlay = document.getElementById('mapGlowOverlay');
+            if (glowOverlay) {
+                // Konverter 0-8 til opacity 0-0.8
+                const opacity = size / 10;
+                glowOverlay.style.opacity = opacity;
+            }
         }
 
         function hexToRgb(hex) {
@@ -2958,13 +3039,11 @@
 
         function updateMapFilters() {
             const mapEl = document.getElementById('map');
-            const saturation = parseInt(document.getElementById('mapSaturationSlider').value);
-            const contrast = parseInt(document.getElementById('mapContrastSlider').value);
-            const brightness = parseInt(document.getElementById('mapBrightnessSlider').value);
             
-            state.mapSaturation = saturation;
-            state.mapContrast = contrast;
-            state.mapBrightness = brightness;
+            // Bruk state-verdier (oppdateres fra event listeners)
+            const saturation = state.mapSaturation;
+            const contrast = state.mapContrast;
+            const brightness = state.mapBrightness;
             
             // Build filter string
             let filters = [];
@@ -3087,10 +3166,9 @@
                 const mapAreaWidth = Math.round(posterWidth * (1 - marginPercent * 2));
                 const mapAreaHeight = Math.round(posterHeight * (1 - marginPercent * 2));
                 
-                // Get map bounds for API
-                const bounds = map.getBounds();
-                const sw = bounds.getSouthWest();
-                const ne = bounds.getNorthEast();
+                // Get map center and zoom for exact positioning
+                const center = map.getCenter();
+                const zoom = map.getZoom();
                 
                 loading.querySelector('.loading-text').textContent = 'Henter høyoppløselig kart fra Geoapify...';
                 
@@ -3120,14 +3198,16 @@
                 }
                 
                 // Get Geoapify style from current map style
+                // All Geoapify tile styles are also supported by Static Maps API
                 const geoapifyStyle = state.style.geoapifyStyle || 'osm-bright';
                 
-                // Build Geoapify Static Map URL
+                // Build Geoapify Static Map URL using CENTER and ZOOM for exact match
                 const geoapifyUrl = `https://maps.geoapify.com/v1/staticmap?` +
                     `style=${geoapifyStyle}` +
                     `&width=${requestWidth}` +
                     `&height=${requestHeight}` +
-                    `&area=rect:${sw.lng},${sw.lat},${ne.lng},${ne.lat}` +
+                    `&center=lonlat:${center.lng},${center.lat}` +
+                    `&zoom=${zoom}` +
                     `&scaleFactor=${scaleFactor}` +
                     `&format=png` +
                     `&apiKey=${GEOAPIFY_API_KEY}`;
@@ -3159,19 +3239,41 @@
                 const mapX = Math.round(posterWidth * marginPercent);
                 const mapY = Math.round(posterHeight * marginPercent);
                 
-                // Draw the map image, scaled to fit
+                // Draw the map image - stretch to fill exactly (matches Leaflet behavior)
                 ctx.drawImage(mapImg, mapX, mapY, mapAreaWidth, mapAreaHeight);
+                
+                // Cover Geoapify attribution at bottom of map with background color
+                const attributionHeight = 20 * scale;
+                ctx.fillStyle = state.bgColor;
+                ctx.fillRect(mapX, mapY + mapAreaHeight - attributionHeight, mapAreaWidth, attributionHeight);
+                
+                // Draw vignette effect if enabled (lys vignette)
+                if (state.labelShadow > 0) {
+                    const vignetteOpacity = state.labelShadow / 10;
+                    const vignetteGradient = ctx.createRadialGradient(
+                        mapX + mapAreaWidth / 2, mapY + mapAreaHeight / 2, 0,
+                        mapX + mapAreaWidth / 2, mapY + mapAreaHeight / 2, Math.max(mapAreaWidth, mapAreaHeight) * 0.7
+                    );
+                    vignetteGradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
+                    vignetteGradient.addColorStop(0.4, 'rgba(255, 255, 255, 0)');
+                    vignetteGradient.addColorStop(0.7, `rgba(255, 255, 255, ${vignetteOpacity * 0.3})`);
+                    vignetteGradient.addColorStop(0.9, `rgba(255, 255, 255, ${vignetteOpacity * 0.6})`);
+                    vignetteGradient.addColorStop(1, `rgba(255, 255, 255, ${vignetteOpacity * 0.8})`);
+                    ctx.fillStyle = vignetteGradient;
+                    ctx.fillRect(mapX, mapY, mapAreaWidth, mapAreaHeight);
+                }
                 
                 // Draw text overlay
                 loading.querySelector('.loading-text').textContent = 'Legger til tekst...';
                 
-                // Text styling
-                const titleSize = state.titleSize * scale;
-                const subtitleSize = 13 * scale;
-                const coordsSize = 10 * scale;
-                const dateSize = 12 * scale;
+                // Text styling - use textSize percentage from state
+                const textScale = state.textSize / 100;
+                const titleSize = 38 * scale * textScale;
+                const subtitleSize = 13 * scale * textScale;
+                const coordsSize = 10 * scale * textScale;
+                const dateSize = 12 * scale * textScale;
                 const padding = 28 * scale;
-                const lineWidth = 36 * scale;
+                const lineWidth = 36 * scale * textScale;
                 const lineHeight = 1.5 * scale;
                 
                 ctx.textAlign = 'center';
@@ -3181,57 +3283,94 @@
                 let textX = mapX + (mapAreaWidth * state.textX / 100);
                 let textY = mapY + (mapAreaHeight * state.textY / 100);
                 
-                // Adjust for theme
+                // Calculate total text height to ensure it fits within map area
+                const totalTextHeight = titleSize + subtitleSize * 1.2 + coordsSize * 1.5 + dateSize * 1.5;
+                const maxTextY = mapY + mapAreaHeight - totalTextHeight - 10 * scale;
+                
+                // Adjust for theme - position text in center of theme area
                 if (state.textTheme === 'panel' || state.textTheme === 'double') {
-                    textY = mapY + (mapAreaHeight * 0.88);
+                    // Theme starts at (1 - themeSize/100) from top
+                    const themeTopY = mapY + mapAreaHeight * (1 - state.themeSize / 100);
+                    const themeHeight = mapAreaHeight * (state.themeSize / 100);
+                    // Center title vertically in the theme area (adjusted for subtitle below)
+                    textY = themeTopY + themeHeight * 0.35;
                 } else if (state.textTheme === 'gradient') {
-                    textY = mapY + (mapAreaHeight * 0.90);
+                    const themeTopY = mapY + mapAreaHeight * (1 - state.themeSize / 100);
+                    const themeHeight = mapAreaHeight * (state.themeSize / 100);
+                    // Position text in lower part of gradient
+                    textY = themeTopY + themeHeight * 0.5;
                 }
                 
+                // Ensure text doesn't go below the map area
+                textY = Math.min(textY, maxTextY);
+                
                 // Draw text theme backgrounds
+                // Get theme colors from map style
+                const themeColor = state.style.bgColor || '#ffffff';
+                const themeBorderColor = state.style.textColor || '#2C2C2C';
+                
+                // Convert hex to rgba for gradient
+                const hexToRgba = (hex, alpha) => {
+                    const r = parseInt(hex.slice(1, 3), 16);
+                    const g = parseInt(hex.slice(3, 5), 16);
+                    const b = parseInt(hex.slice(5, 7), 16);
+                    return `rgba(${r},${g},${b},${alpha})`;
+                };
+                
                 if (state.textTheme === 'gradient') {
-                    const gradient = ctx.createLinearGradient(0, mapY + mapAreaHeight * 0.5, 0, mapY + mapAreaHeight);
-                    gradient.addColorStop(0, 'rgba(255,255,255,0)');
-                    gradient.addColorStop(0.7, 'rgba(255,255,255,1)');
-                    gradient.addColorStop(1, 'rgba(255,255,255,1)');
+                    // Use themeSize from state
+                    const gradientStartY = mapY + mapAreaHeight * (1 - state.themeSize / 100);
+                    const gradientEndY = mapY + mapAreaHeight;
+                    const gradient = ctx.createLinearGradient(0, gradientStartY, 0, gradientEndY);
+                    gradient.addColorStop(0, hexToRgba(themeColor, 0));
+                    gradient.addColorStop(1, hexToRgba(themeColor, 1));
                     ctx.fillStyle = gradient;
-                    ctx.fillRect(mapX, mapY + mapAreaHeight * 0.5, mapAreaWidth, mapAreaHeight * 0.5);
+                    ctx.fillRect(mapX, gradientStartY, mapAreaWidth, gradientEndY - gradientStartY);
                 } else if (state.textTheme === 'panel') {
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(mapX, mapY + mapAreaHeight * 0.75, mapAreaWidth, mapAreaHeight * 0.25);
-                    ctx.strokeStyle = state.textColor;
+                    ctx.fillStyle = themeColor;
+                    ctx.fillRect(mapX, mapY + mapAreaHeight * (1 - state.themeSize / 100), mapAreaWidth, mapAreaHeight * (state.themeSize / 100));
+                    ctx.strokeStyle = themeBorderColor;
                     ctx.lineWidth = 2 * scale;
                     ctx.beginPath();
-                    ctx.moveTo(mapX, mapY + mapAreaHeight * 0.75);
-                    ctx.lineTo(mapX + mapAreaWidth, mapY + mapAreaHeight * 0.75);
+                    ctx.moveTo(mapX, mapY + mapAreaHeight * (1 - state.themeSize / 100));
+                    ctx.lineTo(mapX + mapAreaWidth, mapY + mapAreaHeight * (1 - state.themeSize / 100));
                     ctx.stroke();
                 } else if (state.textTheme === 'double') {
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(mapX, mapY + mapAreaHeight * 0.72, mapAreaWidth, mapAreaHeight * 0.28);
-                    ctx.strokeStyle = state.textColor;
+                    ctx.fillStyle = themeColor;
+                    ctx.fillRect(mapX, mapY + mapAreaHeight * (1 - state.themeSize / 100), mapAreaWidth, mapAreaHeight * (state.themeSize / 100));
+                    ctx.strokeStyle = themeBorderColor;
                     ctx.lineWidth = 3 * scale;
                     ctx.beginPath();
-                    ctx.moveTo(mapX, mapY + mapAreaHeight * 0.72);
-                    ctx.lineTo(mapX + mapAreaWidth, mapY + mapAreaHeight * 0.72);
+                    ctx.moveTo(mapX, mapY + mapAreaHeight * (1 - state.themeSize / 100));
+                    ctx.lineTo(mapX + mapAreaWidth, mapY + mapAreaHeight * (1 - state.themeSize / 100));
                     ctx.stroke();
                     ctx.lineWidth = 1 * scale;
                     ctx.beginPath();
-                    ctx.moveTo(mapX, mapY + mapAreaHeight * 0.75);
-                    ctx.lineTo(mapX + mapAreaWidth, mapY + mapAreaHeight * 0.75);
+                    ctx.moveTo(mapX, mapY + mapAreaHeight * (1 - state.themeSize / 100 + 0.03));
+                    ctx.lineTo(mapX + mapAreaWidth, mapY + mapAreaHeight * (1 - state.themeSize / 100 + 0.03));
                     ctx.stroke();
                 } else if (state.textTheme === 'box') {
-                    // Draw box behind text
-                    const boxWidth = 180 * scale;
-                    const boxHeight = 80 * scale;
-                    ctx.fillStyle = '#ffffff';
+                    // Draw box behind text - scale with text size
+                    const boxPaddingX = 48 * scale * textScale;
+                    const boxPaddingY = 32 * scale * textScale;
+                    
+                    // Measure the title to get proper box size
+                    ctx.font = `700 ${titleSize}px ${state.font.family.replace(/'/g, '')}`;
+                    const titleText = document.getElementById('titleInput').value || state.location.name;
+                    const titleWidth = ctx.measureText(titleText.toUpperCase()).width;
+                    
+                    const boxWidth = Math.max(titleWidth + boxPaddingX * 2, 150 * scale * textScale);
+                    const boxHeight = titleSize * 2.5 + boxPaddingY;
+                    
+                    ctx.fillStyle = themeColor;
                     ctx.fillRect(textX - boxWidth/2, textY - boxHeight/2, boxWidth, boxHeight);
-                    ctx.strokeStyle = state.textColor;
+                    ctx.strokeStyle = themeBorderColor;
                     ctx.lineWidth = 2 * scale;
                     ctx.strokeRect(textX - boxWidth/2, textY - boxHeight/2, boxWidth, boxHeight);
                 }
                 
                 // Set text color based on theme
-                const textColorForTheme = (state.textTheme !== 'none') ? '#2C2C2C' : state.textColor;
+                const textColorForTheme = (state.textTheme !== 'none') ? themeBorderColor : state.textColor;
                 
                 // Text shadow (only for no theme)
                 if (state.textTheme === 'none') {
@@ -3248,21 +3387,26 @@
                 ctx.fillStyle = textColorForTheme;
                 ctx.font = `700 ${titleSize}px ${state.font.family.replace(/'/g, '')}`;
                 ctx.letterSpacing = `${titleSize * 0.08}px`;
-                ctx.fillText(state.location.name.toUpperCase(), textX, textY);
+                
+                // Get title from input field
+                const titleText = document.getElementById('titleInput').value || state.location.name;
+                ctx.fillText(titleText.toUpperCase(), textX, textY);
                 
                 // Draw subtitle with lines
                 const subtitleY = textY + titleSize * 0.8;
                 ctx.font = `500 ${subtitleSize}px 'DM Sans', sans-serif`;
                 ctx.letterSpacing = `${subtitleSize * 0.2}px`;
                 
-                if (state.showLines) {
+                // Get subtitle from input field
+                const subtitleText = document.getElementById('subtitleInput').value || 'Norge';
+                
+                if (state.showLines && subtitleText) {
                     // Measure subtitle
-                    const subtitleText = 'NORGE';
-                    const subtitleWidth = ctx.measureText(subtitleText).width;
+                    const subtitleWidth = ctx.measureText(subtitleText.toUpperCase()).width;
                     
                     // Draw lines
                     ctx.beginPath();
-                    ctx.strokeStyle = state.textColor;
+                    ctx.strokeStyle = textColorForTheme;
                     ctx.lineWidth = lineHeight;
                     ctx.globalAlpha = 0.5;
                     
@@ -3278,8 +3422,11 @@
                     ctx.globalAlpha = 1;
                 }
                 
+                ctx.fillStyle = textColorForTheme;
                 ctx.globalAlpha = 0.9;
-                ctx.fillText('NORGE', textX, subtitleY);
+                if (subtitleText) {
+                    ctx.fillText(subtitleText.toUpperCase(), textX, subtitleY);
+                }
                 ctx.globalAlpha = 1;
                 
                 // Draw coordinates
@@ -3312,18 +3459,57 @@
                 ctx.shadowBlur = 0;
                 ctx.shadowOffsetY = 0;
                 
-                // Draw frame if enabled
+                // Draw frame LAST - in the margin area OUTSIDE the map
                 if (state.frameStyle !== 'none') {
                     ctx.strokeStyle = state.frameColor;
-                    const frameOffset = 8 * scale;
-                    const frameBorderWidth = 2 * scale;
+                    
+                    // Frame is drawn in the margin, outside the map area
+                    // Offset from poster edge (into margin area)
+                    const marginSize = mapX; // The margin is mapX pixels wide
+                    const frameInset = marginSize * 0.4; // Frame sits 40% into the margin from edge
+                    
+                    let frameBorderWidth = 2 * scale;
+                    if (state.frameStyle === 'thick') {
+                        frameBorderWidth = 4 * scale;
+                    } else if (state.frameStyle === 'double') {
+                        frameBorderWidth = 3 * scale;
+                    } else if (state.frameStyle === 'vintage' || state.frameStyle === 'ornate') {
+                        frameBorderWidth = 3 * scale;
+                    }
+                    
                     ctx.lineWidth = frameBorderWidth;
+                    
+                    // Main frame - drawn OUTSIDE the map, in the margin
                     ctx.strokeRect(
-                        mapX + frameOffset,
-                        mapY + frameOffset,
-                        mapAreaWidth - frameOffset * 2,
-                        mapAreaHeight - frameOffset * 2
+                        frameInset,
+                        frameInset,
+                        posterWidth - frameInset * 2,
+                        posterHeight - frameInset * 2
                     );
+                    
+                    // Double frame - add second line closer to edge
+                    if (state.frameStyle === 'double') {
+                        ctx.lineWidth = 1 * scale;
+                        const innerInset = frameInset + 6 * scale;
+                        ctx.strokeRect(
+                            innerInset,
+                            innerInset,
+                            posterWidth - innerInset * 2,
+                            posterHeight - innerInset * 2
+                        );
+                    }
+                    
+                    // Vintage/ornate - add decorative lines
+                    if (state.frameStyle === 'vintage' || state.frameStyle === 'ornate') {
+                        ctx.lineWidth = 1 * scale;
+                        const innerInset = frameInset + 8 * scale;
+                        ctx.strokeRect(
+                            innerInset,
+                            innerInset,
+                            posterWidth - innerInset * 2,
+                            posterHeight - innerInset * 2
+                        );
+                    }
                 }
                 
                 loading.querySelector('.loading-text').textContent = 'Genererer fil...';
