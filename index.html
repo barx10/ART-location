@@ -972,10 +972,11 @@
             overflow: hidden;
         }
 
+        /* Thin frame - inner border with margin */
         .poster-frame.frame-thin .poster-inner {
             inset: 16px;
         }
-
+        
         .poster-frame.frame-thin .poster-inner::after {
             content: '';
             position: absolute;
@@ -985,23 +986,25 @@
             z-index: 1001;
         }
 
+        /* Thick frame - larger margin and border */
         .poster-frame.frame-thick .poster-inner {
             inset: 24px;
         }
-
+        
         .poster-frame.frame-thick .poster-inner::after {
             content: '';
             position: absolute;
             inset: 0;
-            border: 8px solid var(--frame-color, #2C2C2C);
+            border: 4px solid var(--frame-color, #2C2C2C);
             pointer-events: none;
             z-index: 1001;
         }
 
+        /* Double frame - margin with double border */
         .poster-frame.frame-double .poster-inner {
             inset: 20px;
         }
-
+        
         .poster-frame.frame-double .poster-inner::after {
             content: '';
             position: absolute;
@@ -1011,17 +1014,17 @@
             z-index: 1001;
         }
 
+        /* Vintage frame - margin with textured effect */
         .poster-frame.frame-vintage .poster-inner {
             inset: 28px;
         }
-
+        
         .poster-frame.frame-vintage .poster-inner::before {
             content: '';
             position: absolute;
-            inset: -8px;
+            inset: 0;
             border: 3px solid var(--frame-color, #2C2C2C);
             pointer-events: none;
-            opacity: 0.4;
             z-index: 1001;
         }
 
@@ -1029,51 +1032,27 @@
             content: '';
             position: absolute;
             inset: 0;
-            border: 3px solid var(--frame-color, #2C2C2C);
-            pointer-events: none;
             background: 
-                /* Krakelering/sprekk-effekt */
-                repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 3px),
-                repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px),
-                repeating-linear-gradient(22deg, transparent, transparent 4px, rgba(0,0,0,0.04) 4px, rgba(0,0,0,0.04) 5px),
-                repeating-linear-gradient(-67deg, transparent, transparent 5px, rgba(0,0,0,0.05) 5px, rgba(0,0,0,0.05) 6px),
-                /* Slitasje og patina */
-                radial-gradient(ellipse at 20% 20%, rgba(0,0,0,0.05) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(0,0,0,0.05) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.03) 100%);
-            background-size: 
-                20px 20px,
-                25px 25px,
-                15px 15px,
-                30px 30px,
-                100% 100%,
-                100% 100%,
-                100% 100%;
-            z-index: 1001;
+                repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 3px),
+                repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(0,0,0,0.03) 3px, rgba(0,0,0,0.03) 4px);
+            background-size: 20px 20px, 25px 25px;
+            pointer-events: none;
+            z-index: 1002;
         }
 
+        /* Ornate frame - margin with decorative border */
         .poster-frame.frame-ornate .poster-inner {
             inset: 32px;
         }
-
+        
         .poster-frame.frame-ornate .poster-inner::before {
-            content: '';
-            position: absolute;
-            inset: -12px;
-            border: 1px solid var(--frame-color, #2C2C2C);
-            pointer-events: none;
-            opacity: 0.3;
-            z-index: 1001;
-        }
-
-        .poster-frame.frame-ornate .poster-inner::after {
             content: '';
             position: absolute;
             inset: 0;
             border: 3px solid var(--frame-color, #2C2C2C);
             box-shadow: 
-                inset 0 0 0 6px transparent,
-                inset 0 0 0 7px var(--frame-color, #2C2C2C);
+                0 0 0 6px var(--bg-color, #f5f5f0),
+                0 0 0 8px var(--frame-color, #2C2C2C);
             pointer-events: none;
             z-index: 1001;
         }
@@ -1085,33 +1064,33 @@
             height: 20px;
             border: 2px solid var(--frame-color, #2C2C2C);
             pointer-events: none;
-            z-index: 10;
+            z-index: 1003;
         }
 
         .poster-frame.frame-ornate .corner-decor.top-left {
-            top: 20px;
-            left: 20px;
+            top: 24px;
+            left: 24px;
             border-right: none;
             border-bottom: none;
         }
 
         .poster-frame.frame-ornate .corner-decor.top-right {
-            top: 20px;
-            right: 20px;
+            top: 24px;
+            right: 24px;
             border-left: none;
             border-bottom: none;
         }
 
         .poster-frame.frame-ornate .corner-decor.bottom-left {
-            bottom: 20px;
-            left: 20px;
+            bottom: 24px;
+            left: 24px;
             border-right: none;
             border-top: none;
         }
 
         .poster-frame.frame-ornate .corner-decor.bottom-right {
-            bottom: 20px;
-            right: 20px;
+            bottom: 24px;
+            right: 24px;
             border-left: none;
             border-top: none;
         }
@@ -1202,7 +1181,8 @@
             transform: translate(-50%, -50%);
             text-align: center;
             padding: 20px 40px;
-            border-radius: 8px;
+            border-radius: 0;
+            z-index: 10; /* Above theme pseudo-elements */
         }
 
         .poster-title {
@@ -1213,10 +1193,6 @@
             text-transform: uppercase;
             line-height: 1.1;
             margin-bottom: 10px;
-            text-shadow: 
-                0 0 var(--text-blur-amount, 20px) var(--text-blur-color, rgba(0,0,0,0.5)),
-                0 0 calc(var(--text-blur-amount, 20px) * 2) var(--text-blur-color, rgba(0,0,0,0.3)),
-                0 0 calc(var(--text-blur-amount, 20px) * 3) var(--text-blur-color, rgba(0,0,0,0.2));
         }
 
         .poster-subtitle-wrapper {
@@ -1231,8 +1207,6 @@
             width: 36px;
             height: 1.5px;
             opacity: 0.5;
-            box-shadow: 
-                0 0 var(--text-blur-amount, 20px) var(--text-blur-color, rgba(0,0,0,0.5));
         }
 
         .poster-subtitle {
@@ -1242,9 +1216,6 @@
             letter-spacing: 0.2em;
             text-transform: uppercase;
             opacity: 0.9;
-            text-shadow: 
-                0 0 var(--text-blur-amount, 20px) var(--text-blur-color, rgba(0,0,0,0.5)),
-                0 0 calc(var(--text-blur-amount, 20px) * 2) var(--text-blur-color, rgba(0,0,0,0.3));
         }
 
         .poster-coords {
@@ -1252,9 +1223,6 @@
             font-size: 10px;
             letter-spacing: 0.1em;
             opacity: 0.7;
-            text-shadow: 
-                0 0 var(--text-blur-amount, 20px) var(--text-blur-color, rgba(0,0,0,0.5)),
-                0 0 calc(var(--text-blur-amount, 20px) * 2) var(--text-blur-color, rgba(0,0,0,0.3));
         }
 
         .poster-date {
@@ -1265,9 +1233,87 @@
             text-transform: uppercase;
             opacity: 0.85;
             margin-top: 10px;
-            text-shadow: 
-                0 0 var(--text-blur-amount, 20px) var(--text-blur-color, rgba(0,0,0,0.5)),
-                0 0 calc(var(--text-blur-amount, 20px) * 2) var(--text-blur-color, rgba(0,0,0,0.3));
+        }
+
+        /* Text Theme: Gradient */
+        .poster-overlay.theme-gradient::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: var(--theme-size, 50%);
+            background: linear-gradient(to bottom, transparent 0%, var(--theme-color, #ffffff) 70%);
+            pointer-events: none;
+        }
+        
+        .poster-overlay.theme-gradient .poster-text {
+            color: var(--theme-text-color, #2C2C2C);
+        }
+
+        /* Text Theme: Box */
+        .poster-overlay.theme-box .poster-text {
+            background: var(--theme-color, #ffffff);
+            border: 2px solid var(--theme-border-color, #2C2C2C);
+            padding: 24px 48px;
+            color: var(--theme-text-color, #2C2C2C);
+        }
+        
+        .poster-overlay.theme-box .poster-line {
+            background-color: var(--theme-text-color, #2C2C2C) !important;
+        }
+
+        /* Text Theme: Panel */
+        .poster-overlay.theme-panel::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: var(--theme-size, 25%);
+            background: var(--theme-color, #ffffff);
+            border-top: 2px solid var(--theme-border-color, #2C2C2C);
+            pointer-events: none;
+        }
+        
+        .poster-overlay.theme-panel .poster-text {
+            color: var(--theme-text-color, #2C2C2C);
+        }
+        
+        .poster-overlay.theme-panel .poster-line {
+            background-color: var(--theme-text-color, #2C2C2C) !important;
+        }
+
+        /* Text Theme: Double Line Panel */
+        .poster-overlay.theme-double::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: var(--theme-size, 28%);
+            background: var(--theme-color, #ffffff);
+            border-top: 3px solid var(--theme-border-color, #2C2C2C);
+            pointer-events: none;
+        }
+        
+        .poster-overlay.theme-double::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: calc(var(--theme-size, 28%) - 3%);
+            border-top: 1px solid var(--theme-border-color, #2C2C2C);
+            pointer-events: none;
+        }
+        
+        .poster-overlay.theme-double .poster-text {
+            color: var(--theme-text-color, #2C2C2C);
+        }
+        
+        .poster-overlay.theme-double .poster-line {
+            background-color: var(--theme-text-color, #2C2C2C) !important;
         }
 
         /* Loading state */
@@ -1657,7 +1703,7 @@
                 <div class="section">
                     <div class="section-header">
                         <span class="section-title">🎨 Kartstil</span>
-                        <span class="section-badge">13 stiler</span>
+                        <span class="section-badge">11 stiler</span>
                     </div>
                     <div class="style-grid" id="styleGrid">
                         <!-- Styles injected by JS -->
@@ -1704,6 +1750,20 @@
                         </div>
                         <input type="range" class="slider" id="textSizeSlider" min="70" max="130" value="100" step="5">
                     </div>
+                    <div class="slider-container" id="textPositionContainer">
+                        <div class="slider-header">
+                            <span class="slider-label">Horisontal posisjon</span>
+                            <span class="slider-value" id="textXValue">50%</span>
+                        </div>
+                        <input type="range" class="slider" id="textXSlider" min="10" max="90" value="50" step="1">
+                    </div>
+                    <div class="slider-container" id="textYContainer">
+                        <div class="slider-header">
+                            <span class="slider-label">Vertikal posisjon</span>
+                            <span class="slider-value" id="textYValue">85%</span>
+                        </div>
+                        <input type="range" class="slider" id="textYSlider" min="10" max="95" value="85" step="1">
+                    </div>
                 </div>
 
                 <!-- Text Section -->
@@ -1731,19 +1791,50 @@
                     </div>
                 </div>
 
-                <!-- Colors Section -->
+                <!-- Text Theme Section -->
                 <div class="section">
                     <div class="section-header">
-                        <span class="section-title">🖌️ Bakgrunnsfarge</span>
+                        <span class="section-title">📝 Tekst-tema</span>
+                        <span class="section-badge">5 temaer</span>
                     </div>
-                    <div class="color-grid" id="colorGrid">
-                        <!-- Colors injected by JS -->
+                    <div class="frame-grid" id="themeGrid">
+                        <button class="frame-btn active" data-theme="none" onclick="setTextTheme('none')">
+                            <div class="frame-preview">
+                                <div class="frame-preview-inner" style="display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 8px;">Aa</div>
+                            </div>
+                            <span>Ingen</span>
+                        </button>
+                        <button class="frame-btn" data-theme="gradient" onclick="setTextTheme('gradient')">
+                            <div class="frame-preview">
+                                <div class="frame-preview-inner" style="background: linear-gradient(to bottom, transparent 30%, white 80%); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 8px;">Aa</div>
+                            </div>
+                            <span>Gradient</span>
+                        </button>
+                        <button class="frame-btn" data-theme="box" onclick="setTextTheme('box')">
+                            <div class="frame-preview">
+                                <div class="frame-preview-inner" style="display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px;"><span style="background: white; border: 1px solid #333; padding: 2px 6px; font-size: 6px;">Aa</span></div>
+                            </div>
+                            <span>Boks</span>
+                        </button>
+                        <button class="frame-btn" data-theme="panel" onclick="setTextTheme('panel')">
+                            <div class="frame-preview">
+                                <div class="frame-preview-inner" style="position: relative;"><div style="position: absolute; bottom: 0; left: 0; right: 0; height: 35%; background: white; border-top: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 6px;">Aa</div></div>
+                            </div>
+                            <span>Panel</span>
+                        </button>
+                        <button class="frame-btn" data-theme="double" onclick="setTextTheme('double')">
+                            <div class="frame-preview">
+                                <div class="frame-preview-inner" style="position: relative;"><div style="position: absolute; bottom: 0; left: 0; right: 0; height: 35%; background: white; border-top: 2px solid #333;"></div><div style="position: absolute; bottom: 0; left: 0; right: 0; height: 30%; border-top: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 6px;">Aa</div></div>
+                            </div>
+                            <span>Dobbel</span>
+                        </button>
                     </div>
-                    <div class="custom-color-wrapper">
-                        <div class="color-input-wrapper">
-                            <input type="color" class="color-picker" id="customColorPicker" value="#f5f5f0">
-                            <input type="text" class="color-hex" id="customColorHex" value="#F5F5F0" maxlength="7">
+                    <div class="slider-container" id="themeSizeContainer" style="margin-top: 12px; display: none;">
+                        <div class="slider-header">
+                            <span class="slider-label">Tema-høyde</span>
+                            <span class="slider-value" id="themeSizeValue">30%</span>
                         </div>
+                        <input type="range" class="slider" id="themeSizeSlider" min="15" max="60" value="30" step="5">
                     </div>
                 </div>
 
@@ -1869,41 +1960,6 @@
                     </div>
                     <div id="dateInputWrapper" style="display: none; margin-top: 8px;">
                         <input type="date" class="input" id="dateInput" onchange="updateDate()" oninput="updateDate()">
-                    </div>
-                </div>
-
-                <!-- Text Styling Section -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">✏️ Tekststyling</span>
-                    </div>
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">Tittelstørrelse</span>
-                            <span class="slider-value" id="titleSizeValue">38px</span>
-                        </div>
-                        <input type="range" class="slider" id="titleSizeSlider" min="24" max="60" value="38" step="2">
-                    </div>
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">Horisontal posisjon</span>
-                            <span class="slider-value" id="textXValue">50%</span>
-                        </div>
-                        <input type="range" class="slider" id="textXSlider" min="10" max="90" value="50" step="1">
-                    </div>
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">Vertikal posisjon</span>
-                            <span class="slider-value" id="textYValue">85%</span>
-                        </div>
-                        <input type="range" class="slider" id="textYSlider" min="10" max="95" value="85" step="1">
-                    </div>
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">Tekst-glød (bakgrunn)</span>
-                            <span class="slider-value" id="textBlurValue">20px</span>
-                        </div>
-                        <input type="range" class="slider" id="textBlurSlider" min="0" max="60" value="20" step="5">
                     </div>
                 </div>
 
@@ -2168,215 +2224,135 @@
         // Geoapify API key - get your free key at https://myprojects.geoapify.com/
         let GEOAPIFY_API_KEY = localStorage.getItem('geoapify_api_key') || '';
         
+        // Helper to get Geoapify tile URL
+        function getGeoapifyTileUrl(style) {
+            if (GEOAPIFY_API_KEY) {
+                return `https://maps.geoapify.com/v1/tile/${style}/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_API_KEY}`;
+            }
+            return null;
+        }
+        
         const MAP_STYLES = [
             {
-                id: 'minimal',
-                name: 'Minimal',
-                desc: 'Ren, minimalistisk stil',
+                id: 'positron',
+                name: 'Positron',
+                desc: 'Lys og minimalistisk',
                 colors: ['#F7F5F0', '#2C2C2C', '#E0E7ED', '#EDEEE8'],
-                url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
+                fallbackUrl: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                fallbackUrlNoLabels: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
                 textColor: '#2C2C2C',
                 bgColor: '#F7F5F0',
                 geoapifyStyle: 'positron'
             },
             {
-                id: 'dark',
-                name: 'Mørk Modus',
-                desc: 'Dramatisk mørk stil',
-                colors: ['#0A0A0F', '#C9A432', '#06080D', '#0A0F0A'],
-                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+                id: 'dark-matter',
+                name: 'Dark Matter',
+                desc: 'Mørk og elegant',
+                colors: ['#0A0A0F', '#F5F5F0', '#1A1A24', '#151520'],
+                fallbackUrl: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                fallbackUrlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
                 textColor: '#F5F5F0',
+                bgColor: '#0A0A0F',
+                geoapifyStyle: 'dark-matter'
+            },
+            {
+                id: 'dark-matter-yellow',
+                name: 'Gule Veier',
+                desc: 'Mørk med gule veier',
+                colors: ['#0A0A0F', '#C9A432', '#1A1A24', '#151520'],
+                fallbackUrl: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                fallbackUrlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#C9A432',
                 bgColor: '#0A0A0F',
                 geoapifyStyle: 'dark-matter-yellow-roads'
             },
             {
-                id: 'midnight',
-                name: 'Midnatt',
-                desc: 'Dyp blå med hvite gater',
-                colors: ['#0D1B2A', '#C0C1BD', '#1B263B', '#1B263B'],
-                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
-                textColor: '#E8E8E8',
-                bgColor: '#0D1B2A',
-                geoapifyStyle: 'dark-matter'
+                id: 'dark-matter-brown',
+                name: 'Brun Atmosfære',
+                desc: 'Mørk med varme toner',
+                colors: ['#2A1B2D', '#F4D4B0', '#1A1020', '#201520'],
+                fallbackUrl: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                fallbackUrlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#F4D4B0',
+                bgColor: '#2A1B2D',
+                geoapifyStyle: 'dark-matter-brown'
             },
             {
-                id: 'blueprint',
-                name: 'Blueprint',
-                desc: 'Arkitektonisk blåkopi-stil',
-                colors: ['#0A2647', '#E8F1F5', '#072035', '#0A3040'],
-                url: 'https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png',
-                urlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_toner_background/{z}/{x}/{y}{r}.png',
-                textColor: '#E8F1F5',
-                bgColor: '#0A2647',
+                id: 'dark-matter-purple',
+                name: 'Lilla Natt',
+                desc: 'Mørk lilla stemning',
+                colors: ['#1A1020', '#B090D0', '#251830', '#1F1228'],
+                fallbackUrl: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                fallbackUrlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#D0B0E0',
+                bgColor: '#1A1020',
+                geoapifyStyle: 'dark-matter-purple-roads'
+            },
+            {
+                id: 'osm-bright',
+                name: 'OSM Bright',
+                desc: 'Lys og detaljert',
+                colors: ['#F5F5F0', '#3A3A3A', '#5090C0', '#70A870'],
+                fallbackUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                fallbackUrlNoLabels: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#2C2C2C',
+                bgColor: '#F5F5F0',
+                geoapifyStyle: 'osm-bright'
+            },
+            {
+                id: 'osm-carto',
+                name: 'Klassisk OSM',
+                desc: 'Standard kartutseende',
+                colors: ['#F5F5F0', '#3A3A3A', '#AAD3DF', '#CDEBB0'],
+                fallbackUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                fallbackUrlNoLabels: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
+                textColor: '#2C2C2C',
+                bgColor: '#F5F5F0',
+                geoapifyStyle: 'osm-carto'
+            },
+            {
+                id: 'toner',
+                name: 'Toner',
+                desc: 'Høykontrast svart/hvit',
+                colors: ['#FFFFFF', '#000000', '#CCCCCC', '#EEEEEE'],
+                fallbackUrl: 'https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png',
+                fallbackUrlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_toner_background/{z}/{x}/{y}{r}.png',
+                textColor: '#000000',
+                bgColor: '#FFFFFF',
                 geoapifyStyle: 'toner'
             },
             {
-                id: 'vintage',
-                name: 'Vintage',
-                desc: 'Gammelt kart med patina',
-                colors: ['#E8DCC8', '#5A4A3A', '#C8B8A0', '#B0A090'],
-                url: 'https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png',
-                urlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_toner_background/{z}/{x}/{y}{r}.png',
-                textColor: '#3A2A1A',
-                bgColor: '#E8DCC8',
+                id: 'toner-grey',
+                name: 'Toner Grå',
+                desc: 'Myk svart/hvit',
+                colors: ['#F0F0F0', '#505050', '#D0D0D0', '#E8E8E8'],
+                fallbackUrl: 'https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png',
+                fallbackUrlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_toner_background/{z}/{x}/{y}{r}.png',
+                textColor: '#3A3A3A',
+                bgColor: '#F0F0F0',
                 geoapifyStyle: 'toner-grey'
-            },
-            {
-                id: 'topographic',
-                name: 'Topografisk',
-                desc: 'Terreng med høydekurver',
-                colors: ['#F5F2E8', '#6E5840', '#B8D4E8', '#D8E4D0'],
-                url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-                urlNoLabels: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-                textColor: '#4A3A28',
-                bgColor: '#F5F2E8',
-                geoapifyStyle: 'osm-bright'
             },
             {
                 id: 'watercolor',
                 name: 'Akvarell',
                 desc: 'Myk, malt estetikk',
                 colors: ['#FAF8F5', '#787880', '#7BA3B8', '#A8B89C'],
-                url: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
-                urlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
+                fallbackUrl: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
+                fallbackUrlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
                 textColor: '#4A4A4A',
                 bgColor: '#FAF8F5',
                 geoapifyStyle: 'osm-bright-smooth'
             },
             {
-                id: 'osm',
-                name: 'Klassisk',
-                desc: 'Standard OpenStreetMap',
-                colors: ['#F5F5F0', '#3A3A3A', '#5090C0', '#70A870'],
-                url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
-                textColor: '#2C2C2C',
-                bgColor: '#F5F5F0',
-                geoapifyStyle: 'osm-carto'
-            },
-            {
-                id: 'atmospheric',
-                name: 'Atmosfærisk',
-                desc: 'Myk gradient med varme toner',
-                colors: ['#2A1B2D', '#F4D4B0', '#1A1020', '#1A2F1A'],
-                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
-                textColor: '#F4D4B0',
-                bgColor: '#2A1B2D',
-                geoapifyStyle: 'dark-matter-brown'
-            },
-            {
-                id: 'nature',
-                name: 'Natur',
-                desc: 'Skog og hav',
-                colors: ['#030810', '#60D8F8', '#010408', '#1A2F1A'],
-                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
-                textColor: '#60D8F8',
-                bgColor: '#030810',
-                geoapifyStyle: 'dark-matter-dark-purple'
-            },
-            {
-                id: 'retro',
-                name: 'Retro',
-                desc: '70-talls jordtoner',
+                id: 'terrain',
+                name: 'Terreng',
+                desc: 'Med høydekurver',
                 colors: ['#F5E6D3', '#4A2E15', '#A8967C', '#E8F0E8'],
-                url: 'https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png',
-                urlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png',
+                fallbackUrl: 'https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png',
+                fallbackUrlNoLabels: 'https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png',
                 textColor: '#4A2E15',
                 bgColor: '#F5E6D3',
                 geoapifyStyle: 'klokantech-basic'
-            },
-            {
-                id: 'voyager',
-                name: 'Voyager',
-                desc: 'Moderne og fargerik',
-                colors: ['#FAFAF8', '#4A4A4A', '#7ABACC', '#8BC78B'],
-                url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
-                textColor: '#2C2C2C',
-                bgColor: '#FAFAF8',
-                geoapifyStyle: 'osm-bright-grey'
-            },
-            {
-                id: 'positron',
-                name: 'Positron',
-                desc: 'Lys og elegant',
-                colors: ['#E6E6E6', '#505050', '#AADAFF', '#C8E6C8'],
-                url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
-                textColor: '#2C2C2C',
-                bgColor: '#E6E6E6',
-                geoapifyStyle: 'positron'
-            },
-            {
-                id: 'positron-blue',
-                name: 'Positron Blå',
-                desc: 'Lys med blå aksenter',
-                colors: ['#EAEFF5', '#3D5A80', '#98C1D9', '#D0E8F2'],
-                url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
-                textColor: '#3D5A80',
-                bgColor: '#EAEFF5',
-                geoapifyStyle: 'positron-blue'
-            },
-            {
-                id: 'positron-red',
-                name: 'Positron Rød',
-                desc: 'Lys med røde veier',
-                colors: ['#F5EAEA', '#8B4049', '#D89090', '#E8D0D0'],
-                url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
-                textColor: '#8B4049',
-                bgColor: '#F5EAEA',
-                geoapifyStyle: 'positron-red'
-            },
-            {
-                id: 'dark-grey',
-                name: 'Mørk Grå',
-                desc: 'Sofistikert mørk grå',
-                colors: ['#1A1A1A', '#B0B0B0', '#2A2A2A', '#252525'],
-                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
-                textColor: '#D0D0D0',
-                bgColor: '#1A1A1A',
-                geoapifyStyle: 'dark-matter-dark-grey'
-            },
-            {
-                id: 'purple-roads',
-                name: 'Lilla Veier',
-                desc: 'Mørk med lilla aksenter',
-                colors: ['#1A1020', '#C8A0E0', '#251830', '#1F1228'],
-                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
-                textColor: '#E0D0F0',
-                bgColor: '#1A1020',
-                geoapifyStyle: 'dark-matter-purple-roads'
-            },
-            {
-                id: 'osm-liberty',
-                name: 'Liberty',
-                desc: 'Klassisk OpenStreetMap',
-                colors: ['#F0F0E8', '#404040', '#7090B0', '#90A080'],
-                url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
-                textColor: '#303030',
-                bgColor: '#F0F0E8',
-                geoapifyStyle: 'osm-liberty'
-            },
-            {
-                id: 'maptiler-3d',
-                name: 'Maptiler 3D',
-                desc: 'Moderne med dybde',
-                colors: ['#F8F8F5', '#505050', '#80B8D0', '#90C090'],
-                url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-                urlNoLabels: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
-                textColor: '#383838',
-                bgColor: '#F8F8F5',
-                geoapifyStyle: 'maptiler-3d'
             }
         ];
 
@@ -2389,12 +2365,6 @@
             { id: 'baskerville', name: 'Libre Baskerville', family: "'Libre Baskerville', serif", style: 'Tradisjonell' },
             { id: 'raleway', name: 'Raleway', family: "'Raleway', sans-serif", style: 'Elegant sans' },
             { id: 'abril', name: 'Abril Fatface', family: "'Abril Fatface', serif", style: 'Display' }
-        ];
-
-        const PRESET_COLORS = [
-            '#F7F5F0', '#E8E4DE', '#FFFFFF', '#F5F2E8',
-            '#0A0A0F', '#1A1A24', '#0D1B2A', '#2A1B2D',
-            '#F4E4C8', '#D4C4A8', '#B8A888', '#968868'
         ];
 
         const NORWEGIAN_LOCATIONS = [
@@ -2444,16 +2414,17 @@
             showDate: false,
             dateValue: '',
             frameStyle: 'none',
+            textTheme: 'none',
+            themeSize: 30,
             showLabels: true,
             exportScale: 4,
             labelShadow: 2,
             mapSaturation: 100,
             mapContrast: 100,
             mapBrightness: 100,
-            titleSize: 38,
+            textSize: 100,
             textX: 50,
-            textY: 85,
-            textBlur: 20
+            textY: 85
         };
 
         let map = null;
@@ -2470,6 +2441,8 @@
             renderFontGrid();
             setupEventListeners();
             updatePoster();
+            updateMapFilters();
+            updateThemeColors();
             loadApiKey();
         });
 
@@ -2483,7 +2456,15 @@
                 touchZoom: true
             }).setView([state.location.lat, state.location.lng], state.zoom);
 
-            tileLayer = L.tileLayer(state.style.url, {
+            // Get initial tile URL
+            let tileUrl;
+            if (GEOAPIFY_API_KEY && state.style.geoapifyStyle) {
+                tileUrl = `https://maps.geoapify.com/v1/tile/${state.style.geoapifyStyle}/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_API_KEY}`;
+            } else {
+                tileUrl = state.style.fallbackUrl || state.style.url;
+            }
+            
+            tileLayer = L.tileLayer(tileUrl, {
                 maxZoom: 19,
                 attribution: '© OpenStreetMap'
             }).addTo(map);
@@ -2524,15 +2505,6 @@
             `).join('');
         }
 
-        function renderColorGrid() {
-            const grid = document.getElementById('colorGrid');
-            grid.innerHTML = PRESET_COLORS.map(color => `
-                <div class="color-swatch ${state.bgColor === color ? 'active' : ''}" 
-                     style="background: ${color}"
-                     onclick="selectColor('${color}')"></div>
-            `).join('');
-        }
-
         function renderFontGrid() {
             const grid = document.getElementById('fontGrid');
             grid.innerHTML = FONTS.map(font => `
@@ -2547,7 +2519,12 @@
 
         function selectFont(fontId) {
             state.font = FONTS.find(f => f.id === fontId);
-            document.getElementById('posterTitle').style.fontFamily = state.font.family;
+            const fontFamily = state.font.family;
+            document.getElementById('posterTitle').style.fontFamily = fontFamily;
+            document.getElementById('posterSubtitle').style.fontFamily = fontFamily;
+            document.getElementById('posterCoords').style.fontFamily = fontFamily;
+            const dateEl = document.getElementById('posterDate');
+            if (dateEl) dateEl.style.fontFamily = fontFamily;
             renderFontGrid();
         }
 
@@ -2571,27 +2548,11 @@
                 mapWrapper.classList.remove('vintage-map');
             }
             
+            // Update theme colors to match new style
+            updateThemeColors();
+            
             updatePoster();
             renderStyleGrid();
-            renderColorGrid();
-            
-            // Update color pickers
-            document.getElementById('customColorPicker').value = state.bgColor;
-            document.getElementById('customColorHex').value = state.bgColor.toUpperCase();
-        }
-
-        function selectColor(color) {
-            state.bgColor = color;
-            
-            // Auto-detect text color
-            const brightness = getBrightness(color);
-            state.textColor = brightness > 128 ? '#2C2C2C' : '#F5F5F0';
-            
-            updatePoster();
-            renderColorGrid();
-            
-            document.getElementById('customColorPicker').value = color;
-            document.getElementById('customColorHex').value = color.toUpperCase();
         }
 
         function getBrightness(hex) {
@@ -2663,19 +2624,6 @@
                 document.getElementById('posterSubtitle').textContent = e.target.value || '';
             });
 
-            // Color picker
-            document.getElementById('customColorPicker').addEventListener('input', (e) => {
-                selectColor(e.target.value);
-            });
-
-            document.getElementById('customColorHex').addEventListener('input', (e) => {
-                let value = e.target.value;
-                if (!value.startsWith('#')) value = '#' + value;
-                if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
-                    selectColor(value);
-                }
-            });
-
             // Frame color picker
             document.getElementById('frameColorPicker').addEventListener('input', (e) => {
                 updateFrameColor(e.target.value);
@@ -2707,9 +2655,9 @@
                 updateMapFilters();
             });
 
-            // Title size slider
-            document.getElementById('titleSizeSlider').addEventListener('input', (e) => {
-                updateTitleSize(parseInt(e.target.value));
+            // Theme size slider
+            document.getElementById('themeSizeSlider').addEventListener('input', (e) => {
+                updateThemeSize(parseInt(e.target.value));
             });
 
             // Text position sliders
@@ -2719,10 +2667,6 @@
 
             document.getElementById('textYSlider').addEventListener('input', (e) => {
                 updateTextY(e.target.value);
-            });
-
-            document.getElementById('textBlurSlider').addEventListener('input', (e) => {
-                updateTextBlur(e.target.value);
             });
         }
 
@@ -2769,24 +2713,21 @@
             // Background
             frame.style.background = state.bgColor;
 
-            // Text position
+            // Text position (only if not using panel themes)
             posterText.style.left = `${state.textX}%`;
-            posterText.style.top = `${state.textY}%`;
-            
-            // Text blur/glow - based on text color for a glow effect
-            const isLightText = isColorLight(state.textColor);
-            // Use contrasting color for glow (dark glow for light text, light glow for dark text)
-            const blurColor = isLightText ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)';
-            posterText.style.setProperty('--text-blur-color', blurColor);
-            posterText.style.setProperty('--text-blur-amount', `${state.textBlur}px`);
+            if (state.textTheme !== 'panel' && state.textTheme !== 'double' && state.textTheme !== 'gradient') {
+                posterText.style.top = `${state.textY}%`;
+            }
 
-            // Text colors
-            title.style.color = state.textColor;
-            subtitle.style.color = state.textColor;
-            coords.style.color = state.textColor;
-            dateEl.style.color = state.textColor;
-            line1.style.backgroundColor = state.textColor;
-            line2.style.backgroundColor = state.textColor;
+            // Text colors - only apply if no text theme is active (themes set their own colors)
+            if (state.textTheme === 'none') {
+                title.style.color = state.textColor;
+                subtitle.style.color = state.textColor;
+                coords.style.color = state.textColor;
+                dateEl.style.color = state.textColor;
+                line1.style.backgroundColor = state.textColor;
+                line2.style.backgroundColor = state.textColor;
+            }
 
             // Frame color via CSS variable
             frame.style.setProperty('--frame-color', state.textColor);
@@ -2859,28 +2800,21 @@
             }
         }
 
-        function updateTitleSize(size) {
-            state.titleSize = size;
-            document.getElementById('posterTitle').style.fontSize = `${size}px`;
-            document.getElementById('titleSizeValue').textContent = `${size}px`;
-        }
-
         function updateTextX(value) {
             state.textX = parseInt(value);
             document.getElementById('textXValue').textContent = `${value}%`;
-            updatePoster();
+            const posterText = document.querySelector('.poster-text');
+            posterText.style.left = `${value}%`;
         }
 
         function updateTextY(value) {
             state.textY = parseInt(value);
             document.getElementById('textYValue').textContent = `${value}%`;
-            updatePoster();
-        }
-
-        function updateTextBlur(value) {
-            state.textBlur = parseInt(value);
-            document.getElementById('textBlurValue').textContent = `${value}px`;
-            updatePoster();
+            const posterText = document.querySelector('.poster-text');
+            // Only update Y position if not using fixed-position themes
+            if (state.textTheme !== 'panel' && state.textTheme !== 'double' && state.textTheme !== 'gradient') {
+                posterText.style.top = `${value}%`;
+            }
         }
 
         function setFrame(frameStyle) {
@@ -2896,14 +2830,105 @@
             }
             
             // Update button states
-            document.querySelectorAll('.frame-btn').forEach(btn => {
+            document.querySelectorAll('.frame-btn[data-frame]').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.frame === frameStyle);
             });
             
-            // Update frame color via CSS variable
+            // Update frame colors via CSS variables
             frame.style.setProperty('--frame-color', state.frameColor);
+            frame.style.setProperty('--frame-bg', state.bgColor);
             
             setTimeout(() => map.invalidateSize(), 100);
+        }
+
+        function setTextTheme(theme) {
+            state.textTheme = theme;
+            const overlay = document.querySelector('.poster-overlay');
+            
+            // Remove all theme classes
+            overlay.classList.remove('theme-none', 'theme-gradient', 'theme-box', 'theme-panel', 'theme-double');
+            
+            // Add new theme class
+            if (theme !== 'none') {
+                overlay.classList.add(`theme-${theme}`);
+            }
+            
+            // Update theme colors to match current map style
+            updateThemeColors();
+            
+            // Update button states
+            document.querySelectorAll('.frame-btn[data-theme]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === theme);
+            });
+            
+            // Show/hide size slider (not applicable for none or box)
+            const sizeContainer = document.getElementById('themeSizeContainer');
+            const posYContainer = document.getElementById('textYContainer');
+            
+            if (theme === 'gradient' || theme === 'panel' || theme === 'double') {
+                sizeContainer.style.display = 'block';
+                if (posYContainer) posYContainer.style.display = 'none'; // Hide Y position when theme controls it
+            } else {
+                sizeContainer.style.display = 'none';
+                if (posYContainer) posYContainer.style.display = 'block';
+            }
+            
+            // Adjust text position for themes that need it
+            const posterText = document.querySelector('.poster-text');
+            if (theme === 'panel' || theme === 'double') {
+                // Center text vertically in the panel area
+                posterText.style.top = '88%';
+            } else if (theme === 'gradient') {
+                posterText.style.top = '85%';
+            } else {
+                posterText.style.top = `${state.textY}%`;
+            }
+        }
+        
+        function updateThemeColors() {
+            const overlay = document.querySelector('.poster-overlay');
+            if (!overlay) return;
+            
+            // Use map style's bgColor for theme background and textColor for text/borders
+            const themeColor = state.style.bgColor || '#ffffff';
+            const themeBorderColor = state.style.textColor || '#2C2C2C';
+            const themeTextColor = state.style.textColor || '#2C2C2C';
+            
+            overlay.style.setProperty('--theme-color', themeColor);
+            overlay.style.setProperty('--theme-border-color', themeBorderColor);
+            overlay.style.setProperty('--theme-text-color', themeTextColor);
+            overlay.style.setProperty('--theme-size', `${state.themeSize}%`);
+            
+            // Apply text colors directly when theme is active (to override inline styles)
+            if (state.textTheme !== 'none') {
+                const title = document.getElementById('posterTitle');
+                const subtitle = document.getElementById('posterSubtitle');
+                const coords = document.getElementById('posterCoords');
+                const dateEl = document.getElementById('posterDate');
+                const line1 = document.getElementById('posterLine1');
+                const line2 = document.getElementById('posterLine2');
+                
+                title.style.color = themeTextColor;
+                subtitle.style.color = themeTextColor;
+                coords.style.color = themeTextColor;
+                dateEl.style.color = themeTextColor;
+                line1.style.backgroundColor = themeTextColor;
+                line2.style.backgroundColor = themeTextColor;
+            }
+        }
+        
+        function updateThemeSize(size) {
+            state.themeSize = size;
+            const overlay = document.querySelector('.poster-overlay');
+            overlay.style.setProperty('--theme-size', `${size}%`);
+            document.getElementById('themeSizeValue').textContent = `${size}%`;
+            
+            // Force repaint to apply CSS variable to pseudo-elements
+            overlay.classList.remove(`theme-${state.textTheme}`);
+            void overlay.offsetWidth; // Force reflow
+            if (state.textTheme !== 'none') {
+                overlay.classList.add(`theme-${state.textTheme}`);
+            }
         }
 
         function updateFrameColor(color) {
@@ -2956,7 +2981,8 @@
             filters.push(`contrast(${contrast}%)`);
             filters.push(`brightness(${brightness}%)`);
             
-            mapEl.style.filter = filters.join(' ');
+            const filterString = filters.join(' ');
+            mapEl.style.setProperty('filter', filterString, 'important');
             
             // Update display values
             document.getElementById('mapSaturationValue').textContent = `${saturation}%`;
@@ -2965,11 +2991,22 @@
         }
 
         function updateMapTiles() {
-            const tileUrl = state.showLabels ? state.style.url : (state.style.urlNoLabels || state.style.url);
+            let tileUrl;
+            
+            // Use Geoapify tiles when API key is available
+            if (GEOAPIFY_API_KEY && state.style.geoapifyStyle) {
+                tileUrl = `https://maps.geoapify.com/v1/tile/${state.style.geoapifyStyle}/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_API_KEY}`;
+            } else {
+                // Fallback to free tiles
+                tileUrl = state.showLabels 
+                    ? (state.style.fallbackUrl || state.style.url) 
+                    : (state.style.fallbackUrlNoLabels || state.style.urlNoLabels || state.style.fallbackUrl || state.style.url);
+            }
+            
             map.removeLayer(tileLayer);
             tileLayer = L.tileLayer(tileUrl, {
                 maxZoom: 19,
-                attribution: '© OpenStreetMap'
+                attribution: GEOAPIFY_API_KEY ? '© Geoapify © OpenStreetMap' : '© OpenStreetMap'
             }).addTo(map);
         }
 
@@ -3141,33 +3178,74 @@
                 ctx.textBaseline = 'middle';
                 
                 // Calculate text position using free positioning
-                const textX = mapX + (mapAreaWidth * state.textX / 100);
-                const textY = mapY + (mapAreaHeight * state.textY / 100);
+                let textX = mapX + (mapAreaWidth * state.textX / 100);
+                let textY = mapY + (mapAreaHeight * state.textY / 100);
                 
-                // Draw text blur/glow background
-                if (state.textBlur > 0) {
-                    const isLightBg = isColorLight(state.bgColor);
-                    const blurColor = isLightBg ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.4)';
-                    const blurRadius = state.textBlur * scale;
-                    
-                    // Draw ellipse blur behind text
-                    ctx.save();
-                    ctx.filter = `blur(${blurRadius}px)`;
-                    ctx.fillStyle = blurColor;
-                    ctx.beginPath();
-                    ctx.ellipse(textX, textY, 120 * scale, 60 * scale, 0, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.restore();
+                // Adjust for theme
+                if (state.textTheme === 'panel' || state.textTheme === 'double') {
+                    textY = mapY + (mapAreaHeight * 0.88);
+                } else if (state.textTheme === 'gradient') {
+                    textY = mapY + (mapAreaHeight * 0.90);
                 }
                 
-                // Text shadow
-                const shadowBlur = state.labelShadow * scale;
-                ctx.shadowColor = 'rgba(0,0,0,0.5)';
-                ctx.shadowBlur = shadowBlur;
-                ctx.shadowOffsetY = shadowBlur / 2;
+                // Draw text theme backgrounds
+                if (state.textTheme === 'gradient') {
+                    const gradient = ctx.createLinearGradient(0, mapY + mapAreaHeight * 0.5, 0, mapY + mapAreaHeight);
+                    gradient.addColorStop(0, 'rgba(255,255,255,0)');
+                    gradient.addColorStop(0.7, 'rgba(255,255,255,1)');
+                    gradient.addColorStop(1, 'rgba(255,255,255,1)');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(mapX, mapY + mapAreaHeight * 0.5, mapAreaWidth, mapAreaHeight * 0.5);
+                } else if (state.textTheme === 'panel') {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(mapX, mapY + mapAreaHeight * 0.75, mapAreaWidth, mapAreaHeight * 0.25);
+                    ctx.strokeStyle = state.textColor;
+                    ctx.lineWidth = 2 * scale;
+                    ctx.beginPath();
+                    ctx.moveTo(mapX, mapY + mapAreaHeight * 0.75);
+                    ctx.lineTo(mapX + mapAreaWidth, mapY + mapAreaHeight * 0.75);
+                    ctx.stroke();
+                } else if (state.textTheme === 'double') {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(mapX, mapY + mapAreaHeight * 0.72, mapAreaWidth, mapAreaHeight * 0.28);
+                    ctx.strokeStyle = state.textColor;
+                    ctx.lineWidth = 3 * scale;
+                    ctx.beginPath();
+                    ctx.moveTo(mapX, mapY + mapAreaHeight * 0.72);
+                    ctx.lineTo(mapX + mapAreaWidth, mapY + mapAreaHeight * 0.72);
+                    ctx.stroke();
+                    ctx.lineWidth = 1 * scale;
+                    ctx.beginPath();
+                    ctx.moveTo(mapX, mapY + mapAreaHeight * 0.75);
+                    ctx.lineTo(mapX + mapAreaWidth, mapY + mapAreaHeight * 0.75);
+                    ctx.stroke();
+                } else if (state.textTheme === 'box') {
+                    // Draw box behind text
+                    const boxWidth = 180 * scale;
+                    const boxHeight = 80 * scale;
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(textX - boxWidth/2, textY - boxHeight/2, boxWidth, boxHeight);
+                    ctx.strokeStyle = state.textColor;
+                    ctx.lineWidth = 2 * scale;
+                    ctx.strokeRect(textX - boxWidth/2, textY - boxHeight/2, boxWidth, boxHeight);
+                }
+                
+                // Set text color based on theme
+                const textColorForTheme = (state.textTheme !== 'none') ? '#2C2C2C' : state.textColor;
+                
+                // Text shadow (only for no theme)
+                if (state.textTheme === 'none') {
+                    const shadowBlur = state.labelShadow * scale;
+                    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                    ctx.shadowBlur = shadowBlur;
+                    ctx.shadowOffsetY = shadowBlur / 2;
+                } else {
+                    ctx.shadowColor = 'transparent';
+                    ctx.shadowBlur = 0;
+                }
                 
                 // Draw title
-                ctx.fillStyle = state.textColor;
+                ctx.fillStyle = textColorForTheme;
                 ctx.font = `700 ${titleSize}px ${state.font.family.replace(/'/g, '')}`;
                 ctx.letterSpacing = `${titleSize * 0.08}px`;
                 ctx.fillText(state.location.name.toUpperCase(), textX, textY);
