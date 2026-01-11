@@ -194,6 +194,58 @@
             transform: scale(1.05);
         }
 
+        /* Sticker styles */
+        .sticker-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 6px;
+        }
+
+        .sticker-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sticker-btn:hover {
+            background: var(--bg-tertiary);
+            transform: scale(1.1);
+        }
+
+        .sticker-btn.active {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        .placed-sticker {
+            position: absolute;
+            cursor: move;
+            user-select: none;
+            z-index: 1200;
+            transition: transform 0.1s ease;
+        }
+
+        .placed-sticker:hover {
+            transform: scale(1.2);
+        }
+
+        .sticker-placing {
+            cursor: crosshair !important;
+        }
+
+        .sticker-placing * {
+            cursor: crosshair !important;
+        }
+
         /* Input styles */
         .input-group {
             margin-bottom: 12px;
@@ -970,11 +1022,6 @@
             border-radius: 4px;
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .poster-frame.landscape {
-            aspect-ratio: 3/2;
-            width: 550px;
         }
 
         .poster-frame.square {
@@ -1755,10 +1802,6 @@
                             <div class="perspective-icon">📱</div>
                             <div class="perspective-label">Portrett</div>
                         </button>
-                        <button class="perspective-btn" data-aspect="landscape" onclick="setAspect('landscape')">
-                            <div class="perspective-icon">🖥️</div>
-                            <div class="perspective-label">Landskap</div>
-                        </button>
                         <button class="perspective-btn" data-aspect="square" onclick="setAspect('square')">
                             <div class="perspective-icon">⬜</div>
                             <div class="perspective-label">Kvadrat</div>
@@ -1929,6 +1972,40 @@
                             <input type="color" class="color-picker" id="frameColorPicker" value="#2C2C2C">
                             <input type="text" class="color-hex" id="frameColorHex" value="#2C2C2C" maxlength="7">
                         </div>
+                    </div>
+                </div>
+
+                <!-- Stickers Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">✨ Stickers</span>
+                        <button class="section-badge" onclick="clearStickers()">Fjern alle</button>
+                    </div>
+                    <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">Klikk en sticker, deretter klikk på kartet for å plassere</p>
+                    <div class="sticker-grid" id="stickerGrid">
+                        <button class="sticker-btn" data-sticker="❤️" onclick="selectSticker('❤️')">❤️</button>
+                        <button class="sticker-btn" data-sticker="💕" onclick="selectSticker('💕')">💕</button>
+                        <button class="sticker-btn" data-sticker="💖" onclick="selectSticker('💖')">💖</button>
+                        <button class="sticker-btn" data-sticker="💍" onclick="selectSticker('💍')">💍</button>
+                        <button class="sticker-btn" data-sticker="🏠" onclick="selectSticker('🏠')">🏠</button>
+                        <button class="sticker-btn" data-sticker="📍" onclick="selectSticker('📍')">📍</button>
+                        <button class="sticker-btn" data-sticker="⭐" onclick="selectSticker('⭐')">⭐</button>
+                        <button class="sticker-btn" data-sticker="🌟" onclick="selectSticker('🌟')">🌟</button>
+                        <button class="sticker-btn" data-sticker="✈️" onclick="selectSticker('✈️')">✈️</button>
+                        <button class="sticker-btn" data-sticker="🎄" onclick="selectSticker('🎄')">🎄</button>
+                        <button class="sticker-btn" data-sticker="🎂" onclick="selectSticker('🎂')">🎂</button>
+                        <button class="sticker-btn" data-sticker="👶" onclick="selectSticker('👶')">👶</button>
+                        <button class="sticker-btn" data-sticker="🐕" onclick="selectSticker('🐕')">🐕</button>
+                        <button class="sticker-btn" data-sticker="🐈" onclick="selectSticker('🐈')">🐈</button>
+                        <button class="sticker-btn" data-sticker="🌸" onclick="selectSticker('🌸')">🌸</button>
+                        <button class="sticker-btn" data-sticker="🌺" onclick="selectSticker('🌺')">🌺</button>
+                    </div>
+                    <div class="slider-container" style="margin-top: 12px;">
+                        <div class="slider-header">
+                            <span class="slider-label">Sticker-størrelse</span>
+                            <span class="slider-value" id="stickerSizeValue">40px</span>
+                        </div>
+                        <input type="range" class="slider" id="stickerSizeSlider" min="20" max="80" value="40" step="5">
                     </div>
                 </div>
 
@@ -2480,7 +2557,10 @@
             textSize: 100,
             textX: 50,
             textY: 85,
-            canvasScale: 1
+            canvasScale: 1,
+            stickers: [],
+            selectedSticker: null,
+            stickerSize: 40
         };
 
         let map = null;
@@ -2808,6 +2888,26 @@
                 }
             });
 
+            // Sticker size control
+            document.getElementById('stickerSizeSlider').addEventListener('input', (e) => {
+                state.stickerSize = parseInt(e.target.value);
+                document.getElementById('stickerSizeValue').textContent = `${state.stickerSize}px`;
+                // Update existing stickers
+                state.stickers.forEach(s => s.size = state.stickerSize);
+                renderStickers();
+            });
+
+            // Click on poster to place sticker
+            document.querySelector('.poster-inner').addEventListener('click', (e) => {
+                if (!state.selectedSticker) return;
+                
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                
+                placeSticker(x, y);
+            });
+
             // White glow control
             document.getElementById('labelShadowSlider').addEventListener('input', (e) => {
                 updateLabelShadow(parseInt(e.target.value));
@@ -2931,7 +3031,7 @@
             state.aspect = aspect;
             const frame = document.getElementById('posterFrame');
             
-            frame.classList.remove('portrait', 'landscape', 'square');
+            frame.classList.remove('portrait', 'square');
             if (aspect !== 'portrait') frame.classList.add(aspect);
 
             document.querySelectorAll('.perspective-btn').forEach(btn => {
@@ -3220,6 +3320,117 @@
         }
 
         // ============================================
+        // Sticker Functions
+        // ============================================
+        
+        function selectSticker(emoji) {
+            // Toggle sticker selection
+            if (state.selectedSticker === emoji) {
+                state.selectedSticker = null;
+                document.querySelectorAll('.sticker-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector('.poster-inner').classList.remove('sticker-placing');
+            } else {
+                state.selectedSticker = emoji;
+                document.querySelectorAll('.sticker-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.sticker === emoji);
+                });
+                document.querySelector('.poster-inner').classList.add('sticker-placing');
+                showNotification('Klikk på kartet for å plassere stickeren', 'info');
+            }
+        }
+
+        function placeSticker(x, y) {
+            if (!state.selectedSticker) return;
+            
+            const sticker = {
+                id: Date.now(),
+                emoji: state.selectedSticker,
+                x: x, // Percentage from left
+                y: y, // Percentage from top
+                size: state.stickerSize
+            };
+            
+            state.stickers.push(sticker);
+            renderStickers();
+            
+            // Deselect after placing
+            state.selectedSticker = null;
+            document.querySelectorAll('.sticker-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.poster-inner').classList.remove('sticker-placing');
+        }
+
+        function renderStickers() {
+            // Remove existing stickers
+            document.querySelectorAll('.placed-sticker').forEach(el => el.remove());
+            
+            const posterInner = document.querySelector('.poster-inner');
+            
+            state.stickers.forEach(sticker => {
+                const el = document.createElement('div');
+                el.className = 'placed-sticker';
+                el.textContent = sticker.emoji;
+                el.style.left = `${sticker.x}%`;
+                el.style.top = `${sticker.y}%`;
+                el.style.fontSize = `${sticker.size}px`;
+                el.style.transform = 'translate(-50%, -50%)';
+                el.dataset.stickerId = sticker.id;
+                
+                // Double-click to remove
+                el.addEventListener('dblclick', (e) => {
+                    e.stopPropagation();
+                    removeSticker(sticker.id);
+                });
+                
+                // Drag to move
+                el.addEventListener('mousedown', (e) => {
+                    if (e.detail === 2) return; // Ignore double-clicks
+                    e.stopPropagation();
+                    startDragSticker(e, sticker);
+                });
+                
+                posterInner.appendChild(el);
+            });
+        }
+
+        function removeSticker(id) {
+            state.stickers = state.stickers.filter(s => s.id !== id);
+            renderStickers();
+        }
+
+        function clearStickers() {
+            state.stickers = [];
+            renderStickers();
+            showNotification('Alle stickers fjernet', 'success');
+        }
+
+        function startDragSticker(e, sticker) {
+            const posterInner = document.querySelector('.poster-inner');
+            const rect = posterInner.getBoundingClientRect();
+            
+            const onMove = (moveEvent) => {
+                const x = ((moveEvent.clientX - rect.left) / rect.width) * 100;
+                const y = ((moveEvent.clientY - rect.top) / rect.height) * 100;
+                
+                sticker.x = Math.max(5, Math.min(95, x));
+                sticker.y = Math.max(5, Math.min(95, y));
+                
+                const el = document.querySelector(`[data-sticker-id="${sticker.id}"]`);
+                if (el) {
+                    el.style.left = `${sticker.x}%`;
+                    el.style.top = `${sticker.y}%`;
+                }
+            };
+            
+            const onUp = () => {
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+            };
+            
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
+        }
+
+        // ============================================
         // Map Controls
         // ============================================
         
@@ -3302,6 +3513,15 @@
             
             // Reset aspect ratio
             setAspect('portrait');
+            
+            // Reset stickers
+            state.stickers = [];
+            state.selectedSticker = null;
+            state.stickerSize = 40;
+            document.getElementById('stickerSizeSlider').value = 40;
+            document.getElementById('stickerSizeValue').textContent = '40px';
+            document.querySelectorAll('.sticker-btn').forEach(btn => btn.classList.remove('active'));
+            renderStickers();
             
             // Update poster
             updatePoster();
@@ -3586,14 +3806,19 @@
                     const titleText = document.getElementById('titleInput').value || state.location.name;
                     const titleWidth = ctx.measureText(titleText.toUpperCase()).width;
                     
+                    // Calculate box height - include date if visible
+                    let boxHeight = titleSize + subtitleSize * 1.5 + coordsSize * 1.5 + boxPaddingY * 2;
+                    if (state.showDate && state.dateValue) {
+                        boxHeight += dateSize * 1.5;
+                    }
+                    
                     const boxWidth = Math.max(titleWidth + boxPaddingX * 2, 150 * scale * textScale);
-                    const boxHeight = titleSize * 2.5 + boxPaddingY;
                     
                     ctx.fillStyle = themeColor;
-                    ctx.fillRect(textX - boxWidth/2, textY - boxHeight/2, boxWidth, boxHeight);
+                    ctx.fillRect(textX - boxWidth/2, textY - boxPaddingY, boxWidth, boxHeight);
                     ctx.strokeStyle = themeBorderColor;
                     ctx.lineWidth = 2 * scale;
-                    ctx.strokeRect(textX - boxWidth/2, textY - boxHeight/2, boxWidth, boxHeight);
+                    ctx.strokeRect(textX - boxWidth/2, textY - boxPaddingY, boxWidth, boxHeight);
                 }
                 
                 // Set text color based on theme
@@ -3736,6 +3961,20 @@
                             posterWidth - innerInset * 2,
                             posterHeight - innerInset * 2
                         );
+                    }
+                }
+                
+                // Draw stickers
+                if (state.stickers.length > 0) {
+                    for (const sticker of state.stickers) {
+                        const stickerX = (sticker.x / 100) * posterWidth;
+                        const stickerY = (sticker.y / 100) * posterHeight;
+                        const stickerSize = sticker.size * scale;
+                        
+                        ctx.font = `${stickerSize}px Arial`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(sticker.emoji, stickerX, stickerY);
                     }
                 }
                 
