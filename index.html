@@ -6,7 +6,7 @@
     <title>Stedskart — Lag vakre kartplakater av dine favorittplasser</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400;500&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700;800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Raleway:wght@400;500;600;700;800&family=Abril+Fatface&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400;500&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700;800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Raleway:wght@400;500;600;700;800&family=Abril+Fatface&family=Cinzel:wght@400;500;600;700&family=Bodoni+Moda:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;500;600;700;800&family=Roboto+Slab:wght@400;500;700&family=Source+Serif+4:wght@400;600;700&family=Archivo+Black&family=Anton&family=Righteous&family=Staatliches&family=Permanent+Marker&family=Satisfy&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js"></script>
@@ -175,6 +175,23 @@
             color: var(--accent);
             border-radius: 100px;
             font-weight: 500;
+        }
+
+        .random-btn {
+            font-size: 13px;
+            padding: 8px 16px;
+            background: var(--accent);
+            color: #000;
+            border-radius: 100px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .random-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.05);
         }
 
         /* Input styles */
@@ -1694,7 +1711,7 @@
                 <div class="section">
                     <div class="section-header">
                         <span class="section-title">📍 Lokasjon</span>
-                        <button class="section-badge" onclick="randomLocation()">🎲 Tilfeldig</button>
+                        <button class="random-btn" onclick="randomLocation()">🎲 Tilfeldig</button>
                     </div>
                     <div class="input-group">
                         <div class="input-icon-wrapper" style="position: relative;">
@@ -1806,6 +1823,13 @@
                     </div>
                     <div class="font-grid" id="fontGrid">
                         <!-- Fonts injected by JS -->
+                    </div>
+                    <div class="input-group" style="margin-top: 16px;">
+                        <label class="input-label">🎨 Tekstfarge</label>
+                        <div class="color-input-wrapper">
+                            <input type="color" class="color-picker" id="textColorPicker" value="#2C2C2C">
+                            <input type="text" class="color-hex" id="textColorHex" value="#2C2C2C" maxlength="7">
+                        </div>
                     </div>
                 </div>
 
@@ -2062,13 +2086,13 @@
 
             <!-- Toolbar -->
             <div class="canvas-toolbar">
-                <button class="toolbar-btn" onclick="zoomMap(-1)" title="Zoom ut (-)">
+                <button class="toolbar-btn" onclick="zoomCanvas(-0.1)" title="Forminsk lerret (-)">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="8"></circle>
                         <path d="M21 21l-4.35-4.35M8 11h6"></path>
                     </svg>
                 </button>
-                <button class="toolbar-btn" onclick="zoomMap(1)" title="Zoom inn (+)">
+                <button class="toolbar-btn" onclick="zoomCanvas(0.1)" title="Forstørr lerret (+)">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="8"></circle>
                         <path d="M21 21l-4.35-4.35M11 8v6M8 11h6"></path>
@@ -2383,7 +2407,19 @@
             { id: 'montserrat', name: 'Montserrat', family: "'Montserrat', sans-serif", style: 'Geometrisk' },
             { id: 'baskerville', name: 'Libre Baskerville', family: "'Libre Baskerville', serif", style: 'Tradisjonell' },
             { id: 'raleway', name: 'Raleway', family: "'Raleway', sans-serif", style: 'Elegant sans' },
-            { id: 'abril', name: 'Abril Fatface', family: "'Abril Fatface', serif", style: 'Display' }
+            { id: 'abril', name: 'Abril Fatface', family: "'Abril Fatface', serif", style: 'Display' },
+            { id: 'cinzel', name: 'Cinzel', family: "'Cinzel', serif", style: 'Romersk' },
+            { id: 'bodoni', name: 'Bodoni Moda', family: "'Bodoni Moda', serif", style: 'Luksus' },
+            { id: 'lora', name: 'Lora', family: "'Lora', serif", style: 'Boklig' },
+            { id: 'poppins', name: 'Poppins', family: "'Poppins', sans-serif", style: 'Rund moderne' },
+            { id: 'roboto-slab', name: 'Roboto Slab', family: "'Roboto Slab', serif", style: 'Slab serif' },
+            { id: 'source-serif', name: 'Source Serif', family: "'Source Serif 4', serif", style: 'Lesbar' },
+            { id: 'archivo', name: 'Archivo Black', family: "'Archivo Black', sans-serif", style: 'Tung' },
+            { id: 'anton', name: 'Anton', family: "'Anton', sans-serif", style: 'Impact' },
+            { id: 'righteous', name: 'Righteous', family: "'Righteous', sans-serif", style: 'Retro' },
+            { id: 'staatliches', name: 'Staatliches', family: "'Staatliches', sans-serif", style: 'Poster' },
+            { id: 'marker', name: 'Permanent Marker', family: "'Permanent Marker', cursive", style: 'Håndskrift' },
+            { id: 'satisfy', name: 'Satisfy', family: "'Satisfy', cursive", style: 'Kalligrafi' }
         ];
 
         const NORWEGIAN_LOCATIONS = [
@@ -2443,7 +2479,8 @@
             mapBrightness: 100,
             textSize: 100,
             textX: 50,
-            textY: 85
+            textY: 85,
+            canvasScale: 1
         };
 
         let map = null;
@@ -2621,6 +2658,12 @@
             // Update theme colors to match new style
             updateThemeColors();
             
+            // Update text color picker to match style
+            const textPicker = document.getElementById('textColorPicker');
+            const textHex = document.getElementById('textColorHex');
+            if (textPicker) textPicker.value = state.textColor;
+            if (textHex) textHex.value = state.textColor.toUpperCase();
+            
             updatePoster();
             renderStyleGrid();
         }
@@ -2640,27 +2683,71 @@
             const searchInput = document.getElementById('searchInput');
             const searchResults = document.getElementById('searchResults');
 
-            searchInput.addEventListener('input', (e) => {
+            searchInput.addEventListener('input', async (e) => {
                 const query = e.target.value.toLowerCase();
                 if (query.length < 2) {
                     searchResults.classList.remove('active');
                     return;
                 }
 
-                const matches = NORWEGIAN_LOCATIONS.filter(loc => 
+                // First check local Norwegian locations
+                const localMatches = NORWEGIAN_LOCATIONS.filter(loc => 
                     loc.name.toLowerCase().includes(query) || 
                     loc.region.toLowerCase().includes(query)
-                ).slice(0, 6);
+                ).slice(0, 4);
 
-                if (matches.length > 0) {
-                    searchResults.innerHTML = matches.map(loc => `
+                // If we have local matches, show them
+                if (localMatches.length > 0) {
+                    searchResults.innerHTML = localMatches.map(loc => `
                         <div class="search-result-item" onclick="selectLocation(${loc.lat}, ${loc.lng}, '${loc.name}')">
                             <div class="search-result-name">${loc.name}</div>
                             <div class="search-result-region">${loc.region}</div>
                         </div>
                     `).join('');
                     searchResults.classList.add('active');
-                } else {
+                }
+
+                // Also search via Geoapify API for more results
+                if (query.length >= 3 && GEOAPIFY_API_KEY) {
+                    try {
+                        const response = await fetch(
+                            `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(query)}&limit=6&apiKey=${GEOAPIFY_API_KEY}`
+                        );
+                        const data = await response.json();
+                        
+                        if (data.features && data.features.length > 0) {
+                            const apiResults = data.features.map(f => ({
+                                name: f.properties.name || f.properties.city || f.properties.formatted.split(',')[0],
+                                region: f.properties.county || f.properties.state || 'Norge',
+                                lat: f.properties.lat,
+                                lng: f.properties.lon
+                            }));
+                            
+                            // Combine local and API results, remove duplicates
+                            const allResults = [...localMatches];
+                            apiResults.forEach(api => {
+                                if (!allResults.some(local => 
+                                    local.name.toLowerCase() === api.name.toLowerCase() &&
+                                    Math.abs(local.lat - api.lat) < 0.01
+                                )) {
+                                    allResults.push(api);
+                                }
+                            });
+                            
+                            searchResults.innerHTML = allResults.slice(0, 8).map(loc => `
+                                <div class="search-result-item" onclick="selectLocation(${loc.lat}, ${loc.lng}, '${loc.name}')">
+                                    <div class="search-result-name">${loc.name}</div>
+                                    <div class="search-result-region">${loc.region}</div>
+                                </div>
+                            `).join('');
+                            searchResults.classList.add('active');
+                        }
+                    } catch (err) {
+                        console.log('Geocoding error:', err);
+                    }
+                }
+
+                if (localMatches.length === 0 && !GEOAPIFY_API_KEY) {
                     searchResults.classList.remove('active');
                 }
             });
@@ -2705,6 +2792,19 @@
                 if (!value.startsWith('#')) value = '#' + value;
                 if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
                     updateFrameColor(value);
+                }
+            });
+
+            // Text color picker
+            document.getElementById('textColorPicker').addEventListener('input', (e) => {
+                updateTextColor(e.target.value);
+            });
+
+            document.getElementById('textColorHex').addEventListener('input', (e) => {
+                let value = e.target.value;
+                if (!value.startsWith('#')) value = '#' + value;
+                if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                    updateTextColor(value);
                 }
             });
 
@@ -2963,10 +3063,11 @@
             const overlay = document.querySelector('.poster-overlay');
             if (!overlay) return;
             
-            // Use map style's bgColor for theme background and textColor for text/borders
+            // Use map style's bgColor for theme background
+            // Use current state.textColor for text (which may have been customized by user)
             const themeColor = state.style.bgColor || '#ffffff';
-            const themeBorderColor = state.style.textColor || '#2C2C2C';
-            const themeTextColor = state.style.textColor || '#2C2C2C';
+            const themeBorderColor = state.textColor || state.style.textColor || '#2C2C2C';
+            const themeTextColor = state.textColor || state.style.textColor || '#2C2C2C';
             
             overlay.style.setProperty('--theme-color', themeColor);
             overlay.style.setProperty('--theme-border-color', themeBorderColor);
@@ -2982,12 +3083,12 @@
                 const line1 = document.getElementById('posterLine1');
                 const line2 = document.getElementById('posterLine2');
                 
-                title.style.color = themeTextColor;
-                subtitle.style.color = themeTextColor;
-                coords.style.color = themeTextColor;
-                dateEl.style.color = themeTextColor;
-                line1.style.backgroundColor = themeTextColor;
-                line2.style.backgroundColor = themeTextColor;
+                if (title) title.style.color = themeTextColor;
+                if (subtitle) subtitle.style.color = themeTextColor;
+                if (coords) coords.style.color = themeTextColor;
+                if (dateEl) dateEl.style.color = themeTextColor;
+                if (line1) line1.style.backgroundColor = themeTextColor;
+                if (line2) line2.style.backgroundColor = themeTextColor;
             }
         }
         
@@ -3013,6 +3114,35 @@
             // Update both picker and hex input
             document.getElementById('frameColorPicker').value = color;
             document.getElementById('frameColorHex').value = color.toUpperCase();
+        }
+
+        function updateTextColor(color) {
+            state.textColor = color;
+            
+            // Update poster text elements
+            const posterText = document.querySelector('.poster-text');
+            if (posterText) {
+                posterText.style.color = color;
+            }
+            
+            // Update individual elements
+            const title = document.getElementById('posterTitle');
+            const subtitle = document.getElementById('posterSubtitle');
+            const coords = document.getElementById('posterCoords');
+            
+            if (title) title.style.color = color;
+            if (subtitle) subtitle.style.color = color;
+            if (coords) coords.style.color = color;
+            
+            // Update lines color
+            const subtitleLines = document.querySelector('.subtitle-lines');
+            if (subtitleLines) {
+                subtitleLines.style.setProperty('--line-color', color);
+            }
+            
+            // Update both picker and hex input
+            document.getElementById('textColorPicker').value = color;
+            document.getElementById('textColorHex').value = color.toUpperCase();
         }
 
         function updateLabelShadow(size) {
@@ -3093,6 +3223,13 @@
         // Map Controls
         // ============================================
         
+        function zoomCanvas(delta) {
+            state.canvasScale = Math.max(0.5, Math.min(2, state.canvasScale + delta));
+            const posterFrame = document.getElementById('posterFrame');
+            posterFrame.style.transform = `scale(${state.canvasScale})`;
+            posterFrame.style.transformOrigin = 'center center';
+        }
+
         function zoomMap(delta) {
             state.zoom = Math.max(8, Math.min(16, state.zoom + delta * 0.5));
             map.setZoom(state.zoom);
@@ -3101,10 +3238,75 @@
         }
 
         function resetMap() {
+            // Reset location and map
+            state.location = { name: 'Oslo', lat: 59.9139, lng: 10.7522 };
             map.setView([state.location.lat, state.location.lng], 12);
             state.zoom = 12;
             document.getElementById('zoomSlider').value = 12;
             document.getElementById('zoomValue').textContent = 12;
+            
+            // Reset canvas scale
+            state.canvasScale = 1;
+            const posterFrame = document.getElementById('posterFrame');
+            posterFrame.style.transform = 'scale(1)';
+            
+            // Reset text
+            document.getElementById('titleInput').value = 'Oslo';
+            document.getElementById('subtitleInput').value = 'Norge';
+            document.getElementById('posterTitle').textContent = 'Oslo';
+            document.getElementById('posterSubtitle').textContent = 'Norge';
+            
+            // Reset style to first (Klassisk)
+            selectStyle('classic');
+            
+            // Reset font to first
+            selectFont('playfair');
+            
+            // Reset text size
+            state.textSize = 100;
+            document.getElementById('textSizeSlider').value = 100;
+            document.getElementById('textSizeValue').textContent = '100%';
+            document.getElementById('posterTitle').style.fontSize = '38px';
+            document.getElementById('posterSubtitle').style.fontSize = '13px';
+            document.getElementById('posterCoords').style.fontSize = '10px';
+            
+            // Reset text position
+            state.textX = 50;
+            state.textY = 85;
+            document.getElementById('textXSlider').value = 50;
+            document.getElementById('textYSlider').value = 85;
+            document.getElementById('textXValue').textContent = '50%';
+            document.getElementById('textYValue').textContent = '85%';
+            
+            // Reset text theme
+            setTextTheme('none');
+            
+            // Reset frame
+            setFrame('none');
+            
+            // Reset map adjustments
+            state.mapSaturation = 100;
+            state.mapContrast = 100;
+            state.mapBrightness = 100;
+            state.labelShadow = 2;
+            document.getElementById('mapSaturationSlider').value = 100;
+            document.getElementById('mapContrastSlider').value = 100;
+            document.getElementById('mapBrightnessSlider').value = 100;
+            document.getElementById('labelShadowSlider').value = 2;
+            document.getElementById('mapSaturationValue').textContent = '100%';
+            document.getElementById('mapContrastValue').textContent = '100%';
+            document.getElementById('mapBrightnessValue').textContent = '100%';
+            document.getElementById('labelShadowValue').textContent = '2px';
+            updateMapFilters();
+            updateLabelShadow(2);
+            
+            // Reset aspect ratio
+            setAspect('portrait');
+            
+            // Update poster
+            updatePoster();
+            
+            showNotification('Alt er tilbakestilt!', 'success');
         }
 
         function setExportScale(scale) {
@@ -3166,48 +3368,63 @@
                 const mapAreaWidth = Math.round(posterWidth * (1 - marginPercent * 2));
                 const mapAreaHeight = Math.round(posterHeight * (1 - marginPercent * 2));
                 
-                // Get map center and zoom for exact positioning
+                // Get map center and bounds for exact positioning
                 const center = map.getCenter();
                 const zoom = map.getZoom();
+                const bounds = map.getBounds();
                 
                 loading.querySelector('.loading-text').textContent = 'Henter høyoppløselig kart fra Geoapify...';
                 
                 // Geoapify max is 4096x4096, with scaleFactor=2 we get 8192x8192
-                // We may need to tile for very large exports
                 const maxGeoapifySize = 4096;
                 const scaleFactor = 2; // Double resolution
                 
-                // Calculate how to best fit within Geoapify limits
-                let requestWidth, requestHeight;
+                // Calculate request size - Geoapify will multiply by scaleFactor
+                // We want the final image to match mapAreaWidth x mapAreaHeight
                 const aspectRatio = mapAreaWidth / mapAreaHeight;
                 
-                if (mapAreaWidth > mapAreaHeight) {
-                    requestWidth = Math.min(maxGeoapifySize, Math.round(mapAreaWidth / scaleFactor));
+                // Request size (before scaleFactor multiplier)
+                let requestWidth, requestHeight;
+                
+                // Start with target dimensions divided by scaleFactor
+                requestWidth = Math.round(mapAreaWidth / scaleFactor);
+                requestHeight = Math.round(mapAreaHeight / scaleFactor);
+                
+                // Cap to Geoapify limits while maintaining aspect ratio
+                if (requestWidth > maxGeoapifySize) {
+                    requestWidth = maxGeoapifySize;
                     requestHeight = Math.round(requestWidth / aspectRatio);
-                    if (requestHeight > maxGeoapifySize) {
-                        requestHeight = maxGeoapifySize;
-                        requestWidth = Math.round(requestHeight * aspectRatio);
-                    }
-                } else {
-                    requestHeight = Math.min(maxGeoapifySize, Math.round(mapAreaHeight / scaleFactor));
+                }
+                if (requestHeight > maxGeoapifySize) {
+                    requestHeight = maxGeoapifySize;
                     requestWidth = Math.round(requestHeight * aspectRatio);
-                    if (requestWidth > maxGeoapifySize) {
-                        requestWidth = maxGeoapifySize;
-                        requestHeight = Math.round(requestWidth / aspectRatio);
-                    }
                 }
                 
                 // Get Geoapify style from current map style
                 // All Geoapify tile styles are also supported by Static Maps API
                 const geoapifyStyle = state.style.geoapifyStyle || 'osm-bright';
                 
-                // Build Geoapify Static Map URL using CENTER and ZOOM for exact match
+                // Use bounds from Leaflet for exact geographic match
+                const sw = bounds.getSouthWest();
+                const ne = bounds.getNorthEast();
+                
+                // Request a slightly taller image to crop out the Geoapify attribution
+                const attributionPixels = 20; // Geoapify adds ~20px attribution bar
+                const extraHeight = Math.ceil(attributionPixels / scaleFactor);
+                const requestHeightWithExtra = requestHeight + extraHeight;
+                
+                console.log('Export bounds:', { 
+                    sw: { lat: sw.lat, lng: sw.lng },
+                    ne: { lat: ne.lat, lng: ne.lng },
+                    requestWidth, requestHeight, requestHeightWithExtra
+                });
+                
+                // Build Geoapify Static Map URL using AREA for exact geographic match
                 const geoapifyUrl = `https://maps.geoapify.com/v1/staticmap?` +
                     `style=${geoapifyStyle}` +
                     `&width=${requestWidth}` +
-                    `&height=${requestHeight}` +
-                    `&center=lonlat:${center.lng},${center.lat}` +
-                    `&zoom=${zoom}` +
+                    `&height=${requestHeightWithExtra}` +
+                    `&area=rect:${sw.lng},${ne.lat},${ne.lng},${sw.lat}` +
                     `&scaleFactor=${scaleFactor}` +
                     `&format=png` +
                     `&apiKey=${GEOAPIFY_API_KEY}`;
@@ -3239,13 +3456,21 @@
                 const mapX = Math.round(posterWidth * marginPercent);
                 const mapY = Math.round(posterHeight * marginPercent);
                 
-                // Draw the map image - stretch to fill exactly (matches Leaflet behavior)
-                ctx.drawImage(mapImg, mapX, mapY, mapAreaWidth, mapAreaHeight);
+                // Draw the map image - crop out the bottom (Geoapify attribution area)
+                // Source: full width, but only the top portion (excluding attribution)
+                const srcWidth = mapImg.width;
+                const srcHeight = mapImg.height - (attributionPixels * scaleFactor); // Crop bottom
                 
-                // Cover Geoapify attribution at bottom of map with background color
-                const attributionHeight = 20 * scale;
-                ctx.fillStyle = state.bgColor;
-                ctx.fillRect(mapX, mapY + mapAreaHeight - attributionHeight, mapAreaWidth, attributionHeight);
+                console.log('Drawing map:', { 
+                    imgWidth: mapImg.width, 
+                    imgHeight: mapImg.height, 
+                    srcHeight: srcHeight,
+                    targetWidth: mapAreaWidth, 
+                    targetHeight: mapAreaHeight
+                });
+                
+                // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+                ctx.drawImage(mapImg, 0, 0, srcWidth, srcHeight, mapX, mapY, mapAreaWidth, mapAreaHeight);
                 
                 // Draw vignette effect if enabled (lys vignette)
                 if (state.labelShadow > 0) {
@@ -3308,6 +3533,8 @@
                 // Get theme colors from map style
                 const themeColor = state.style.bgColor || '#ffffff';
                 const themeBorderColor = state.style.textColor || '#2C2C2C';
+                
+                console.log('Theme colors:', { themeColor, themeBorderColor, style: state.style });
                 
                 // Convert hex to rgba for gradient
                 const hexToRgba = (hex, alpha) => {
