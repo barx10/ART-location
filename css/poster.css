@@ -1,0 +1,428 @@
+/* ============================================
+   Poster - Frame, Map, Text Overlay
+   ============================================ */
+
+/* Poster Container */
+.poster-container {
+    position: relative;
+    filter: drop-shadow(0 32px 64px rgba(0,0,0,0.5));
+}
+
+.poster-frame {
+    position: relative;
+    width: 400px;
+    aspect-ratio: 2/3;
+    background: #f5f5f0;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.poster-frame.square {
+    aspect-ratio: 1/1;
+    width: 450px;
+}
+
+/* Poster Inner */
+.poster-inner {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+/* Frame styles - Thin */
+.poster-frame.frame-thin .poster-inner {
+    inset: 16px;
+}
+
+.poster-frame.frame-thin .poster-inner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--frame-color, #2C2C2C);
+    pointer-events: none;
+    z-index: 1001;
+}
+
+/* Frame styles - Thick */
+.poster-frame.frame-thick .poster-inner {
+    inset: 24px;
+}
+
+.poster-frame.frame-thick .poster-inner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 4px solid var(--frame-color, #2C2C2C);
+    pointer-events: none;
+    z-index: 1001;
+}
+
+/* Frame styles - Double */
+.poster-frame.frame-double .poster-inner {
+    inset: 20px;
+}
+
+.poster-frame.frame-double .poster-inner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 4px double var(--frame-color, #2C2C2C);
+    pointer-events: none;
+    z-index: 1001;
+}
+
+/* Frame styles - Vintage */
+.poster-frame.frame-vintage .poster-inner {
+    inset: 28px;
+}
+
+.poster-frame.frame-vintage .poster-inner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 3px solid var(--frame-color, #2C2C2C);
+    pointer-events: none;
+    z-index: 1001;
+}
+
+.poster-frame.frame-vintage .poster-inner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 3px),
+        repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(0,0,0,0.03) 3px, rgba(0,0,0,0.03) 4px);
+    background-size: 20px 20px, 25px 25px;
+    pointer-events: none;
+    z-index: 1002;
+}
+
+/* Frame styles - Ornate */
+.poster-frame.frame-ornate .poster-inner {
+    inset: 32px;
+}
+
+.poster-frame.frame-ornate .poster-inner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 3px solid var(--frame-color, #2C2C2C);
+    box-shadow:
+        0 0 0 6px var(--bg-color, #f5f5f0),
+        0 0 0 8px var(--frame-color, #2C2C2C);
+    pointer-events: none;
+    z-index: 1001;
+}
+
+/* Corner decorations for ornate */
+.poster-frame.frame-ornate .corner-decor {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--frame-color, #2C2C2C);
+    pointer-events: none;
+    z-index: 1003;
+}
+
+.poster-frame.frame-ornate .corner-decor.top-left {
+    top: 24px;
+    left: 24px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.poster-frame.frame-ornate .corner-decor.top-right {
+    top: 24px;
+    right: 24px;
+    border-left: none;
+    border-bottom: none;
+}
+
+.poster-frame.frame-ornate .corner-decor.bottom-left {
+    bottom: 24px;
+    left: 24px;
+    border-right: none;
+    border-top: none;
+}
+
+.poster-frame.frame-ornate .corner-decor.bottom-right {
+    bottom: 24px;
+    right: 24px;
+    border-left: none;
+    border-top: none;
+}
+
+/* Map container */
+.map-wrapper {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+/* Vintage map effect overlay */
+.map-wrapper.vintage-map::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 500;
+    background:
+        /* Krakelering/sprekker - gammelt kart effekt */
+        repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(40, 30, 20, 0.03) 3px, rgba(40, 30, 20, 0.03) 4px),
+        repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(40, 30, 20, 0.03) 3px, rgba(40, 30, 20, 0.03) 4px),
+        repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(40, 30, 20, 0.02) 8px, rgba(40, 30, 20, 0.02) 10px),
+        repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(40, 30, 20, 0.02) 8px, rgba(40, 30, 20, 0.02) 10px),
+        /* Generell patina og slitasje */
+        radial-gradient(ellipse at 30% 20%, rgba(80, 60, 40, 0.08) 0%, transparent 40%),
+        radial-gradient(ellipse at 70% 80%, rgba(60, 50, 30, 0.06) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(50, 40, 30, 0.04) 70%),
+        /* Sepia-aktig tone */
+        linear-gradient(135deg, rgba(139, 119, 101, 0.08) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.map-wrapper.vintage-map::before {
+    opacity: 1;
+}
+
+/* Hvit glod-effekt overlay */
+.map-glow-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 400;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0) 40%,
+        rgba(255, 255, 255, 0.3) 70%,
+        rgba(255, 255, 255, 0.6) 90%,
+        rgba(255, 255, 255, 0.8) 100%
+    );
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+/* Vintage map sepia filter */
+.vintage-map #map {
+    filter: sepia(0.15) contrast(0.95) brightness(1.05);
+}
+
+.leaflet-control-attribution,
+.leaflet-control-zoom {
+    display: none !important;
+}
+
+/* Map label styling */
+#map {
+    --label-size: 100%;
+    --label-color: #000000;
+    --label-shadow: 2px;
+}
+
+.leaflet-tile-pane {
+    filter: var(--map-label-filter, none);
+}
+
+/* Custom label overlay styling */
+.map-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: var(--label-blend-mode, normal);
+    background: var(--label-overlay-color, transparent);
+    opacity: var(--label-overlay-opacity, 0);
+}
+
+/* Text overlay */
+.poster-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1050;
+}
+
+.poster-text {
+    position: absolute;
+    left: 50%;
+    top: 85%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    padding: 20px 40px;
+    border-radius: 0;
+    z-index: 1100;
+}
+
+.poster-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.1;
+    margin-bottom: 10px;
+}
+
+.poster-subtitle-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 6px;
+}
+
+.poster-line {
+    width: 36px;
+    height: 1.5px;
+    opacity: 0.5;
+}
+
+.poster-subtitle {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+.poster-coords {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+}
+
+.poster-date {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.85;
+    margin-top: 10px;
+}
+
+/* Text Theme: Gradient */
+.poster-overlay.theme-gradient::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--theme-size, 30%);
+    background: linear-gradient(to bottom, transparent 0%, var(--theme-color, #ffffff) 100%);
+    pointer-events: none;
+}
+
+.poster-overlay.theme-gradient .poster-text {
+    color: var(--theme-text-color, #2C2C2C);
+}
+
+/* Text Theme: Box */
+.poster-overlay.theme-box .poster-text {
+    background: var(--theme-color, #ffffff);
+    border: 2px solid var(--theme-border-color, #2C2C2C);
+    padding: 24px 48px;
+    color: var(--theme-text-color, #2C2C2C);
+}
+
+.poster-overlay.theme-box .poster-line {
+    background-color: var(--theme-text-color, #2C2C2C) !important;
+}
+
+/* Text Theme: Panel */
+.poster-overlay.theme-panel::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--theme-size, 25%);
+    background: var(--theme-color, #ffffff);
+    border-top: 2px solid var(--theme-border-color, #2C2C2C);
+    pointer-events: none;
+}
+
+.poster-overlay.theme-panel .poster-text {
+    color: var(--theme-text-color, #2C2C2C);
+}
+
+.poster-overlay.theme-panel .poster-line {
+    background-color: var(--theme-text-color, #2C2C2C) !important;
+}
+
+/* Text Theme: Double Line Panel */
+.poster-overlay.theme-double::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--theme-size, 28%);
+    background: var(--theme-color, #ffffff);
+    border-top: 3px solid var(--theme-border-color, #2C2C2C);
+    pointer-events: none;
+}
+
+.poster-overlay.theme-double::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(var(--theme-size, 28%) - 3%);
+    border-top: 1px solid var(--theme-border-color, #2C2C2C);
+    pointer-events: none;
+}
+
+.poster-overlay.theme-double .poster-text {
+    color: var(--theme-text-color, #2C2C2C);
+}
+
+.poster-overlay.theme-double .poster-line {
+    background-color: var(--theme-text-color, #2C2C2C) !important;
+}
+
+/* Loading state */
+.loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 15, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition);
+}
+
+.loading-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
