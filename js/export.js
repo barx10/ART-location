@@ -3,8 +3,8 @@
    ============================================ */
 
 function saveApiKey(key) {
-    GEOAPIFY_API_KEY = key;
-    localStorage.setItem('geoapify_api_key', key);
+    CART_ART_API_KEY = key;
+    localStorage.setItem('carto_art_api_key', key);
 }
 
 function toggleApiKeyVisibility() {
@@ -13,9 +13,9 @@ function toggleApiKeyVisibility() {
 }
 
 function loadApiKey() {
-    const savedKey = localStorage.getItem('geoapify_api_key');
+    const savedKey = localStorage.getItem('carto_art_api_key');
     if (savedKey) {
-        GEOAPIFY_API_KEY = savedKey;
+        CART_ART_API_KEY = savedKey;
         const input = document.getElementById('apiKeyInput');
         if (input) input.value = savedKey;
     }
@@ -23,8 +23,8 @@ function loadApiKey() {
 
 async function exportPoster(format) {
     // Check if API key is available
-    if (!GEOAPIFY_API_KEY) {
-        showNotification('Vennligst legg inn Geoapify API-nokkel for hoykvalitetseksport', 'error');
+    if (!CART_ART_API_KEY) {
+        showNotification('Vennligst legg inn Carto-Art API-nøkkel for høykvalitetseksport', 'error');
         document.getElementById('apiKeyInput').focus();
         return;
     }
@@ -32,8 +32,8 @@ async function exportPoster(format) {
     const loading = document.getElementById('loadingOverlay');
     loading.classList.add('active');
 
-    const scaleNames = { 2: 'Standard', 4: 'Hoy (4K)', 6: 'Print (6K)' };
-    loading.querySelector('.loading-text').textContent = `Forbereder ${scaleNames[state.exportScale]} eksport...`;
+    const scaleNames = { 2: 'Standard', 4: 'Høy (4K)', 6: 'Print (6K)' };
+    loading.querySelector('.loading-text').textContent = `Forbereder ${scaleNames[state.exportScale] || 'eksport'}...`;
 
     try {
         // Get poster dimensions
@@ -45,85 +45,81 @@ async function exportPoster(format) {
         const posterWidth = Math.round(posterRect.width * scale);
         const posterHeight = Math.round(posterRect.height * scale);
 
-        // Calculate map area dimensions (accounting for margin)
+        // Map dimensions (accounting for margin)
         const marginPercent = state.margin / 100;
         const mapAreaWidth = Math.round(posterWidth * (1 - marginPercent * 2));
         const mapAreaHeight = Math.round(posterHeight * (1 - marginPercent * 2));
 
-        // Get map center and bounds for exact positioning
-        const center = map.getCenter();
-        const zoom = map.getZoom();
-        const bounds = map.getBounds();
+        loading.querySelector('.loading-text').textContent = 'Genererer kart hos Carto-Art (dette kan ta litt tid)...';
 
-        loading.querySelector('.loading-text').textContent = 'Henter hoyopploselig kart fra Geoapify...';
+        // Construct API Payload
+        const payload = {
+            location: {
+                lat: state.location.lat,
+                lng: state.location.lng
+            },
+            // Use the category ID (e.g. 'blueprint', 'minimal')
+            style: state.style.styleId,
+            // Send specific palette colors
+            palette: state.style.colors,
+            camera: {
+                pitch: state.pitch || 0,
+                bearing: state.bearing || 0,
+                zoom: state.zoom // Pass current zoom
+            },
 
-        // Geoapify max is 4096x4096, with scaleFactor=2 we get 8192x8192
-        const maxGeoapifySize = 4096;
-        const scaleFactor = 2; // Double resolution
+            options: {
+                width: mapAreaWidth,
+                height: mapAreaHeight,
+                scale: 1, // We already scaled width/height
+                buildings_3d: state.buildings3d,
+                terrain: state.terrain,
+                contours: state.contours,
+                streets: state.streets,
+                water: state.water,
+                parks: state.parks,
+                buildings: state.buildings,
+                background: state.background
+            },
+            text: {
+                show_title: false,
+                show_subtitle: false
+            }
+        };
 
-        // Calculate request size - Geoapify will multiply by scaleFactor
-        // We want the final image to match mapAreaWidth x mapAreaHeight
-        const aspectRatio = mapAreaWidth / mapAreaHeight;
+        console.log('Fetching map from Carto-Art:', payload);
 
-        // Request size (before scaleFactor multiplier)
-        let requestWidth, requestHeight;
-
-        // Start with target dimensions divided by scaleFactor
-        requestWidth = Math.round(mapAreaWidth / scaleFactor);
-        requestHeight = Math.round(mapAreaHeight / scaleFactor);
-
-        // Cap to Geoapify limits while maintaining aspect ratio
-        if (requestWidth > maxGeoapifySize) {
-            requestWidth = maxGeoapifySize;
-            requestHeight = Math.round(requestWidth / aspectRatio);
-        }
-        if (requestHeight > maxGeoapifySize) {
-            requestHeight = maxGeoapifySize;
-            requestWidth = Math.round(requestHeight * aspectRatio);
-        }
-
-        // Get Geoapify style from current map style
-        const geoapifyStyle = state.style.geoapifyStyle || 'osm-bright';
-
-        // Use bounds from Leaflet for exact geographic match
-        const sw = bounds.getSouthWest();
-        const ne = bounds.getNorthEast();
-
-        // Request a slightly taller image to crop out the Geoapify attribution
-        const attributionPixels = 20;
-        const extraHeight = Math.ceil(attributionPixels / scaleFactor);
-        const requestHeightWithExtra = requestHeight + extraHeight;
-
-        console.log('Export bounds:', {
-            sw: { lat: sw.lat, lng: sw.lng },
-            ne: { lat: ne.lat, lng: ne.lng },
-            requestWidth, requestHeight, requestHeightWithExtra
+        const response = await fetch('https://cartoart.net/api/v1/posters/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${CART_ART_API_KEY}`
+            },
+            body: JSON.stringify(payload)
         });
 
-        // Build Geoapify Static Map URL using AREA for exact geographic match
-        const geoapifyUrl = `https://maps.geoapify.com/v1/staticmap?` +
-            `style=${geoapifyStyle}` +
-            `&width=${requestWidth}` +
-            `&height=${requestHeightWithExtra}` +
-            `&area=rect:${sw.lng},${ne.lat},${ne.lng},${sw.lat}` +
-            `&scaleFactor=${scaleFactor}` +
-            `&format=png` +
-            `&apiKey=${GEOAPIFY_API_KEY}`;
-
-        console.log('Fetching map from:', geoapifyUrl);
-
-        // Fetch the map image
-        const response = await fetch(geoapifyUrl);
         if (!response.ok) {
-            throw new Error(`Geoapify API feil: ${response.status} ${response.statusText}`);
+            const errData = await response.json();
+            throw new Error(errData.message || `API Feil: ${response.status} ${response.statusText}`);
         }
 
-        const mapBlob = await response.blob();
-        const mapImg = await createImageBitmap(mapBlob);
+        const data = await response.json();
 
-        loading.querySelector('.loading-text').textContent = 'Bygger poster med hoyopploselig kart...';
+        if (!data.download_url) {
+            throw new Error('Ingen nedlastingslenke mottatt fra API');
+        }
 
-        // Create final canvas
+        loading.querySelector('.loading-text').textContent = 'Laster ned høyoppløselig bilde...';
+
+        // Fetch the generated image
+        // Note: Using a proxy or CORS-enabled fetch for S3 URL
+        const imageResponse = await fetch(data.download_url);
+        const imageBlob = await imageResponse.blob();
+        const mapImg = await createImageBitmap(imageBlob);
+
+        loading.querySelector('.loading-text').textContent = 'Komponerer plakat...';
+
+        // Create canvas and draw everything (reusing existing logic)
         const canvas = document.createElement('canvas');
         canvas.width = posterWidth;
         canvas.height = posterHeight;
@@ -133,23 +129,12 @@ async function exportPoster(format) {
         ctx.fillStyle = state.bgColor;
         ctx.fillRect(0, 0, posterWidth, posterHeight);
 
-        // Calculate map position (centered with margin)
+        // Calculate map position
         const mapX = Math.round(posterWidth * marginPercent);
         const mapY = Math.round(posterHeight * marginPercent);
 
-        // Draw the map image - crop out the bottom (Geoapify attribution area)
-        const srcWidth = mapImg.width;
-        const srcHeight = mapImg.height - (attributionPixels * scaleFactor);
-
-        console.log('Drawing map:', {
-            imgWidth: mapImg.width,
-            imgHeight: mapImg.height,
-            srcHeight: srcHeight,
-            targetWidth: mapAreaWidth,
-            targetHeight: mapAreaHeight
-        });
-
-        ctx.drawImage(mapImg, 0, 0, srcWidth, srcHeight, mapX, mapY, mapAreaWidth, mapAreaHeight);
+        // Draw Map
+        ctx.drawImage(mapImg, 0, 0, mapImg.width, mapImg.height, mapX, mapY, mapAreaWidth, mapAreaHeight);
 
         // Draw vignette effect if enabled
         if (state.labelShadow > 0) {
@@ -168,17 +153,13 @@ async function exportPoster(format) {
         }
 
         // Draw text overlay
-        loading.querySelector('.loading-text').textContent = 'Legger til tekst...';
-
-        // Text styling
         const textScale = state.textSize / 100;
         const titleSize = 38 * scale * textScale;
         const subtitleSize = 13 * scale * textScale;
         const coordsSize = 10 * scale * textScale;
         const dateSize = 12 * scale * textScale;
-        const padding = 28 * scale;
-        const lineWidth = 36 * scale * textScale;
         const lineHeight = 1.5 * scale;
+        const lineWidth = 36 * scale * textScale;
 
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -191,7 +172,7 @@ async function exportPoster(format) {
         const totalTextHeight = titleSize + subtitleSize * 1.2 + coordsSize * 1.5 + dateSize * 1.5;
         const maxTextY = mapY + mapAreaHeight - totalTextHeight - 10 * scale;
 
-        // Adjust for theme
+        // Theme adjustments
         if (state.textTheme === 'panel' || state.textTheme === 'double') {
             const themeTopY = mapY + mapAreaHeight * (1 - state.themeSize / 100);
             const themeHeight = mapAreaHeight * (state.themeSize / 100);
@@ -201,7 +182,6 @@ async function exportPoster(format) {
             const themeHeight = mapAreaHeight * (state.themeSize / 100);
             textY = themeTopY + themeHeight * 0.5;
         }
-
         textY = Math.min(textY, maxTextY);
 
         // Theme colors
@@ -229,19 +209,13 @@ async function exportPoster(format) {
             ctx.fillRect(mapX, mapY + mapAreaHeight * (1 - state.themeSize / 100), mapAreaWidth, mapAreaHeight * (state.themeSize / 100));
             ctx.strokeStyle = themeBorderColor;
             ctx.lineWidth = 2 * scale;
-            ctx.beginPath();
-            ctx.moveTo(mapX, mapY + mapAreaHeight * (1 - state.themeSize / 100));
-            ctx.lineTo(mapX + mapAreaWidth, mapY + mapAreaHeight * (1 - state.themeSize / 100));
-            ctx.stroke();
+            ctx.strokeRect(mapX, mapY + mapAreaHeight * (1 - state.themeSize / 100), mapAreaWidth, mapAreaHeight * (state.themeSize / 100)); // Fixed: use strokeRect
         } else if (state.textTheme === 'double') {
             ctx.fillStyle = themeColor;
             ctx.fillRect(mapX, mapY + mapAreaHeight * (1 - state.themeSize / 100), mapAreaWidth, mapAreaHeight * (state.themeSize / 100));
             ctx.strokeStyle = themeBorderColor;
             ctx.lineWidth = 3 * scale;
-            ctx.beginPath();
-            ctx.moveTo(mapX, mapY + mapAreaHeight * (1 - state.themeSize / 100));
-            ctx.lineTo(mapX + mapAreaWidth, mapY + mapAreaHeight * (1 - state.themeSize / 100));
-            ctx.stroke();
+            ctx.strokeRect(mapX, mapY + mapAreaHeight * (1 - state.themeSize / 100), mapAreaWidth, mapAreaHeight * (state.themeSize / 100));
             ctx.lineWidth = 1 * scale;
             ctx.beginPath();
             ctx.moveTo(mapX, mapY + mapAreaHeight * (1 - state.themeSize / 100 + 0.03));
@@ -256,20 +230,17 @@ async function exportPoster(format) {
             const titleWidth = ctx.measureText(titleText.toUpperCase()).width;
 
             let boxHeight = titleSize + subtitleSize * 1.5 + coordsSize * 1.5 + boxPaddingY * 2;
-            if (state.showDate && state.dateValue) {
-                boxHeight += dateSize * 1.5;
-            }
+            if (state.showDate && state.dateValue) boxHeight += dateSize * 1.5;
 
             const boxWidth = Math.max(titleWidth + boxPaddingX * 2, 150 * scale * textScale);
 
             ctx.fillStyle = themeColor;
-            ctx.fillRect(textX - boxWidth/2, textY - boxPaddingY, boxWidth, boxHeight);
+            ctx.fillRect(textX - boxWidth / 2, textY - boxPaddingY, boxWidth, boxHeight);
             ctx.strokeStyle = themeBorderColor;
             ctx.lineWidth = 2 * scale;
-            ctx.strokeRect(textX - boxWidth/2, textY - boxPaddingY, boxWidth, boxHeight);
+            ctx.strokeRect(textX - boxWidth / 2, textY - boxPaddingY, boxWidth, boxHeight);
         }
 
-        // Text color
         const textColorForTheme = (state.textTheme !== 'none') ? themeBorderColor : state.textColor;
 
         // Text shadow
@@ -287,7 +258,6 @@ async function exportPoster(format) {
         ctx.fillStyle = textColorForTheme;
         ctx.font = `700 ${titleSize}px ${state.font.family.replace(/'/g, '')}`;
         ctx.letterSpacing = `${titleSize * 0.08}px`;
-
         const titleText = document.getElementById('titleInput').value || state.location.name;
         ctx.fillText(titleText.toUpperCase(), textX, textY);
 
@@ -295,33 +265,27 @@ async function exportPoster(format) {
         const subtitleY = textY + titleSize * 0.8;
         ctx.font = `500 ${subtitleSize}px 'DM Sans', sans-serif`;
         ctx.letterSpacing = `${subtitleSize * 0.2}px`;
-
         const subtitleText = document.getElementById('subtitleInput').value || 'Norge';
 
         if (state.showLines && subtitleText) {
             const subtitleWidth = ctx.measureText(subtitleText.toUpperCase()).width;
-
             ctx.beginPath();
             ctx.strokeStyle = textColorForTheme;
             ctx.lineWidth = lineHeight;
             ctx.globalAlpha = 0.5;
-
             ctx.moveTo(textX - subtitleWidth / 2 - 14 * scale - lineWidth, subtitleY);
             ctx.lineTo(textX - subtitleWidth / 2 - 14 * scale, subtitleY);
-
             ctx.moveTo(textX + subtitleWidth / 2 + 14 * scale, subtitleY);
             ctx.lineTo(textX + subtitleWidth / 2 + 14 * scale + lineWidth, subtitleY);
-
             ctx.stroke();
             ctx.globalAlpha = 1;
         }
 
-        ctx.fillStyle = textColorForTheme;
-        ctx.globalAlpha = 0.9;
         if (subtitleText) {
+            ctx.globalAlpha = 0.9;
             ctx.fillText(subtitleText.toUpperCase(), textX, subtitleY);
+            ctx.globalAlpha = 1;
         }
-        ctx.globalAlpha = 1;
 
         // Draw coordinates
         if (state.showCoords) {
@@ -329,7 +293,6 @@ async function exportPoster(format) {
             ctx.font = `400 ${coordsSize}px 'JetBrains Mono', monospace`;
             ctx.letterSpacing = `${coordsSize * 0.1}px`;
             ctx.globalAlpha = 0.7;
-
             const lat = state.location.lat.toFixed(2);
             const lng = state.location.lng.toFixed(2);
             const latDir = state.location.lat >= 0 ? 'N' : 'S';
@@ -351,53 +314,22 @@ async function exportPoster(format) {
         // Reset shadow
         ctx.shadowColor = 'transparent';
         ctx.shadowBlur = 0;
-        ctx.shadowOffsetY = 0;
 
         // Draw frame
         if (state.frameStyle !== 'none') {
             ctx.strokeStyle = state.frameColor;
-
-            const marginSize = mapX;
-            const frameInset = marginSize * 0.4;
-
+            const frameInset = mapX * 0.4;
             let frameBorderWidth = 2 * scale;
-            if (state.frameStyle === 'thick') {
-                frameBorderWidth = 4 * scale;
-            } else if (state.frameStyle === 'double') {
-                frameBorderWidth = 3 * scale;
-            } else if (state.frameStyle === 'vintage' || state.frameStyle === 'ornate') {
-                frameBorderWidth = 3 * scale;
-            }
+            if (state.frameStyle === 'thick') frameBorderWidth = 4 * scale;
+            if (state.frameStyle === 'double') frameBorderWidth = 3 * scale;
 
             ctx.lineWidth = frameBorderWidth;
-
-            ctx.strokeRect(
-                frameInset,
-                frameInset,
-                posterWidth - frameInset * 2,
-                posterHeight - frameInset * 2
-            );
+            ctx.strokeRect(frameInset, frameInset, posterWidth - frameInset * 2, posterHeight - frameInset * 2);
 
             if (state.frameStyle === 'double') {
                 ctx.lineWidth = 1 * scale;
                 const innerInset = frameInset + 6 * scale;
-                ctx.strokeRect(
-                    innerInset,
-                    innerInset,
-                    posterWidth - innerInset * 2,
-                    posterHeight - innerInset * 2
-                );
-            }
-
-            if (state.frameStyle === 'vintage' || state.frameStyle === 'ornate') {
-                ctx.lineWidth = 1 * scale;
-                const innerInset = frameInset + 8 * scale;
-                ctx.strokeRect(
-                    innerInset,
-                    innerInset,
-                    posterWidth - innerInset * 2,
-                    posterHeight - innerInset * 2
-                );
+                ctx.strokeRect(innerInset, innerInset, posterWidth - innerInset * 2, posterHeight - innerInset * 2);
             }
         }
 
@@ -407,7 +339,6 @@ async function exportPoster(format) {
                 const stickerX = (sticker.x / 100) * posterWidth;
                 const stickerY = (sticker.y / 100) * posterHeight;
                 const stickerSize = sticker.size * scale;
-
                 ctx.font = `${stickerSize}px Arial`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
@@ -415,26 +346,19 @@ async function exportPoster(format) {
             }
         }
 
-        loading.querySelector('.loading-text').textContent = 'Genererer fil...';
-
         // Download
         const link = document.createElement('a');
-        link.download = `stedskart-${state.location.name.toLowerCase()}-${posterWidth}x${posterHeight}.png`;
+        link.download = `carto-art-poster-${state.location.name}-${posterWidth}x${posterHeight}.png`;
         link.href = canvas.toDataURL('image/png', 1.0);
         link.click();
 
         loading.classList.remove('active');
-        showNotification(`Eksportert ${posterWidth}x${posterHeight}px i print-kvalitet!`, 'success');
+        showNotification('Plakat lastet ned suksessfullt!', 'success');
 
     } catch (error) {
         console.error('Export error:', error);
         loading.classList.remove('active');
-
-        if (error.message.includes('API')) {
-            showNotification('API-feil: Sjekk at API-nokkelen er korrekt', 'error');
-        } else {
-            showNotification('Det oppstod en feil ved eksport. Prov igjen.', 'error');
-        }
+        showNotification(`Feil: ${error.message}`, 'error');
     }
 }
 
@@ -475,7 +399,7 @@ async function exportSimple() {
         link.href = canvas.toDataURL('image/png', 1.0);
         link.click();
 
-        showNotification(`Eksportert ${width}x${height}px (bruk API for hoyere kvalitet)`, 'success');
+        showNotification(`Eksportert ${width}x${height}px (bruk API for høyere kvalitet)`, 'success');
 
     } catch (error) {
         console.error('Simple export error:', error);

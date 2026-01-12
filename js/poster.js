@@ -43,17 +43,21 @@ function updatePoster() {
     updateMapWrapper();
 }
 
-function selectStyle(styleId) {
-    state.style = MAP_STYLES.find(s => s.id === styleId);
-    state.bgColor = state.style.bgColor;
-    state.textColor = state.style.textColor;
+function selectStyle(paletteId) {
+    // Find palette in flattened list
+    const palette = ALL_PALETTES.find(p => p.id === paletteId);
+    if (!palette) return;
+
+    state.style = palette;
+    state.bgColor = palette.colors.background;
+    state.textColor = palette.colors.text;
 
     // Update map tiles respecting labels setting
     updateMapTiles();
 
-    // Apply vintage effect if vintage style
+    // Apply vintage effect if vintage category
     const mapWrapper = document.getElementById('mapWrapper');
-    if (styleId === 'vintage') {
+    if (palette.styleId === 'vintage') {
         mapWrapper.classList.add('vintage-map');
     } else {
         mapWrapper.classList.remove('vintage-map');
@@ -95,7 +99,7 @@ function setAspect(aspect) {
     });
 
     updateMapWrapper();
-    setTimeout(() => map.invalidateSize(), 300);
+    setTimeout(() => map.resize(), 300);
 }
 
 function setFrame(frameStyle) {
@@ -119,7 +123,7 @@ function setFrame(frameStyle) {
     frame.style.setProperty('--frame-color', state.frameColor);
     frame.style.setProperty('--frame-bg', state.bgColor);
 
-    setTimeout(() => map.invalidateSize(), 100);
+    setTimeout(() => map.resize(), 100);
 }
 
 function setTextTheme(theme) {

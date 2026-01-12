@@ -4,20 +4,25 @@
 
 function renderStyleGrid() {
     const grid = document.getElementById('styleGrid');
-    grid.innerHTML = MAP_STYLES.map(style => `
-        <div class="style-card ${state.style.id === style.id ? 'active' : ''}"
-             onclick="selectStyle('${style.id}')">
-            <div class="style-preview">
-                ${style.colors.map(c => `<div class="style-color" style="background: ${c}"></div>`).join('')}
-            </div>
-            <div class="style-name">${style.name}</div>
-            <div class="style-desc">${style.desc}</div>
-            <div class="style-check">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-            </div>
+    grid.innerHTML = MAP_STYLES.map(category => `
+        <div class="style-category" style="width: 100%; margin-top: 12px; margin-bottom: 8px;">
+            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">${category.name}</div>
         </div>
+        ${category.palettes.map(palette => `
+            <div class="style-card ${state.style && state.style.id === palette.id ? 'active' : ''}"
+                 onclick="selectStyle('${palette.id}')">
+                <div class="style-preview">
+                    <div class="style-color" style="background: ${palette.colors.background}"></div>
+                    <div class="style-color" style="background: ${palette.colors.text}"></div>
+                </div>
+                <div class="style-name">${palette.name}</div>
+                <div class="style-check">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+            </div>
+        `).join('')}
     `).join('');
 }
 
@@ -111,20 +116,20 @@ function setupEventListeners() {
             searchResults.classList.add('active');
         }
 
-        // Also search via Geoapify API for more results
-        if (query.length >= 3 && GEOAPIFY_API_KEY) {
+        // Search via Nominatim (OpenStreetMap) - Free & Global
+        if (query.length >= 3) {
             try {
                 const response = await fetch(
-                    `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(query)}&limit=6&apiKey=${GEOAPIFY_API_KEY}`
+                    `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=6`
                 );
                 const data = await response.json();
 
-                if (data.features && data.features.length > 0) {
-                    const apiResults = data.features.map(f => ({
-                        name: f.properties.name || f.properties.city || f.properties.formatted.split(',')[0],
-                        region: f.properties.county || f.properties.state || 'Norge',
-                        lat: f.properties.lat,
-                        lng: f.properties.lon
+                if (data && data.length > 0) {
+                    const apiResults = data.map(f => ({
+                        name: f.name || f.display_name.split(',')[0],
+                        region: f.address.state || f.address.country || 'Verden',
+                        lat: parseFloat(f.lat),
+                        lng: parseFloat(f.lon)
                     }));
 
                     // Combine local and API results, remove duplicates
@@ -151,7 +156,7 @@ function setupEventListeners() {
             }
         }
 
-        if (localMatches.length === 0 && !GEOAPIFY_API_KEY) {
+        if (localMatches.length === 0 && query.length < 3) {
             searchResults.classList.remove('active');
         }
     });
@@ -292,7 +297,7 @@ function setupKeyboardShortcuts() {
             return;
         }
 
-        switch(e.key) {
+        switch (e.key) {
             case '+':
             case '=':
                 zoomMap(1);
@@ -327,9 +332,28 @@ function setupKeyboardShortcuts() {
     });
 }
 
-function setExportScale(scale) {
-    state.exportScale = scale;
-    document.querySelectorAll('.quality-btn').forEach(btn => {
-        btn.classList.toggle('active', parseInt(btn.dataset.scale) === scale);
-    });
+// NEW: Layer Toggles (Carto-Art API)
+function toggleLayer(layerName) {
+    state[layerName] = !state[layerName];
+    const btn = document.getElementById(`btn-${layerName}`);
+    if (btn) {
+        btn.classList.toggle('active', state[layerName]);
+    }
+    // Update map style to reflect layer visibility changes
+    if (typeof updateMapTiles === 'function') {
+        updateMapTiles();
+    }
+}
+
+// NEW: Camera Updates (Pitch/Bearing)
+function updateCamera(param, value) {
+    const val = parseInt(value);
+    state[param] = val;
+    document.getElementById(`${param}Value`).textContent = `${val}°`;
+
+    // Update map view directly
+    if (map) {
+        if (param === 'pitch') map.setPitch(val);
+        if (param === 'bearing') map.setBearing(val);
+    }
 }

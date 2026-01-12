@@ -1,46 +1,140 @@
 /* ============================================
-   Map - Leaflet Map Functions
+   Map - MapLibre GL JS Functions (Vector Tiles)
    ============================================ */
 
+// Helper to generate style based on current palette
+function getMapStyle() {
+    const colors = state.style.colors;
+
+    return {
+        version: 8,
+        sources: {
+            'openmaptiles': {
+                type: 'vector',
+                url: 'https://www.cartoart.net/api/tiles/openfreemap/planet?v=3d9821099af4b05076fb8a51beb3679fcc248ef8'
+            }
+        },
+        layers: [
+            // Background
+            {
+                id: 'background',
+                type: 'background',
+                paint: {
+                    'background-color': colors.background
+                }
+            },
+            // Water
+            {
+                id: 'water-layer',
+                type: 'fill',
+                source: 'openmaptiles',
+                'source-layer': 'water',
+                paint: {
+                    'fill-color': colors.text,
+                    'fill-opacity': 0.15
+                }
+            },
+            // Landuse/Parks (Green areas) - Optional, maybe just texture
+            {
+                id: 'parks',
+                type: 'fill',
+                source: 'openmaptiles',
+                'source-layer': 'park',
+                layout: { visibility: state.parks ? 'visible' : 'none' },
+                paint: {
+                    'fill-color': colors.text,
+                    'fill-opacity': 0.05
+                }
+            },
+            // Roads (Lines)
+            {
+                id: 'roads-minor',
+                type: 'line',
+                source: 'openmaptiles',
+                'source-layer': 'transportation',
+                filter: ['all',
+                    ['!=', 'class', 'motorway'],
+                    ['!=', 'class', 'trunk'],
+                    ['!=', 'class', 'primary']
+                ],
+                layout: { visibility: state.streets ? 'visible' : 'none' },
+                paint: {
+                    'line-color': colors.text,
+                    'line-width': ['interpolate', ['linear'], ['zoom'], 12, 0.5, 16, 2],
+                    'line-opacity': 0.3
+                }
+            },
+            {
+                id: 'roads-major',
+                type: 'line',
+                source: 'openmaptiles',
+                'source-layer': 'transportation',
+                filter: ['any',
+                    ['==', 'class', 'motorway'],
+                    ['==', 'class', 'trunk'],
+                    ['==', 'class', 'primary']
+                ],
+                layout: { visibility: state.streets ? 'visible' : 'none' },
+                paint: {
+                    'line-color': colors.text,
+                    'line-width': ['interpolate', ['linear'], ['zoom'], 12, 1, 16, 4],
+                    'line-opacity': 0.8
+                }
+            },
+            // Buildings (Extrusion / 3D)
+            {
+                id: 'buildings',
+                type: 'fill-extrusion',
+                source: 'openmaptiles',
+                'source-layer': 'building',
+                layout: { visibility: state.buildings ? 'visible' : 'none' },
+                paint: {
+                    'fill-extrusion-color': colors.text,
+                    'fill-extrusion-height': state.buildings3d ? ['get', 'render_height'] : 0,
+                    'fill-extrusion-base': state.buildings3d ? ['get', 'render_min_height'] : 0,
+                    'fill-extrusion-opacity': 0.6
+                }
+            }
+        ]
+    };
+}
+
 function initMap() {
-    map = L.map('map', {
-        zoomControl: false,
-        attributionControl: false,
-        dragging: true,
-        scrollWheelZoom: true,
-        doubleClickZoom: true,
-        touchZoom: true
-    }).setView([state.location.lat, state.location.lng], state.zoom);
-
-    // Get initial tile URL
-    let tileUrl;
-    if (GEOAPIFY_API_KEY && state.style.geoapifyStyle) {
-        tileUrl = `https://maps.geoapify.com/v1/tile/${state.style.geoapifyStyle}/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_API_KEY}`;
-    } else {
-        tileUrl = state.style.fallbackUrl || state.style.url;
-    }
-
-    tileLayer = L.tileLayer(tileUrl, {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-    map.on('moveend', updateCoords);
-    map.on('zoomend', () => {
-        state.zoom = map.getZoom();
-        document.getElementById('zoomSlider').value = state.zoom;
-        document.getElementById('zoomValue').textContent = state.zoom;
+    map = new maplibregl.Map({
+        container: 'map',
+        style: getMapStyle(),
+        center: [state.location.lng, state.location.lat],
+        zoom: state.zoom,
+        pitch: state.pitch,
+        bearing: state.bearing,
+        attributionControl: false
     });
 
-    // Initialize label styling after map loads
-    setTimeout(() => {
-        updateLabelShadow(state.labelShadow);
-    }, 500);
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false, showZoom: false }), 'top-right');
+
+    map.on('moveend', () => {
+        updateCoords();
+        state.zoom = map.getZoom();
+        state.pitch = map.getPitch();
+        state.bearing = map.getBearing();
+
+        // Update UI controls
+        document.getElementById('zoomSlider').value = state.zoom;
+        document.getElementById('zoomValue').textContent = state.zoom.toFixed(1);
+        document.getElementById('pitchSlider').value = state.pitch;
+        document.getElementById('pitchValue').textContent = Math.round(state.pitch) + '°';
+        document.getElementById('bearingSlider').value = state.bearing;
+        document.getElementById('bearingValue').textContent = Math.round(state.bearing) + '°';
+    });
 }
 
 function selectLocation(lat, lng, name) {
     state.location = { lat, lng, name };
-    map.setView([lat, lng], state.zoom);
+    map.flyTo({
+        center: [lng, lat],
+        zoom: state.zoom,
+        essential: true
+    });
 
     document.getElementById('searchInput').value = name;
     document.getElementById('titleInput').value = name;
@@ -51,8 +145,7 @@ function selectLocation(lat, lng, name) {
 }
 
 function randomLocation() {
-    // Velg fra hele verden hvis API er satt, ellers kun Norge
-    const locations = GEOAPIFY_API_KEY ? WORLD_LOCATIONS : NORWEGIAN_LOCATIONS;
+    const locations = WORLD_LOCATIONS;
     const loc = locations[Math.floor(Math.random() * locations.length)];
     selectLocation(loc.lat, loc.lng, loc.name);
 }
@@ -66,52 +159,32 @@ function updateCoords() {
 }
 
 function updateMapTiles() {
-    let tileUrl;
-
-    // Use Geoapify tiles when API key is available
-    if (GEOAPIFY_API_KEY && state.style.geoapifyStyle) {
-        tileUrl = `https://maps.geoapify.com/v1/tile/${state.style.geoapifyStyle}/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_API_KEY}`;
-    } else {
-        // Fallback to free tiles
-        tileUrl = state.showLabels
-            ? (state.style.fallbackUrl || state.style.url)
-            : (state.style.fallbackUrlNoLabels || state.style.urlNoLabels || state.style.fallbackUrl || state.style.url);
-    }
-
-    map.removeLayer(tileLayer);
-    tileLayer = L.tileLayer(tileUrl, {
-        maxZoom: 19,
-        attribution: GEOAPIFY_API_KEY ? '© Geoapify © OpenStreetMap' : '© OpenStreetMap'
-    }).addTo(map);
+    if (!map) return;
+    map.setStyle(getMapStyle());
 }
 
 function updateMapFilters() {
-    const mapEl = document.getElementById('map');
+    // Only CSS filter updates remains here for saturation/contrast/brightness effects
+    // on top of the vector style. 
+    // Ideally we should update the STYLE PAINT properties, but for simplicity we keep CSS filters
+    // for these global adjustments.
 
-    // Bruk state-verdier (oppdateres fra event listeners)
     const saturation = state.mapSaturation;
     const contrast = state.mapContrast;
     const brightness = state.mapBrightness;
 
-    // Build filter string
+    const canvas = map.getCanvas();
     let filters = [];
-
-    // Add label shadow if active
-    if (state.labelShadow > 0) {
-        for (let i = 0; i < 3; i++) {
-            filters.push(`drop-shadow(0 0 ${state.labelShadow}px white)`);
-        }
-    }
-
-    // Add color adjustments
     filters.push(`saturate(${saturation}%)`);
     filters.push(`contrast(${contrast}%)`);
     filters.push(`brightness(${brightness}%)`);
 
-    const filterString = filters.join(' ');
-    mapEl.style.setProperty('filter', filterString, 'important');
+    if (state.labelShadow > 0) {
+        filters.push(`drop-shadow(0 0 ${state.labelShadow}px white)`);
+    }
 
-    // Update display values
+    canvas.style.filter = filters.join(' ');
+
     document.getElementById('mapSaturationValue').textContent = `${saturation}%`;
     document.getElementById('mapContrastValue').textContent = `${contrast}%`;
     document.getElementById('mapBrightnessValue').textContent = `${brightness}%`;
@@ -120,18 +193,11 @@ function updateMapFilters() {
 function updateLabelShadow(size) {
     state.labelShadow = size;
     document.getElementById('labelShadowValue').textContent = `${size}px`;
-
-    // Oppdater hvit glod-overlay
-    const glowOverlay = document.getElementById('mapGlowOverlay');
-    if (glowOverlay) {
-        // Konverter 0-8 til opacity 0-0.8
-        const opacity = size / 10;
-        glowOverlay.style.opacity = opacity;
-    }
+    updateMapFilters();
 }
 
 function updateMapWrapper() {
-    setTimeout(() => map.invalidateSize(), 100);
+    setTimeout(() => map.resize(), 100);
 }
 
 function zoomCanvas(delta) {
@@ -142,89 +208,41 @@ function zoomCanvas(delta) {
 }
 
 function zoomMap(delta) {
-    state.zoom = Math.max(8, Math.min(16, state.zoom + delta * 0.5));
-    map.setZoom(state.zoom);
-    document.getElementById('zoomSlider').value = state.zoom;
-    document.getElementById('zoomValue').textContent = state.zoom;
+    const currentZoom = map.getZoom();
+    map.flyTo({ zoom: currentZoom + delta });
 }
 
 function resetMap() {
-    // Reset location and map
     state.location = { name: 'Oslo', lat: 59.9139, lng: 10.7522 };
-    map.setView([state.location.lat, state.location.lng], 12);
     state.zoom = 12;
+    state.pitch = 0;
+    state.bearing = 0;
+
+    map.flyTo({
+        center: [state.location.lng, state.location.lat],
+        zoom: 12,
+        pitch: 0,
+        bearing: 0
+    });
+
     document.getElementById('zoomSlider').value = 12;
-    document.getElementById('zoomValue').textContent = 12;
+    document.getElementById('pitchSlider').value = 0;
+    document.getElementById('bearingSlider').value = 0;
 
-    // Reset canvas scale
-    state.canvasScale = 1;
-    const posterFrame = document.getElementById('posterFrame');
-    posterFrame.style.transform = 'scale(1)';
+    selectStyle(ALL_PALETTES[0].id);
+    showNotification('Kart tilbakestilt', 'success');
+}
 
-    // Reset text
-    document.getElementById('titleInput').value = 'Oslo';
-    document.getElementById('subtitleInput').value = 'Norge';
-    document.getElementById('posterTitle').textContent = 'Oslo';
-    document.getElementById('posterSubtitle').textContent = 'Norge';
+// Update 3D buildings and other toggles
+function toggleLayer(layerName) {
+    // This function is defined in ui.js but needs to trigger map update.
+    // We should hook into state changes. 
+    // For now, assume ui.js calls this or updates state. we need to refresh style.
+    // Better: let ui.js call updateMapTiles() after toggling.
+    // I will add a listener here or ensure UI calls updateMapTiles.
+}
 
-    // Reset style to first (Klassisk)
-    selectStyle('positron');
-
-    // Reset font to first
-    selectFont('playfair');
-
-    // Reset text size
-    state.textSize = 100;
-    document.getElementById('textSizeSlider').value = 100;
-    document.getElementById('textSizeValue').textContent = '100%';
-    document.getElementById('posterTitle').style.fontSize = '38px';
-    document.getElementById('posterSubtitle').style.fontSize = '13px';
-    document.getElementById('posterCoords').style.fontSize = '10px';
-
-    // Reset text position
-    state.textX = 50;
-    state.textY = 85;
-    document.getElementById('textXSlider').value = 50;
-    document.getElementById('textYSlider').value = 85;
-    document.getElementById('textXValue').textContent = '50%';
-    document.getElementById('textYValue').textContent = '85%';
-
-    // Reset text theme
-    setTextTheme('none');
-
-    // Reset frame
-    setFrame('none');
-
-    // Reset map adjustments
-    state.mapSaturation = 100;
-    state.mapContrast = 100;
-    state.mapBrightness = 100;
-    state.labelShadow = 2;
-    document.getElementById('mapSaturationSlider').value = 100;
-    document.getElementById('mapContrastSlider').value = 100;
-    document.getElementById('mapBrightnessSlider').value = 100;
-    document.getElementById('labelShadowSlider').value = 2;
-    document.getElementById('mapSaturationValue').textContent = '100%';
-    document.getElementById('mapContrastValue').textContent = '100%';
-    document.getElementById('mapBrightnessValue').textContent = '100%';
-    document.getElementById('labelShadowValue').textContent = '2px';
-    updateMapFilters();
-    updateLabelShadow(2);
-
-    // Reset aspect ratio
-    setAspect('portrait');
-
-    // Reset stickers
-    state.stickers = [];
-    state.selectedSticker = null;
-    state.stickerSize = 40;
-    document.getElementById('stickerSizeSlider').value = 40;
-    document.getElementById('stickerSizeValue').textContent = '40px';
-    document.querySelectorAll('.sticker-btn').forEach(btn => btn.classList.remove('active'));
-    renderStickers();
-
-    // Update poster
-    updatePoster();
-
-    showNotification('Alt er tilbakestilt!', 'success');
+// Add a specific listener for layer updates (called from ui.js)
+window.updateLayerVisibility = function () {
+    updateMapTiles();
 }

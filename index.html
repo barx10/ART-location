@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="no">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stedskart — Lag vakre kartplakater av dine favorittplasser</title>
-    <meta name="description" content="Lag personlige kartplakater i profesjonell kvalitet. Velg ditt favorittsted, tilpass design med 20+ fonter, farger og stiler. Gratis for Norge, globalt søk med API.">
+    <meta name="description"
+        content="Lag personlige kartplakater i profesjonell kvalitet. Velg ditt favorittsted, tilpass design med 20+ fonter, farger og stiler. Gratis for Norge, globalt søk med API.">
 
     <!-- OpenGraph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://barx10.github.io/ART-location/">
     <meta property="og:title" content="Stedskart — Ditt sted, din kunst">
-    <meta property="og:description" content="Lag personlige kartplakater i profesjonell kvalitet. Velg ditt favorittsted, tilpass design med 20+ fonter, farger og stiler.">
+    <meta property="og:description"
+        content="Lag personlige kartplakater i profesjonell kvalitet. Velg ditt favorittsted, tilpass design med 20+ fonter, farger og stiler.">
     <meta property="og:image" content="https://barx10.github.io/ART-location/preview.png">
     <meta property="og:site_name" content="Stedskart">
 
@@ -18,21 +21,25 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://barx10.github.io/ART-location/">
     <meta name="twitter:title" content="Stedskart — Ditt sted, din kunst">
-    <meta name="twitter:description" content="Lag personlige kartplakater i profesjonell kvalitet. Velg ditt favorittsted, tilpass design med 20+ fonter, farger og stiler.">
+    <meta name="twitter:description"
+        content="Lag personlige kartplakater i profesjonell kvalitet. Velg ditt favorittsted, tilpass design med 20+ fonter, farger og stiler.">
     <meta name="twitter:image" content="https://barx10.github.io/ART-location/preview.png">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c9a962'/%3E%3Cpath d='M50 25c-8.3 0-15 6.7-15 15 0 11.25 15 30 15 30s15-18.75 15-30c0-8.3-6.7-15-15-15zm0 20c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5z' fill='%230a0a0f'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c9a962'/%3E%3Cpath d='M50 25c-8.3 0-15 6.7-15 15 0 11.25 15 30 15 30s15-18.75 15-30c0-8.3-6.7-15-15-15zm0 20c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5z' fill='%230a0a0f'/%3E%3C/svg%3E">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400;500&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700;800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Raleway:wght@400;500;600;700;800&family=Abril+Fatface&family=Cinzel:wght@400;500;600;700&family=Bodoni+Moda:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;500;600;700;800&family=Roboto+Slab:wght@400;500;700&family=Source+Serif+4:wght@400;600;700&family=Archivo+Black&family=Anton&family=Righteous&family=Staatliches&family=Permanent+Marker&family=Satisfy&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400;500&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700;800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Raleway:wght@400;500;600;700;800&family=Abril+Fatface&family=Cinzel:wght@400;500;600;700&family=Bodoni+Moda:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;500;600;700;800&family=Roboto+Slab:wght@400;500;700&family=Source+Serif+4:wght@400;600;700&family=Archivo+Black&family=Anton&family=Righteous&family=Staatliches&family=Permanent+Marker&family=Satisfy&display=swap"
+        rel="stylesheet">
 
     <!-- External Libraries -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js"></script>
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <!-- Application CSS -->
@@ -43,6 +50,7 @@
     <link rel="stylesheet" href="css/modal.css">
     <link rel="stylesheet" href="css/animations.css">
 </head>
+
 <body>
     <div class="ambient-bg"></div>
 
@@ -51,9 +59,10 @@
         <aside class="sidebar">
             <header class="sidebar-header">
                 <div class="logo">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-                        <circle cx="12" cy="10" r="3"/>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                        <circle cx="12" cy="10" r="3" />
                     </svg>
                 </div>
                 <div class="logo-text-wrapper">
@@ -71,25 +80,31 @@
                     </div>
                     <div class="input-group">
                         <div class="input-icon-wrapper" style="position: relative;">
-                            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <path d="m21 21-4.35-4.35"></path>
                             </svg>
-                            <input type="text" class="input" id="searchInput" placeholder="Søk etter by eller sted..." autocomplete="off">
+                            <input type="text" class="input" id="searchInput" placeholder="Søk etter by eller sted..."
+                                autocomplete="off">
                             <div class="search-results" id="searchResults"></div>
                         </div>
                         <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">
-                            💡 Med API-nøkkel (nederst i sidebar): Søk globalt | Uten: Norske steder
+                            💡 Søk etter steder i hele verden (OpenStreetMap)
                         </div>
                     </div>
 
                     <!-- Quick presets for popular Norwegian cities -->
                     <div class="quick-locations">
                         <button class="quick-loc-btn" onclick="selectLocation(59.9139, 10.7522, 'Oslo')">Oslo</button>
-                        <button class="quick-loc-btn" onclick="selectLocation(60.3913, 5.3221, 'Bergen')">Bergen</button>
-                        <button class="quick-loc-btn" onclick="selectLocation(63.4305, 10.3951, 'Trondheim')">Trondheim</button>
-                        <button class="quick-loc-btn" onclick="selectLocation(69.6496, 18.9560, 'Tromsø')">Tromsø</button>
-                        <button class="quick-loc-btn" onclick="selectLocation(68.2000, 14.0000, 'Lofoten')">Lofoten</button>
+                        <button class="quick-loc-btn"
+                            onclick="selectLocation(60.3913, 5.3221, 'Bergen')">Bergen</button>
+                        <button class="quick-loc-btn"
+                            onclick="selectLocation(63.4305, 10.3951, 'Trondheim')">Trondheim</button>
+                        <button class="quick-loc-btn"
+                            onclick="selectLocation(69.6496, 18.9560, 'Tromsø')">Tromsø</button>
+                        <button class="quick-loc-btn"
+                            onclick="selectLocation(68.2000, 14.0000, 'Lofoten')">Lofoten</button>
                     </div>
                 </div>
 
@@ -107,7 +122,7 @@
                 <!-- Perspective Section -->
                 <div class="section">
                     <div class="section-header">
-                        <span class="section-title">🔭 Perspektiv</span>
+                        <span class="section-title">📐 Format</span>
                     </div>
                     <div class="perspective-grid">
                         <button class="perspective-btn active" data-aspect="portrait" onclick="setAspect('portrait')">
@@ -119,6 +134,48 @@
                             <div class="perspective-label">Kvadrat</div>
                         </button>
                     </div>
+                </div>
+
+                <!-- NEW: Map Details / Layers & Camera -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">🌍 Kartlag & 3D</span>
+                    </div>
+
+                    <!-- Camera Controls -->
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Tilt (3D)</span>
+                            <span class="slider-value" id="pitchValue">0°</span>
+                        </div>
+                        <input type="range" class="slider" id="pitchSlider" min="0" max="60" value="0" step="5"
+                            oninput="updateCamera('pitch', this.value)">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Rotasjon</span>
+                            <span class="slider-value" id="bearingValue">0°</span>
+                        </div>
+                        <input type="range" class="slider" id="bearingSlider" min="0" max="360" value="0" step="15"
+                            oninput="updateCamera('bearing', this.value)">
+                    </div>
+
+                    <!-- Layer Toggles -->
+                    <div class="toggle-grid"
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+                        <button class="layer-btn" id="btn-buildings3d" onclick="toggleLayer('buildings3d')">3D
+                            Bygg</button>
+                        <button class="layer-btn" id="btn-terrain" onclick="toggleLayer('terrain')">Terreng</button>
+                        <button class="layer-btn" id="btn-contours"
+                            onclick="toggleLayer('contours')">Høydekurver</button>
+                        <button class="layer-btn active" id="btn-water" onclick="toggleLayer('water')">Vann</button>
+                        <button class="layer-btn active" id="btn-parks" onclick="toggleLayer('parks')">Parker</button>
+                        <button class="layer-btn active" id="btn-streets"
+                            onclick="toggleLayer('streets')">Veier</button>
+                    </div>
+                    <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px; line-height: 1.3;">
+                        ℹ️ Disse valgene påvirker <b>kun</b> den ferdige høykvalitets-eksporten, ikke forhåndsvisningen.
+                    </p>
                 </div>
 
                 <!-- Zoom & Details -->
@@ -197,31 +254,50 @@
                     <div class="frame-grid" id="themeGrid">
                         <button class="frame-btn active" data-theme="none" onclick="setTextTheme('none')">
                             <div class="frame-preview">
-                                <div class="frame-preview-inner" style="display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 8px;">Aa</div>
+                                <div class="frame-preview-inner"
+                                    style="display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 8px;">
+                                    Aa</div>
                             </div>
                             <span>Ingen</span>
                         </button>
                         <button class="frame-btn" data-theme="gradient" onclick="setTextTheme('gradient')">
                             <div class="frame-preview">
-                                <div class="frame-preview-inner" style="background: linear-gradient(to bottom, transparent 30%, white 80%); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 8px;">Aa</div>
+                                <div class="frame-preview-inner"
+                                    style="background: linear-gradient(to bottom, transparent 30%, white 80%); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 8px;">
+                                    Aa</div>
                             </div>
                             <span>Gradient</span>
                         </button>
                         <button class="frame-btn" data-theme="box" onclick="setTextTheme('box')">
                             <div class="frame-preview">
-                                <div class="frame-preview-inner" style="display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px;"><span style="background: white; border: 1px solid #333; padding: 2px 6px; font-size: 6px;">Aa</span></div>
+                                <div class="frame-preview-inner"
+                                    style="display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px;">
+                                    <span
+                                        style="background: white; border: 1px solid #333; padding: 2px 6px; font-size: 6px;">Aa</span>
+                                </div>
                             </div>
                             <span>Boks</span>
                         </button>
                         <button class="frame-btn" data-theme="panel" onclick="setTextTheme('panel')">
                             <div class="frame-preview">
-                                <div class="frame-preview-inner" style="position: relative;"><div style="position: absolute; bottom: 0; left: 0; right: 0; height: 35%; background: white; border-top: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 6px;">Aa</div></div>
+                                <div class="frame-preview-inner" style="position: relative;">
+                                    <div
+                                        style="position: absolute; bottom: 0; left: 0; right: 0; height: 35%; background: white; border-top: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 6px;">
+                                        Aa</div>
+                                </div>
                             </div>
                             <span>Panel</span>
                         </button>
                         <button class="frame-btn" data-theme="double" onclick="setTextTheme('double')">
                             <div class="frame-preview">
-                                <div class="frame-preview-inner" style="position: relative;"><div style="position: absolute; bottom: 0; left: 0; right: 0; height: 35%; background: white; border-top: 2px solid #333;"></div><div style="position: absolute; bottom: 0; left: 0; right: 0; height: 30%; border-top: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 6px;">Aa</div></div>
+                                <div class="frame-preview-inner" style="position: relative;">
+                                    <div
+                                        style="position: absolute; bottom: 0; left: 0; right: 0; height: 35%; background: white; border-top: 2px solid #333;">
+                                    </div>
+                                    <div
+                                        style="position: absolute; bottom: 0; left: 0; right: 0; height: 30%; border-top: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 6px;">
+                                        Aa</div>
+                                </div>
                             </div>
                             <span>Dobbel</span>
                         </button>
@@ -261,19 +337,24 @@
                         </button>
                         <button class="frame-btn" data-frame="double" onclick="setFrame('double')">
                             <div class="frame-preview">
-                                <div class="frame-preview-inner" style="border: 2px double var(--text-secondary);"></div>
+                                <div class="frame-preview-inner" style="border: 2px double var(--text-secondary);">
+                                </div>
                             </div>
                             <span>Dobbel</span>
                         </button>
                         <button class="frame-btn" data-frame="vintage" onclick="setFrame('vintage')">
                             <div class="frame-preview">
-                                <div class="frame-preview-inner" style="border: 2px solid var(--text-secondary); box-shadow: inset 0 0 0 1px var(--text-secondary), inset 0 0 0 4px transparent, inset 0 0 0 5px var(--text-secondary);"></div>
+                                <div class="frame-preview-inner"
+                                    style="border: 2px solid var(--text-secondary); box-shadow: inset 0 0 0 1px var(--text-secondary), inset 0 0 0 4px transparent, inset 0 0 0 5px var(--text-secondary);">
+                                </div>
                             </div>
                             <span>Vintage</span>
                         </button>
                         <button class="frame-btn" data-frame="ornate" onclick="setFrame('ornate')">
                             <div class="frame-preview">
-                                <div class="frame-preview-inner" style="border: 1px solid var(--text-secondary); box-shadow: inset 0 0 0 2px transparent, inset 0 0 0 3px var(--text-secondary);"></div>
+                                <div class="frame-preview-inner"
+                                    style="border: 1px solid var(--text-secondary); box-shadow: inset 0 0 0 2px transparent, inset 0 0 0 3px var(--text-secondary);">
+                                </div>
                             </div>
                             <span>Ornament</span>
                         </button>
@@ -293,7 +374,8 @@
                         <span class="section-title">✨ Stickers</span>
                         <button class="section-badge" onclick="clearStickers()">Fjern alle</button>
                     </div>
-                    <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">Klikk en sticker, deretter klikk på kartet for å plassere</p>
+                    <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">Klikk en sticker,
+                        deretter klikk på kartet for å plassere</p>
                     <div class="sticker-grid" id="stickerGrid">
                         <button class="sticker-btn" data-sticker="❤️" onclick="selectSticker('❤️')">❤️</button>
                         <button class="sticker-btn" data-sticker="💕" onclick="selectSticker('💕')">💕</button>
@@ -331,21 +413,24 @@
                             <span class="slider-label">Fargemetning</span>
                             <span class="slider-value" id="mapSaturationValue">100%</span>
                         </div>
-                        <input type="range" class="slider" id="mapSaturationSlider" min="0" max="200" value="100" step="10">
+                        <input type="range" class="slider" id="mapSaturationSlider" min="0" max="200" value="100"
+                            step="10">
                     </div>
                     <div class="slider-container">
                         <div class="slider-header">
                             <span class="slider-label">Kontrast</span>
                             <span class="slider-value" id="mapContrastValue">100%</span>
                         </div>
-                        <input type="range" class="slider" id="mapContrastSlider" min="50" max="150" value="100" step="5">
+                        <input type="range" class="slider" id="mapContrastSlider" min="50" max="150" value="100"
+                            step="5">
                     </div>
                     <div class="slider-container">
                         <div class="slider-header">
                             <span class="slider-label">Lysstyrke</span>
                             <span class="slider-value" id="mapBrightnessValue">100%</span>
                         </div>
-                        <input type="range" class="slider" id="mapBrightnessSlider" min="50" max="150" value="100" step="5">
+                        <input type="range" class="slider" id="mapBrightnessSlider" min="50" max="150" value="100"
+                            step="5">
                     </div>
                     <div class="slider-container">
                         <div class="slider-header">
@@ -402,22 +487,22 @@
                     <div class="export-section">
                         <!-- API Key Input -->
                         <div class="input-group" style="margin-bottom: 16px;">
-                            <label class="input-label">Geoapify API-nøkkel (gratis)</label>
+                            <label class="input-label">Carto-Art API-nøkkel (Premium)</label>
                             <div style="display: flex; gap: 8px;">
                                 <input type="password" id="apiKeyInput" class="text-input"
-                                    placeholder="Din API-nøkkel..."
-                                    style="flex: 1; font-size: 12px;"
+                                    placeholder="Din Carto-Art nøkkel..." style="flex: 1; font-size: 12px;"
                                     onchange="saveApiKey(this.value)">
                                 <button class="toggle-btn" onclick="toggleApiKeyVisibility()" title="Vis/skjul">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                         <circle cx="12" cy="12" r="3"></circle>
                                     </svg>
                                 </button>
                             </div>
-                            <a href="https://myprojects.geoapify.com/" target="_blank"
+                            <a href="https://cartoart.net/developer" target="_blank"
                                 style="font-size: 11px; color: var(--accent); margin-top: 6px; display: inline-block;">
-                                Få gratis API-nøkkel (3000 kreditter/dag) →
+                                Få API-nøkkel for 6K Print →
                             </a>
                         </div>
 
@@ -437,17 +522,20 @@
                                     <span class="quality-size">~7200×10800</span>
                                 </button>
                             </div>
-                            <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px; line-height: 1.4;">⚡ Høy og Print krever API-nøkkel for beste kvalitet. Standard fungerer uten.</p>
+                            <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px; line-height: 1.4;">⚡
+                                Høy og Print krever API-nøkkel for beste kvalitet. Standard fungerer uten.</p>
                         </div>
                         <button class="export-btn" onclick="exportPoster('png')">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
                                 <path d="M12 15V3m0 12-4-4m4 4 4-4"></path>
                                 <path d="M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"></path>
                             </svg>
                             Last ned PNG (Høy kvalitet)
                         </button>
                         <button class="export-btn secondary" onclick="exportSimple()">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
                                 <path d="M12 15V3m0 12-4-4m4 4 4-4"></path>
                                 <path d="M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"></path>
                             </svg>
@@ -459,7 +547,8 @@
 
             <!-- Sidebar Footer -->
             <div class="sidebar-footer">
-                <span class="footer-brand"><a href="https://www.laererliv.no/" target="_blank">Lærerliv</a> © 2026</span>
+                <span class="footer-brand"><a href="https://www.laererliv.no/" target="_blank">Lærerliv</a> ©
+                    2026</span>
             </div>
         </aside>
 
@@ -572,14 +661,19 @@
                         </svg>
                         Hva er Stedskart?
                     </h3>
-                    <p>Stedskart lar deg lage vakre, personlige kartplakater av dine favorittplasser. Perfekt som gave, minne fra en spesiell reise, eller som unik veggdekorasjon.</p>
-                    <p style="margin-top: 12px; font-size: 0.85rem; opacity: 0.7;">Kartdata © <a href="https://www.openstreetmap.org/copyright" target="_blank" style="color: var(--accent);">OpenStreetMap</a> bidragsytere</p>
+                    <p>Stedskart lar deg lage vakre, personlige kartplakater av dine favorittplasser. Perfekt som gave,
+                        minne fra en spesiell reise, eller som unik veggdekorasjon.</p>
+                    <p style="margin-top: 12px; font-size: 0.85rem; opacity: 0.7;">Kartdata © <a
+                            href="https://www.openstreetmap.org/copyright" target="_blank"
+                            style="color: var(--accent);">OpenStreetMap</a> bidragsytere</p>
                 </div>
 
                 <div class="modal-section">
                     <h3>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                            <path
+                                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z">
+                            </path>
                         </svg>
                         Slik bruker du Stedskart
                     </h3>
@@ -602,7 +696,8 @@
                         Hurtigtaster
                     </h3>
                     <ul>
-                        <li><span class="keyboard-shortcut">+</span> / <span class="keyboard-shortcut">-</span> — Zoom inn/ut</li>
+                        <li><span class="keyboard-shortcut">+</span> / <span class="keyboard-shortcut">-</span> — Zoom
+                            inn/ut</li>
                         <li><span class="keyboard-shortcut">R</span> — Tilbakestill kart</li>
                         <li><span class="keyboard-shortcut">E</span> — Eksporter plakat</li>
                         <li><span class="keyboard-shortcut">C</span> — Kopier til utklippstavle</li>
@@ -620,22 +715,28 @@
                         Om skaperen
                     </h3>
                     <div class="about-creator">
-                        <img src="logo.png" alt="Lærerliv logo" class="creator-logo" onerror="this.style.display='none'">
+                        <img src="logo.png" alt="Lærerliv logo" class="creator-logo"
+                            onerror="this.style.display='none'">
                         <div class="creator-info">
                             <h4>Kenneth Bareksten</h4>
-                            <p>Lærer og hobbyprogrammerer som lager digitale verktøy for å gjøre hverdagen litt enklere og mer kreativ.</p>
+                            <p>Lærer og hobbyprogrammerer som lager digitale verktøy for å gjøre hverdagen litt enklere
+                                og mer kreativ.</p>
                             <div class="creator-links">
                                 <a href="https://www.laererliv.no/" target="_blank" class="creator-link">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <circle cx="12" cy="12" r="10"></circle>
                                         <line x1="2" y1="12" x2="22" y2="12"></line>
-                                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                        <path
+                                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                                        </path>
                                     </svg>
                                     www.laererliv.no
                                 </a>
                                 <a href="mailto:kenneth@laererliv.no" class="creator-link">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                        <path
+                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                        </path>
                                         <polyline points="22,6 12,13 2,6"></polyline>
                                     </svg>
                                     kenneth@laererliv.no
@@ -659,4 +760,5 @@
     <script src="js/export.js"></script>
     <script src="js/main.js"></script>
 </body>
+
 </html>
