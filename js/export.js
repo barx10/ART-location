@@ -1,6 +1,7 @@
 /* ============================================
    Export - Image Export and Share Functions
    ============================================ */
+console.log('=== EXPORT.JS VERSION 2 LOADED ===');
 
 // CORS Proxy URL - Set this to your Cloudflare Worker URL
 // Example: 'https://cartoart-proxy.your-subdomain.workers.dev'
