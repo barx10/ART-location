@@ -137,9 +137,11 @@ async function exportPoster(format) {
 
         const apiEndpoint = getCartoArtEndpoint();
         console.log('Using endpoint:', apiEndpoint);
+        console.log('API Key present:', !!CART_ART_API_KEY, 'Length:', CART_ART_API_KEY ? CART_ART_API_KEY.length : 0);
 
         const response = await fetch(apiEndpoint, {
             method: 'POST',
+            mode: 'cors',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${CART_ART_API_KEY}`
