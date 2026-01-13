@@ -6,7 +6,13 @@
 function getMapStyle() {
     const colors = state.style.colors;
 
-    return {
+    // Use custom colors if advanced mode is enabled
+    const waterColor = state.advancedColors ? state.customWaterColor : colors.text;
+    const parksColor = state.advancedColors ? state.customParksColor : colors.text;
+    const roadsColor = state.advancedColors ? state.customRoadsColor : colors.text;
+    const buildingsColor = state.advancedColors ? state.customBuildingsColor : colors.text;
+
+    const style = {
         version: 8,
         sources: {
             'openmaptiles': {
@@ -30,11 +36,11 @@ function getMapStyle() {
                 source: 'openmaptiles',
                 'source-layer': 'water',
                 paint: {
-                    'fill-color': colors.text,
+                    'fill-color': waterColor,
                     'fill-opacity': 0.15
                 }
             },
-            // Landuse/Parks (Green areas) - Optional, maybe just texture
+            // Landuse/Parks (Green areas)
             {
                 id: 'parks',
                 type: 'fill',
@@ -42,7 +48,7 @@ function getMapStyle() {
                 'source-layer': 'park',
                 layout: { visibility: state.parks ? 'visible' : 'none' },
                 paint: {
-                    'fill-color': colors.text,
+                    'fill-color': parksColor,
                     'fill-opacity': 0.05
                 }
             },
@@ -59,7 +65,7 @@ function getMapStyle() {
                 ],
                 layout: { visibility: state.streets ? 'visible' : 'none' },
                 paint: {
-                    'line-color': colors.text,
+                    'line-color': roadsColor,
                     'line-width': ['interpolate', ['linear'], ['zoom'], 12, 0.5, 16, 2],
                     'line-opacity': 0.3
                 }
@@ -76,7 +82,7 @@ function getMapStyle() {
                 ],
                 layout: { visibility: state.streets ? 'visible' : 'none' },
                 paint: {
-                    'line-color': colors.text,
+                    'line-color': roadsColor,
                     'line-width': ['interpolate', ['linear'], ['zoom'], 12, 1, 16, 4],
                     'line-opacity': 0.8
                 }
@@ -89,7 +95,7 @@ function getMapStyle() {
                 'source-layer': 'building',
                 layout: { visibility: state.buildings ? 'visible' : 'none' },
                 paint: {
-                    'fill-extrusion-color': colors.text,
+                    'fill-extrusion-color': buildingsColor,
                     'fill-extrusion-height': state.buildings3d ? ['get', 'render_height'] : 0,
                     'fill-extrusion-base': state.buildings3d ? ['get', 'render_min_height'] : 0,
                     'fill-extrusion-opacity': 0.6
@@ -97,6 +103,8 @@ function getMapStyle() {
             }
         ]
     };
+
+    return style;
 }
 
 function initMap() {

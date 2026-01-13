@@ -13,4 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateMapFilters();
     updateThemeColors();
     loadApiKey();
+
+    // Initialize new features
+    updateLetterSpacing();
 });
