@@ -115,7 +115,8 @@ function initMap() {
         zoom: state.zoom,
         pitch: state.pitch,
         bearing: state.bearing,
-        attributionControl: false
+        attributionControl: false,
+        preserveDrawingBuffer: true  // Required for canvas export
     });
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: false, showZoom: false }), 'top-right');
