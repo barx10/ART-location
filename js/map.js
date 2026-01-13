@@ -201,6 +201,13 @@ function updateMapFilters() {
 function updateLabelShadow(size) {
     state.labelShadow = size;
     document.getElementById('labelShadowValue').textContent = `${size}px`;
+
+    // Update glow overlay opacity
+    const glowOverlay = document.getElementById('mapGlowOverlay');
+    if (glowOverlay) {
+        glowOverlay.style.opacity = size / 10;
+    }
+
     updateMapFilters();
 }
 
