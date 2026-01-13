@@ -272,9 +272,22 @@ function toggleOption(option) {
         state.showDate = !state.showDate;
         document.getElementById('posterDate').style.display = state.showDate ? 'block' : 'none';
         document.getElementById('dateInputWrapper').style.display = state.showDate ? 'block' : 'none';
+    } else if (option === 'marker') {
+        state.showMarker = !state.showMarker;
+        renderMarker();
+        // Show/hide marker options panel
+        const markerOptions = document.getElementById('markerOptions');
+        if (markerOptions) {
+            markerOptions.style.display = state.showMarker ? 'block' : 'none';
+        }
+    } else if (option === 'scale') {
+        state.showScale = !state.showScale;
+        toggleScaleBar(state.showScale);
     }
 
-    toggle.classList.toggle('active');
+    if (toggle) {
+        toggle.classList.toggle('active');
+    }
 }
 
 function updateDate() {

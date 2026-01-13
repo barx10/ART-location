@@ -73,573 +73,785 @@
 
             <div class="sidebar-content">
                 <!-- Location Section -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">📍 Lokasjon</span>
-                        <button class="random-btn" onclick="randomLocation()">🎲 Tilfeldig</button>
-                    </div>
-                    <div class="input-group">
-                        <div class="input-icon-wrapper" style="position: relative;">
-                            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <path d="m21 21-4.35-4.35"></path>
-                            </svg>
-                            <input type="text" class="input" id="searchInput" placeholder="Søk etter by eller sted..."
-                                autocomplete="off">
-                            <div class="search-results" id="searchResults"></div>
+                <div class="section expanded" data-section="location">
+                    <div class="section-header" onclick="toggleSection('location')">
+                        <div class="section-header-left">
+                            <span class="section-title">📍 Lokasjon</span>
                         </div>
-                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">
-                            💡 Søk etter steder i hele verden (OpenStreetMap)
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button class="random-btn" onclick="event.stopPropagation(); randomLocation()">🎲 Tilfeldig</button>
+                            <div class="section-toggle">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
                         </div>
                     </div>
+                    <div class="section-content">
+                        <div class="input-group">
+                            <div class="input-icon-wrapper" style="position: relative;">
+                                <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                                <input type="text" class="input" id="searchInput" placeholder="Søk etter by eller sted..."
+                                    autocomplete="off">
+                                <div class="search-results" id="searchResults"></div>
+                            </div>
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">
+                                💡 Søk etter steder i hele verden (OpenStreetMap)
+                            </div>
+                        </div>
 
-                    <!-- Quick presets for popular Norwegian cities -->
-                    <div class="quick-locations">
-                        <button class="quick-loc-btn" onclick="selectLocation(59.9139, 10.7522, 'Oslo')">Oslo</button>
-                        <button class="quick-loc-btn"
-                            onclick="selectLocation(60.3913, 5.3221, 'Bergen')">Bergen</button>
-                        <button class="quick-loc-btn"
-                            onclick="selectLocation(63.4305, 10.3951, 'Trondheim')">Trondheim</button>
-                        <button class="quick-loc-btn"
-                            onclick="selectLocation(69.6496, 18.9560, 'Tromsø')">Tromsø</button>
-                        <button class="quick-loc-btn"
-                            onclick="selectLocation(68.2000, 14.0000, 'Lofoten')">Lofoten</button>
+                        <!-- Quick presets for popular Norwegian cities -->
+                        <div class="quick-locations">
+                            <button class="quick-loc-btn" onclick="selectLocation(59.9139, 10.7522, 'Oslo')">Oslo</button>
+                            <button class="quick-loc-btn"
+                                onclick="selectLocation(60.3913, 5.3221, 'Bergen')">Bergen</button>
+                            <button class="quick-loc-btn"
+                                onclick="selectLocation(63.4305, 10.3951, 'Trondheim')">Trondheim</button>
+                            <button class="quick-loc-btn"
+                                onclick="selectLocation(69.6496, 18.9560, 'Tromsø')">Tromsø</button>
+                            <button class="quick-loc-btn"
+                                onclick="selectLocation(68.2000, 14.0000, 'Lofoten')">Lofoten</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Marker Section -->
+                <div class="section" data-section="marker">
+                    <div class="section-header" onclick="toggleSection('marker')">
+                        <div class="section-header-left">
+                            <span class="section-title">📌 Lokasjonsmarkør</span>
+                        </div>
+                        <div class="section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="toggle-row" style="border-bottom: none; padding-top: 0;">
+                            <div class="toggle-info">
+                                <div class="toggle-label">Vis markør</div>
+                                <div class="toggle-desc">Senterpunkt på kartet</div>
+                            </div>
+                            <div class="toggle-switch" id="toggleMarker" onclick="toggleOption('marker')"></div>
+                        </div>
+
+                        <div id="markerOptions" style="display: none;">
+                            <label class="input-label" style="margin-top: 12px; margin-bottom: 8px;">Ikon-stil</label>
+                            <div class="icon-style-grid">
+                                <button class="icon-style-btn active" data-marker-style="pin" onclick="setMarkerStyle('pin')">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                    </svg>
+                                    <span>Pin</span>
+                                </button>
+                                <button class="icon-style-btn" data-marker-style="target" onclick="setMarkerStyle('target')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <circle cx="12" cy="12" r="6"/>
+                                        <circle cx="12" cy="12" r="2"/>
+                                    </svg>
+                                    <span>Mål</span>
+                                </button>
+                                <button class="icon-style-btn" data-marker-style="dot" onclick="setMarkerStyle('dot')">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <circle cx="12" cy="12" r="8"/>
+                                    </svg>
+                                    <span>Prikk</span>
+                                </button>
+                                <button class="icon-style-btn" data-marker-style="ring" onclick="setMarkerStyle('ring')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                        <circle cx="12" cy="12" r="8"/>
+                                    </svg>
+                                    <span>Ring</span>
+                                </button>
+                                <button class="icon-style-btn" data-marker-style="heart" onclick="setMarkerStyle('heart')">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                    </svg>
+                                    <span>Hjerte</span>
+                                </button>
+                                <button class="icon-style-btn" data-marker-style="home" onclick="setMarkerStyle('home')">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                                    </svg>
+                                    <span>Hjem</span>
+                                </button>
+                            </div>
+
+                            <div class="input-group" style="margin-top: 12px;">
+                                <label class="input-label">🎨 Markørfarge</label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" class="color-picker" id="markerColorPicker" value="#2C2C2C">
+                                    <input type="text" class="color-hex" id="markerColorHex" value="#2C2C2C" maxlength="7">
+                                </div>
+                            </div>
+
+                            <div class="slider-container" style="margin-top: 12px;">
+                                <div class="slider-header">
+                                    <span class="slider-label">Markørstørrelse</span>
+                                    <span class="slider-value" id="markerSizeValue">40px</span>
+                                </div>
+                                <input type="range" class="slider" id="markerSizeSlider" min="20" max="80" value="40" step="5">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Style Section -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">🎨 Kartstil</span>
-                        <span class="section-badge">11 stiler</span>
+                <div class="section expanded" data-section="style">
+                    <div class="section-header" onclick="toggleSection('style')">
+                        <div class="section-header-left">
+                            <span class="section-title">🎨 Kartstil</span>
+                            <span class="section-badge">11 stiler</span>
+                        </div>
+                        <div class="section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="style-grid" id="styleGrid">
-                        <!-- Styles injected by JS -->
-                    </div>
-
-                    <!-- Advanced Color Customization -->
-                    <div style="margin-top: 16px;">
-                        <div class="toggle-row" style="cursor: pointer;" onclick="toggleAdvancedColors()">
-                            <div class="toggle-info">
-                                <div class="toggle-label">Avanserte farger</div>
-                                <div class="toggle-desc">Tilpass individuelle kartelementer</div>
-                            </div>
-                            <div class="toggle-switch" id="toggleAdvancedColors"></div>
+                    <div class="section-content">
+                        <div class="style-grid" id="styleGrid">
+                            <!-- Styles injected by JS -->
                         </div>
 
-                        <div id="advancedColorsPanel" style="display: none; margin-top: 12px; padding: 12px; background: rgba(0,0,0,0.05); border-radius: 8px;">
-                            <div class="input-group" style="margin-bottom: 12px;">
-                                <label class="input-label">💧 Vann</label>
-                                <div class="color-input-wrapper">
-                                    <input type="color" class="color-picker" id="waterColorPicker" value="#a8d5f2">
-                                    <input type="text" class="color-hex" id="waterColorHex" value="#a8d5f2" maxlength="7">
+                        <!-- Advanced Color Customization -->
+                        <div style="margin-top: 16px;">
+                            <div class="toggle-row" style="cursor: pointer;" onclick="event.stopPropagation(); toggleAdvancedColors()">
+                                <div class="toggle-info">
+                                    <div class="toggle-label">Avanserte farger</div>
+                                    <div class="toggle-desc">Tilpass individuelle kartelementer</div>
                                 </div>
+                                <div class="toggle-switch" id="toggleAdvancedColors"></div>
                             </div>
-                            <div class="input-group" style="margin-bottom: 12px;">
-                                <label class="input-label">🌳 Parker</label>
-                                <div class="color-input-wrapper">
-                                    <input type="color" class="color-picker" id="parksColorPicker" value="#c8e6c9">
-                                    <input type="text" class="color-hex" id="parksColorHex" value="#c8e6c9" maxlength="7">
+
+                            <div id="advancedColorsPanel" style="display: none; margin-top: 12px; padding: 12px; background: rgba(0,0,0,0.05); border-radius: 8px;">
+                                <div class="input-group" style="margin-bottom: 12px;">
+                                    <label class="input-label">💧 Vann</label>
+                                    <div class="color-input-wrapper">
+                                        <input type="color" class="color-picker" id="waterColorPicker" value="#a8d5f2">
+                                        <input type="text" class="color-hex" id="waterColorHex" value="#a8d5f2" maxlength="7">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="input-group" style="margin-bottom: 12px;">
-                                <label class="input-label">🛣️ Veier</label>
-                                <div class="color-input-wrapper">
-                                    <input type="color" class="color-picker" id="roadsColorPicker" value="#757575">
-                                    <input type="text" class="color-hex" id="roadsColorHex" value="#757575" maxlength="7">
+                                <div class="input-group" style="margin-bottom: 12px;">
+                                    <label class="input-label">🌳 Parker</label>
+                                    <div class="color-input-wrapper">
+                                        <input type="color" class="color-picker" id="parksColorPicker" value="#c8e6c9">
+                                        <input type="text" class="color-hex" id="parksColorHex" value="#c8e6c9" maxlength="7">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="input-group" style="margin-bottom: 12px;">
-                                <label class="input-label">🏢 Bygninger</label>
-                                <div class="color-input-wrapper">
-                                    <input type="color" class="color-picker" id="buildingsColorPicker" value="#eeeeee">
-                                    <input type="text" class="color-hex" id="buildingsColorHex" value="#eeeeee" maxlength="7">
+                                <div class="input-group" style="margin-bottom: 12px;">
+                                    <label class="input-label">🛣️ Veier</label>
+                                    <div class="color-input-wrapper">
+                                        <input type="color" class="color-picker" id="roadsColorPicker" value="#757575">
+                                        <input type="text" class="color-hex" id="roadsColorHex" value="#757575" maxlength="7">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="input-group">
-                                <label class="input-label">⛰️ Terreng</label>
-                                <div class="color-input-wrapper">
-                                    <input type="color" class="color-picker" id="terrainColorPicker" value="#d7ccc8">
-                                    <input type="text" class="color-hex" id="terrainColorHex" value="#d7ccc8" maxlength="7">
+                                <div class="input-group" style="margin-bottom: 12px;">
+                                    <label class="input-label">🏢 Bygninger</label>
+                                    <div class="color-input-wrapper">
+                                        <input type="color" class="color-picker" id="buildingsColorPicker" value="#eeeeee">
+                                        <input type="text" class="color-hex" id="buildingsColorHex" value="#eeeeee" maxlength="7">
+                                    </div>
                                 </div>
+                                <div class="input-group">
+                                    <label class="input-label">⛰️ Terreng</label>
+                                    <div class="color-input-wrapper">
+                                        <input type="color" class="color-picker" id="terrainColorPicker" value="#d7ccc8">
+                                        <input type="text" class="color-hex" id="terrainColorHex" value="#d7ccc8" maxlength="7">
+                                    </div>
+                                </div>
+                                <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px; line-height: 1.3;">
+                                    💡 Se endringene live i forhåndsvisningen! Fargene påvirker både visning og eksport.
+                                </p>
                             </div>
-                            <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px; line-height: 1.3;">
-                                💡 Se endringene live i forhåndsvisningen! Fargene påvirker både visning og eksport.
-                            </p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Perspective Section -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">📐 Format</span>
+                <div class="section expanded" data-section="format">
+                    <div class="section-header" onclick="toggleSection('format')">
+                        <div class="section-header-left">
+                            <span class="section-title">📐 Format</span>
+                        </div>
+                        <div class="section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="perspective-grid">
-                        <button class="perspective-btn active" data-aspect="portrait" onclick="setAspect('portrait')">
-                            <div class="perspective-icon">📱</div>
-                            <div class="perspective-label">Portrett</div>
-                        </button>
-                        <button class="perspective-btn" data-aspect="landscape" onclick="setAspect('landscape')">
-                            <div class="perspective-icon">🖼️</div>
-                            <div class="perspective-label">Landskap</div>
-                        </button>
-                        <button class="perspective-btn" data-aspect="square" onclick="setAspect('square')">
-                            <div class="perspective-icon">⬜</div>
-                            <div class="perspective-label">Kvadrat</div>
-                        </button>
+                    <div class="section-content">
+                        <div class="perspective-grid">
+                            <button class="perspective-btn active" data-aspect="portrait" onclick="setAspect('portrait')">
+                                <div class="perspective-icon">📱</div>
+                                <div class="perspective-label">Portrett</div>
+                            </button>
+                            <button class="perspective-btn" data-aspect="landscape" onclick="setAspect('landscape')">
+                                <div class="perspective-icon">🖼️</div>
+                                <div class="perspective-label">Landskap</div>
+                            </button>
+                            <button class="perspective-btn" data-aspect="square" onclick="setAspect('square')">
+                                <div class="perspective-icon">⬜</div>
+                                <div class="perspective-label">Kvadrat</div>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- NEW: Map Details / Layers & Camera -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">🌍 Kartlag & 3D</span>
+                <div class="section" data-section="layers">
+                    <div class="section-header" onclick="toggleSection('layers')">
+                        <div class="section-header-left">
+                            <span class="section-title">🌍 Kartlag & 3D</span>
+                        </div>
+                        <div class="section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
                     </div>
+                    <div class="section-content">
+                        <!-- Camera Controls -->
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <span class="slider-label">Tilt (3D)</span>
+                                <span class="slider-value" id="pitchValue">0°</span>
+                            </div>
+                            <input type="range" class="slider" id="pitchSlider" min="0" max="60" value="0" step="5"
+                                oninput="updateCamera('pitch', this.value)">
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <span class="slider-label">Rotasjon</span>
+                                <span class="slider-value" id="bearingValue">0°</span>
+                            </div>
+                            <input type="range" class="slider" id="bearingSlider" min="0" max="360" value="0" step="15"
+                                oninput="updateCamera('bearing', this.value)">
+                        </div>
 
-                    <!-- Camera Controls -->
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">Tilt (3D)</span>
-                            <span class="slider-value" id="pitchValue">0°</span>
+                        <!-- Layer Toggles -->
+                        <div class="toggle-grid"
+                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+                            <button class="layer-btn" id="btn-buildings3d" onclick="toggleLayer('buildings3d')">3D
+                                Bygg</button>
+                            <button class="layer-btn" id="btn-terrain" onclick="toggleLayer('terrain')">Terreng</button>
+                            <button class="layer-btn" id="btn-contours"
+                                onclick="toggleLayer('contours')">Høydekurver</button>
+                            <button class="layer-btn active" id="btn-water" onclick="toggleLayer('water')">Vann</button>
+                            <button class="layer-btn active" id="btn-parks" onclick="toggleLayer('parks')">Parker</button>
+                            <button class="layer-btn active" id="btn-streets"
+                                onclick="toggleLayer('streets')">Veier</button>
                         </div>
-                        <input type="range" class="slider" id="pitchSlider" min="0" max="60" value="0" step="5"
-                            oninput="updateCamera('pitch', this.value)">
-                    </div>
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">Rotasjon</span>
-                            <span class="slider-value" id="bearingValue">0°</span>
-                        </div>
-                        <input type="range" class="slider" id="bearingSlider" min="0" max="360" value="0" step="15"
-                            oninput="updateCamera('bearing', this.value)">
-                    </div>
 
-                    <!-- Layer Toggles -->
-                    <div class="toggle-grid"
-                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
-                        <button class="layer-btn" id="btn-buildings3d" onclick="toggleLayer('buildings3d')">3D
-                            Bygg</button>
-                        <button class="layer-btn" id="btn-terrain" onclick="toggleLayer('terrain')">Terreng</button>
-                        <button class="layer-btn" id="btn-contours"
-                            onclick="toggleLayer('contours')">Høydekurver</button>
-                        <button class="layer-btn active" id="btn-water" onclick="toggleLayer('water')">Vann</button>
-                        <button class="layer-btn active" id="btn-parks" onclick="toggleLayer('parks')">Parker</button>
-                        <button class="layer-btn active" id="btn-streets"
-                            onclick="toggleLayer('streets')">Veier</button>
-                    </div>
+                        <!-- Scale Bar Toggle -->
+                        <div class="toggle-row" style="margin-top: 16px;">
+                            <div class="toggle-info">
+                                <div class="toggle-label">Vis målestokk</div>
+                                <div class="toggle-desc">Avstandsreferanse på kartet</div>
+                            </div>
+                            <div class="toggle-switch" id="toggleScale" onclick="toggleOption('scale')"></div>
+                        </div>
 
-                    <!-- Terrain & Hillshade Controls -->
-                    <div class="slider-container" style="margin-top: 12px;">
-                        <div class="slider-header">
-                            <span class="slider-label">Terreng eksagering</span>
-                            <span class="slider-value" id="terrainExaggerationValue">1.0×</span>
+                        <!-- Terrain & Hillshade Controls -->
+                        <div class="slider-container" style="margin-top: 12px;">
+                            <div class="slider-header">
+                                <span class="slider-label">Terreng eksagering</span>
+                                <span class="slider-value" id="terrainExaggerationValue">1.0×</span>
+                            </div>
+                            <input type="range" class="slider" id="terrainExaggerationSlider" min="0.5" max="5" value="1" step="0.1">
                         </div>
-                        <input type="range" class="slider" id="terrainExaggerationSlider" min="0.5" max="5" value="1" step="0.1">
-                    </div>
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">Hillshade intensitet</span>
-                            <span class="slider-value" id="hillshadeIntensityValue">0.7</span>
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <span class="slider-label">Hillshade intensitet</span>
+                                <span class="slider-value" id="hillshadeIntensityValue">0.7</span>
+                            </div>
+                            <input type="range" class="slider" id="hillshadeIntensitySlider" min="0" max="1" value="0.7" step="0.1">
                         </div>
-                        <input type="range" class="slider" id="hillshadeIntensitySlider" min="0" max="1" value="0.7" step="0.1">
-                    </div>
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">Solvinkel</span>
-                            <span class="slider-value" id="hillshadeSunAngleValue">315°</span>
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <span class="slider-label">Solvinkel</span>
+                                <span class="slider-value" id="hillshadeSunAngleValue">315°</span>
+                            </div>
+                            <input type="range" class="slider" id="hillshadeSunAngleSlider" min="0" max="360" value="315" step="15">
                         </div>
-                        <input type="range" class="slider" id="hillshadeSunAngleSlider" min="0" max="360" value="315" step="15">
-                    </div>
 
-                    <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px; line-height: 1.3;">
-                        ℹ️ Disse valgene påvirker både forhåndsvisningen og den ferdige eksporten.
-                    </p>
+                        <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px; line-height: 1.3;">
+                            ℹ️ Disse valgene påvirker både forhåndsvisningen og den ferdige eksporten.
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Zoom & Details -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">⚙️ Innstillinger</span>
-                    </div>
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">Zoomnivå</span>
-                            <span class="slider-value" id="zoomValue">12</span>
+                <div class="section" data-section="settings">
+                    <div class="section-header" onclick="toggleSection('settings')">
+                        <div class="section-header-left">
+                            <span class="section-title">⚙️ Innstillinger</span>
                         </div>
-                        <input type="range" class="slider" id="zoomSlider" min="8" max="16" value="12" step="0.5">
-                    </div>
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">Tekststørrelse</span>
-                            <span class="slider-value" id="textSizeValue">100%</span>
+                        <div class="section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
                         </div>
-                        <input type="range" class="slider" id="textSizeSlider" min="70" max="130" value="100" step="5">
                     </div>
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">Bokstavmellomrom</span>
-                            <span class="slider-value" id="letterSpacingValue">0.08</span>
+                    <div class="section-content">
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <span class="slider-label">Zoomnivå</span>
+                                <span class="slider-value" id="zoomValue">12</span>
+                            </div>
+                            <input type="range" class="slider" id="zoomSlider" min="8" max="16" value="12" step="0.5">
                         </div>
-                        <input type="range" class="slider" id="letterSpacingSlider" min="0" max="0.3" value="0.08" step="0.01">
-                    </div>
-                    <div class="slider-container" id="textPositionContainer">
-                        <div class="slider-header">
-                            <span class="slider-label">Horisontal posisjon</span>
-                            <span class="slider-value" id="textXValue">50%</span>
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <span class="slider-label">Tekststørrelse</span>
+                                <span class="slider-value" id="textSizeValue">100%</span>
+                            </div>
+                            <input type="range" class="slider" id="textSizeSlider" min="70" max="130" value="100" step="5">
                         </div>
-                        <input type="range" class="slider" id="textXSlider" min="10" max="90" value="50" step="1">
-                    </div>
-                    <div class="slider-container" id="textYContainer">
-                        <div class="slider-header">
-                            <span class="slider-label">Vertikal posisjon</span>
-                            <span class="slider-value" id="textYValue">85%</span>
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <span class="slider-label">Bokstavmellomrom</span>
+                                <span class="slider-value" id="letterSpacingValue">0.08</span>
+                            </div>
+                            <input type="range" class="slider" id="letterSpacingSlider" min="0" max="0.3" value="0.08" step="0.01">
                         </div>
-                        <input type="range" class="slider" id="textYSlider" min="10" max="95" value="85" step="1">
+                        <div class="slider-container" id="textPositionContainer">
+                            <div class="slider-header">
+                                <span class="slider-label">Horisontal posisjon</span>
+                                <span class="slider-value" id="textXValue">50%</span>
+                            </div>
+                            <input type="range" class="slider" id="textXSlider" min="10" max="90" value="50" step="1">
+                        </div>
+                        <div class="slider-container" id="textYContainer">
+                            <div class="slider-header">
+                                <span class="slider-label">Vertikal posisjon</span>
+                                <span class="slider-value" id="textYValue">85%</span>
+                            </div>
+                            <input type="range" class="slider" id="textYSlider" min="10" max="95" value="85" step="1">
+                        </div>
                     </div>
                 </div>
 
                 <!-- Text Section -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">✏️ Tekst</span>
+                <div class="section expanded" data-section="text">
+                    <div class="section-header" onclick="toggleSection('text')">
+                        <div class="section-header-left">
+                            <span class="section-title">✏️ Tekst</span>
+                        </div>
+                        <div class="section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label class="input-label">Tittel</label>
-                        <input type="text" class="input" id="titleInput" value="Oslo" placeholder="Hovedtittel">
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">Undertittel</label>
-                        <input type="text" class="input" id="subtitleInput" value="Norge" placeholder="Undertekst">
+                    <div class="section-content">
+                        <div class="input-group">
+                            <label class="input-label">Tittel</label>
+                            <input type="text" class="input" id="titleInput" value="Oslo" placeholder="Hovedtittel">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Undertittel</label>
+                            <input type="text" class="input" id="subtitleInput" value="Norge" placeholder="Undertekst">
+                        </div>
                     </div>
                 </div>
 
                 <!-- Font Section -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">🔤 Skrifttype</span>
+                <div class="section" data-section="font">
+                    <div class="section-header" onclick="toggleSection('font')">
+                        <div class="section-header-left">
+                            <span class="section-title">🔤 Skrifttype</span>
+                        </div>
+                        <div class="section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="font-grid" id="fontGrid">
-                        <!-- Fonts injected by JS -->
-                    </div>
-                    <div class="input-group" style="margin-top: 16px;">
-                        <label class="input-label">🎨 Tekstfarge</label>
-                        <div class="color-input-wrapper">
-                            <input type="color" class="color-picker" id="textColorPicker" value="#2C2C2C">
-                            <input type="text" class="color-hex" id="textColorHex" value="#2C2C2C" maxlength="7">
+                    <div class="section-content">
+                        <div class="font-grid" id="fontGrid">
+                            <!-- Fonts injected by JS -->
+                        </div>
+                        <div class="input-group" style="margin-top: 16px;">
+                            <label class="input-label">🎨 Tekstfarge</label>
+                            <div class="color-input-wrapper">
+                                <input type="color" class="color-picker" id="textColorPicker" value="#2C2C2C">
+                                <input type="text" class="color-hex" id="textColorHex" value="#2C2C2C" maxlength="7">
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Text Theme Section -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">📝 Tekst-tema</span>
-                        <span class="section-badge">5 temaer</span>
-                    </div>
-                    <div class="frame-grid" id="themeGrid">
-                        <button class="frame-btn active" data-theme="none" onclick="setTextTheme('none')">
-                            <div class="frame-preview">
-                                <div class="frame-preview-inner"
-                                    style="display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 8px;">
-                                    Aa</div>
-                            </div>
-                            <span>Ingen</span>
-                        </button>
-                        <button class="frame-btn" data-theme="gradient" onclick="setTextTheme('gradient')">
-                            <div class="frame-preview">
-                                <div class="frame-preview-inner"
-                                    style="background: linear-gradient(to bottom, transparent 30%, white 80%); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 8px;">
-                                    Aa</div>
-                            </div>
-                            <span>Gradient</span>
-                        </button>
-                        <button class="frame-btn" data-theme="box" onclick="setTextTheme('box')">
-                            <div class="frame-preview">
-                                <div class="frame-preview-inner"
-                                    style="display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px;">
-                                    <span
-                                        style="background: white; border: 1px solid #333; padding: 2px 6px; font-size: 6px;">Aa</span>
-                                </div>
-                            </div>
-                            <span>Boks</span>
-                        </button>
-                        <button class="frame-btn" data-theme="panel" onclick="setTextTheme('panel')">
-                            <div class="frame-preview">
-                                <div class="frame-preview-inner" style="position: relative;">
-                                    <div
-                                        style="position: absolute; bottom: 0; left: 0; right: 0; height: 35%; background: white; border-top: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 6px;">
-                                        Aa</div>
-                                </div>
-                            </div>
-                            <span>Panel</span>
-                        </button>
-                        <button class="frame-btn" data-theme="double" onclick="setTextTheme('double')">
-                            <div class="frame-preview">
-                                <div class="frame-preview-inner" style="position: relative;">
-                                    <div
-                                        style="position: absolute; bottom: 0; left: 0; right: 0; height: 35%; background: white; border-top: 2px solid #333;">
-                                    </div>
-                                    <div
-                                        style="position: absolute; bottom: 0; left: 0; right: 0; height: 30%; border-top: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 6px;">
-                                        Aa</div>
-                                </div>
-                            </div>
-                            <span>Dobbel</span>
-                        </button>
-                    </div>
-                    <div class="slider-container" id="themeSizeContainer" style="margin-top: 12px; display: none;">
-                        <div class="slider-header">
-                            <span class="slider-label">Tema-høyde</span>
-                            <span class="slider-value" id="themeSizeValue">30%</span>
+                <div class="section" data-section="theme">
+                    <div class="section-header" onclick="toggleSection('theme')">
+                        <div class="section-header-left">
+                            <span class="section-title">📝 Tekst-tema</span>
+                            <span class="section-badge">5 temaer</span>
                         </div>
-                        <input type="range" class="slider" id="themeSizeSlider" min="15" max="60" value="30" step="5">
+                        <div class="section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="frame-grid" id="themeGrid">
+                            <button class="frame-btn active" data-theme="none" onclick="setTextTheme('none')">
+                                <div class="frame-preview">
+                                    <div class="frame-preview-inner"
+                                        style="display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 8px;">
+                                        Aa</div>
+                                </div>
+                                <span>Ingen</span>
+                            </button>
+                            <button class="frame-btn" data-theme="gradient" onclick="setTextTheme('gradient')">
+                                <div class="frame-preview">
+                                    <div class="frame-preview-inner"
+                                        style="background: linear-gradient(to bottom, transparent 30%, white 80%); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 8px;">
+                                        Aa</div>
+                                </div>
+                                <span>Gradient</span>
+                            </button>
+                            <button class="frame-btn" data-theme="box" onclick="setTextTheme('box')">
+                                <div class="frame-preview">
+                                    <div class="frame-preview-inner"
+                                        style="display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px;">
+                                        <span
+                                            style="background: white; border: 1px solid #333; padding: 2px 6px; font-size: 6px;">Aa</span>
+                                    </div>
+                                </div>
+                                <span>Boks</span>
+                            </button>
+                            <button class="frame-btn" data-theme="panel" onclick="setTextTheme('panel')">
+                                <div class="frame-preview">
+                                    <div class="frame-preview-inner" style="position: relative;">
+                                        <div
+                                            style="position: absolute; bottom: 0; left: 0; right: 0; height: 35%; background: white; border-top: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 6px;">
+                                            Aa</div>
+                                    </div>
+                                </div>
+                                <span>Panel</span>
+                            </button>
+                            <button class="frame-btn" data-theme="double" onclick="setTextTheme('double')">
+                                <div class="frame-preview">
+                                    <div class="frame-preview-inner" style="position: relative;">
+                                        <div
+                                            style="position: absolute; bottom: 0; left: 0; right: 0; height: 35%; background: white; border-top: 2px solid #333;">
+                                        </div>
+                                        <div
+                                            style="position: absolute; bottom: 0; left: 0; right: 0; height: 30%; border-top: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 6px;">
+                                            Aa</div>
+                                    </div>
+                                </div>
+                                <span>Dobbel</span>
+                            </button>
+                        </div>
+                        <div class="slider-container" id="themeSizeContainer" style="margin-top: 12px; display: none;">
+                            <div class="slider-header">
+                                <span class="slider-label">Tema-høyde</span>
+                                <span class="slider-value" id="themeSizeValue">30%</span>
+                            </div>
+                            <input type="range" class="slider" id="themeSizeSlider" min="15" max="60" value="30" step="5">
+                        </div>
                     </div>
                 </div>
 
                 <!-- Frame Section -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">🖼️ Ramme</span>
+                <div class="section" data-section="frame">
+                    <div class="section-header" onclick="toggleSection('frame')">
+                        <div class="section-header-left">
+                            <span class="section-title">🖼️ Ramme</span>
+                        </div>
+                        <div class="section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="frame-grid" id="frameGrid">
-                        <button class="frame-btn active" data-frame="none" onclick="setFrame('none')">
-                            <div class="frame-preview">
-                                <div class="frame-preview-inner"></div>
-                            </div>
-                            <span>Ingen</span>
-                        </button>
-                        <button class="frame-btn" data-frame="thin" onclick="setFrame('thin')">
-                            <div class="frame-preview">
-                                <div class="frame-preview-inner" style="border: 1px solid var(--text-secondary);"></div>
-                            </div>
-                            <span>Tynn</span>
-                        </button>
-                        <button class="frame-btn" data-frame="thick" onclick="setFrame('thick')">
-                            <div class="frame-preview">
-                                <div class="frame-preview-inner" style="border: 3px solid var(--text-secondary);"></div>
-                            </div>
-                            <span>Tykk</span>
-                        </button>
-                        <button class="frame-btn" data-frame="double" onclick="setFrame('double')">
-                            <div class="frame-preview">
-                                <div class="frame-preview-inner" style="border: 2px double var(--text-secondary);">
+                    <div class="section-content">
+                        <div class="frame-grid" id="frameGrid">
+                            <button class="frame-btn active" data-frame="none" onclick="setFrame('none')">
+                                <div class="frame-preview">
+                                    <div class="frame-preview-inner"></div>
                                 </div>
-                            </div>
-                            <span>Dobbel</span>
-                        </button>
-                        <button class="frame-btn" data-frame="vintage" onclick="setFrame('vintage')">
-                            <div class="frame-preview">
-                                <div class="frame-preview-inner"
-                                    style="border: 2px solid var(--text-secondary); box-shadow: inset 0 0 0 1px var(--text-secondary), inset 0 0 0 4px transparent, inset 0 0 0 5px var(--text-secondary);">
+                                <span>Ingen</span>
+                            </button>
+                            <button class="frame-btn" data-frame="thin" onclick="setFrame('thin')">
+                                <div class="frame-preview">
+                                    <div class="frame-preview-inner" style="border: 1px solid var(--text-secondary);"></div>
                                 </div>
-                            </div>
-                            <span>Vintage</span>
-                        </button>
-                        <button class="frame-btn" data-frame="ornate" onclick="setFrame('ornate')">
-                            <div class="frame-preview">
-                                <div class="frame-preview-inner"
-                                    style="border: 1px solid var(--text-secondary); box-shadow: inset 0 0 0 2px transparent, inset 0 0 0 3px var(--text-secondary);">
+                                <span>Tynn</span>
+                            </button>
+                            <button class="frame-btn" data-frame="thick" onclick="setFrame('thick')">
+                                <div class="frame-preview">
+                                    <div class="frame-preview-inner" style="border: 3px solid var(--text-secondary);"></div>
                                 </div>
+                                <span>Tykk</span>
+                            </button>
+                            <button class="frame-btn" data-frame="double" onclick="setFrame('double')">
+                                <div class="frame-preview">
+                                    <div class="frame-preview-inner" style="border: 2px double var(--text-secondary);">
+                                    </div>
+                                </div>
+                                <span>Dobbel</span>
+                            </button>
+                            <button class="frame-btn" data-frame="vintage" onclick="setFrame('vintage')">
+                                <div class="frame-preview">
+                                    <div class="frame-preview-inner"
+                                        style="border: 2px solid var(--text-secondary); box-shadow: inset 0 0 0 1px var(--text-secondary), inset 0 0 0 4px transparent, inset 0 0 0 5px var(--text-secondary);">
+                                    </div>
+                                </div>
+                                <span>Vintage</span>
+                            </button>
+                            <button class="frame-btn" data-frame="ornate" onclick="setFrame('ornate')">
+                                <div class="frame-preview">
+                                    <div class="frame-preview-inner"
+                                        style="border: 1px solid var(--text-secondary); box-shadow: inset 0 0 0 2px transparent, inset 0 0 0 3px var(--text-secondary);">
+                                    </div>
+                                </div>
+                                <span>Ornament</span>
+                            </button>
+                        </div>
+                        <div class="input-group" style="margin-top: 16px;">
+                            <label class="input-label">🎨 Rammefarge</label>
+                            <div class="color-input-wrapper">
+                                <input type="color" class="color-picker" id="frameColorPicker" value="#2C2C2C">
+                                <input type="text" class="color-hex" id="frameColorHex" value="#2C2C2C" maxlength="7">
                             </div>
-                            <span>Ornament</span>
-                        </button>
-                    </div>
-                    <div class="input-group" style="margin-top: 16px;">
-                        <label class="input-label">🎨 Rammefarge</label>
-                        <div class="color-input-wrapper">
-                            <input type="color" class="color-picker" id="frameColorPicker" value="#2C2C2C">
-                            <input type="text" class="color-hex" id="frameColorHex" value="#2C2C2C" maxlength="7">
                         </div>
                     </div>
                 </div>
 
                 <!-- Stickers Section -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">✨ Stickers</span>
-                        <button class="section-badge" onclick="clearStickers()">Fjern alle</button>
-                    </div>
-                    <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">Klikk en sticker,
-                        deretter klikk på kartet for å plassere</p>
-                    <div class="sticker-grid" id="stickerGrid">
-                        <button class="sticker-btn" data-sticker="❤️" onclick="selectSticker('❤️')">❤️</button>
-                        <button class="sticker-btn" data-sticker="💕" onclick="selectSticker('💕')">💕</button>
-                        <button class="sticker-btn" data-sticker="💖" onclick="selectSticker('💖')">💖</button>
-                        <button class="sticker-btn" data-sticker="💍" onclick="selectSticker('💍')">💍</button>
-                        <button class="sticker-btn" data-sticker="🏠" onclick="selectSticker('🏠')">🏠</button>
-                        <button class="sticker-btn" data-sticker="📍" onclick="selectSticker('📍')">📍</button>
-                        <button class="sticker-btn" data-sticker="⭐" onclick="selectSticker('⭐')">⭐</button>
-                        <button class="sticker-btn" data-sticker="🌟" onclick="selectSticker('🌟')">🌟</button>
-                        <button class="sticker-btn" data-sticker="✈️" onclick="selectSticker('✈️')">✈️</button>
-                        <button class="sticker-btn" data-sticker="🎄" onclick="selectSticker('🎄')">🎄</button>
-                        <button class="sticker-btn" data-sticker="🎂" onclick="selectSticker('🎂')">🎂</button>
-                        <button class="sticker-btn" data-sticker="👶" onclick="selectSticker('👶')">👶</button>
-                        <button class="sticker-btn" data-sticker="🐕" onclick="selectSticker('🐕')">🐕</button>
-                        <button class="sticker-btn" data-sticker="🐈" onclick="selectSticker('🐈')">🐈</button>
-                        <button class="sticker-btn" data-sticker="🌸" onclick="selectSticker('🌸')">🌸</button>
-                        <button class="sticker-btn" data-sticker="🌺" onclick="selectSticker('🌺')">🌺</button>
-                    </div>
-                    <div class="slider-container" style="margin-top: 12px;">
-                        <div class="slider-header">
-                            <span class="slider-label">Sticker-størrelse</span>
-                            <span class="slider-value" id="stickerSizeValue">40px</span>
+                <div class="section" data-section="stickers">
+                    <div class="section-header" onclick="toggleSection('stickers')">
+                        <div class="section-header-left">
+                            <span class="section-title">✨ Stickers</span>
                         </div>
-                        <input type="range" class="slider" id="stickerSizeSlider" min="20" max="80" value="40" step="5">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button class="section-badge" onclick="event.stopPropagation(); clearStickers()">Fjern alle</button>
+                            <div class="section-toggle">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">Klikk en sticker,
+                            deretter klikk på kartet for å plassere</p>
+                        <div class="sticker-grid" id="stickerGrid">
+                            <button class="sticker-btn" data-sticker="❤️" onclick="selectSticker('❤️')">❤️</button>
+                            <button class="sticker-btn" data-sticker="💕" onclick="selectSticker('💕')">💕</button>
+                            <button class="sticker-btn" data-sticker="💖" onclick="selectSticker('💖')">💖</button>
+                            <button class="sticker-btn" data-sticker="💍" onclick="selectSticker('💍')">💍</button>
+                            <button class="sticker-btn" data-sticker="🏠" onclick="selectSticker('🏠')">🏠</button>
+                            <button class="sticker-btn" data-sticker="📍" onclick="selectSticker('📍')">📍</button>
+                            <button class="sticker-btn" data-sticker="⭐" onclick="selectSticker('⭐')">⭐</button>
+                            <button class="sticker-btn" data-sticker="🌟" onclick="selectSticker('🌟')">🌟</button>
+                            <button class="sticker-btn" data-sticker="✈️" onclick="selectSticker('✈️')">✈️</button>
+                            <button class="sticker-btn" data-sticker="🎄" onclick="selectSticker('🎄')">🎄</button>
+                            <button class="sticker-btn" data-sticker="🎂" onclick="selectSticker('🎂')">🎂</button>
+                            <button class="sticker-btn" data-sticker="👶" onclick="selectSticker('👶')">👶</button>
+                            <button class="sticker-btn" data-sticker="🐕" onclick="selectSticker('🐕')">🐕</button>
+                            <button class="sticker-btn" data-sticker="🐈" onclick="selectSticker('🐈')">🐈</button>
+                            <button class="sticker-btn" data-sticker="🌸" onclick="selectSticker('🌸')">🌸</button>
+                            <button class="sticker-btn" data-sticker="🌺" onclick="selectSticker('🌺')">🌺</button>
+                        </div>
+                        <div class="slider-container" style="margin-top: 12px;">
+                            <div class="slider-header">
+                                <span class="slider-label">Sticker-størrelse</span>
+                                <span class="slider-value" id="stickerSizeValue">40px</span>
+                            </div>
+                            <input type="range" class="slider" id="stickerSizeSlider" min="20" max="80" value="40" step="5">
+                        </div>
                     </div>
                 </div>
 
                 <!-- Map Labels Section -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">🗺️ Kartjusteringer</span>
-                    </div>
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">Fargemetning</span>
-                            <span class="slider-value" id="mapSaturationValue">100%</span>
+                <div class="section" data-section="adjustments">
+                    <div class="section-header" onclick="toggleSection('adjustments')">
+                        <div class="section-header-left">
+                            <span class="section-title">🗺️ Kartjusteringer</span>
                         </div>
-                        <input type="range" class="slider" id="mapSaturationSlider" min="0" max="200" value="100"
-                            step="10">
-                    </div>
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">Kontrast</span>
-                            <span class="slider-value" id="mapContrastValue">100%</span>
+                        <div class="section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
                         </div>
-                        <input type="range" class="slider" id="mapContrastSlider" min="50" max="150" value="100"
-                            step="5">
                     </div>
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">Lysstyrke</span>
-                            <span class="slider-value" id="mapBrightnessValue">100%</span>
+                    <div class="section-content">
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <span class="slider-label">Fargemetning</span>
+                                <span class="slider-value" id="mapSaturationValue">100%</span>
+                            </div>
+                            <input type="range" class="slider" id="mapSaturationSlider" min="0" max="200" value="100"
+                                step="10">
                         </div>
-                        <input type="range" class="slider" id="mapBrightnessSlider" min="50" max="150" value="100"
-                            step="5">
-                    </div>
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">Lys vignette</span>
-                            <span class="slider-value" id="labelShadowValue">0px</span>
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <span class="slider-label">Kontrast</span>
+                                <span class="slider-value" id="mapContrastValue">100%</span>
+                            </div>
+                            <input type="range" class="slider" id="mapContrastSlider" min="50" max="150" value="100"
+                                step="5">
                         </div>
-                        <input type="range" class="slider" id="labelShadowSlider" min="0" max="8" value="0" step="1">
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <span class="slider-label">Lysstyrke</span>
+                                <span class="slider-value" id="mapBrightnessValue">100%</span>
+                            </div>
+                            <input type="range" class="slider" id="mapBrightnessSlider" min="50" max="150" value="100"
+                                step="5">
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <span class="slider-label">Lys vignette</span>
+                                <span class="slider-value" id="labelShadowValue">0px</span>
+                            </div>
+                            <input type="range" class="slider" id="labelShadowSlider" min="0" max="8" value="0" step="1">
+                        </div>
                     </div>
                 </div>
 
                 <!-- Toggles Section -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">🔘 Visning</span>
-                    </div>
-                    <div class="toggle-row">
-                        <div class="toggle-info">
-                            <div class="toggle-label">Vis stedsnavn</div>
-                            <div class="toggle-desc">Byer, tettsteder, bydeler</div>
+                <div class="section" data-section="display">
+                    <div class="section-header" onclick="toggleSection('display')">
+                        <div class="section-header-left">
+                            <span class="section-title">🔘 Visning</span>
                         </div>
-                        <div class="toggle-switch active" id="toggleLabels" onclick="toggleOption('labels')"></div>
-                    </div>
-                    <div class="toggle-row">
-                        <div class="toggle-info">
-                            <div class="toggle-label">Vis koordinater</div>
-                            <div class="toggle-desc">Lat/Long under tittel</div>
+                        <div class="section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
                         </div>
-                        <div class="toggle-switch active" id="toggleCoords" onclick="toggleOption('coords')"></div>
                     </div>
-                    <div class="toggle-row">
-                        <div class="toggle-info">
-                            <div class="toggle-label">Vis skillelinjer</div>
-                            <div class="toggle-desc">Dekorative linjer</div>
+                    <div class="section-content">
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <div class="toggle-label">Vis stedsnavn</div>
+                                <div class="toggle-desc">Byer, tettsteder, bydeler</div>
+                            </div>
+                            <div class="toggle-switch active" id="toggleLabels" onclick="toggleOption('labels')"></div>
                         </div>
-                        <div class="toggle-switch active" id="toggleLines" onclick="toggleOption('lines')"></div>
-                    </div>
-                    <div class="toggle-row">
-                        <div class="toggle-info">
-                            <div class="toggle-label">Vis dato</div>
-                            <div class="toggle-desc">Spesiell dato under koordinater</div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <div class="toggle-label">Vis koordinater</div>
+                                <div class="toggle-desc">Lat/Long under tittel</div>
+                            </div>
+                            <div class="toggle-switch active" id="toggleCoords" onclick="toggleOption('coords')"></div>
                         </div>
-                        <div class="toggle-switch" id="toggleDate" onclick="toggleOption('date')"></div>
-                    </div>
-                    <div id="dateInputWrapper" style="display: none; margin-top: 8px;">
-                        <input type="date" class="input" id="dateInput" onchange="updateDate()" oninput="updateDate()">
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <div class="toggle-label">Vis skillelinjer</div>
+                                <div class="toggle-desc">Dekorative linjer</div>
+                            </div>
+                            <div class="toggle-switch active" id="toggleLines" onclick="toggleOption('lines')"></div>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <div class="toggle-label">Vis dato</div>
+                                <div class="toggle-desc">Spesiell dato under koordinater</div>
+                            </div>
+                            <div class="toggle-switch" id="toggleDate" onclick="toggleOption('date')"></div>
+                        </div>
+                        <div id="dateInputWrapper" style="display: none; margin-top: 8px;">
+                            <input type="date" class="input" id="dateInput" onchange="updateDate()" oninput="updateDate()">
+                        </div>
                     </div>
                 </div>
 
                 <!-- Export Section -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">💾 Eksporter</span>
+                <div class="section expanded" data-section="export">
+                    <div class="section-header" onclick="toggleSection('export')">
+                        <div class="section-header-left">
+                            <span class="section-title">💾 Eksporter</span>
+                        </div>
+                        <div class="section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="export-section">
-                        <!-- API Key Input -->
-                        <div class="input-group" style="margin-bottom: 16px;">
-                            <label class="input-label">Carto-Art API-nøkkel (Premium)</label>
-                            <div style="display: flex; gap: 8px;">
-                                <input type="password" id="apiKeyInput" class="text-input"
-                                    placeholder="Din Carto-Art nøkkel..." style="flex: 1; font-size: 12px;"
-                                    onchange="saveApiKey(this.value)">
-                                <button class="toggle-btn" onclick="toggleApiKeyVisibility()" title="Vis/skjul">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                </button>
-                            </div>
-                            <a href="https://cartoart.net/developer" target="_blank"
-                                style="font-size: 11px; color: var(--accent); margin-top: 6px; display: inline-block;">
-                                Få API-nøkkel for 6K Print →
-                            </a>
-                        </div>
-
-                        <div class="export-quality">
-                            <label class="input-label" style="margin-bottom: 10px; display: block;">Filformat</label>
-                            <div class="quality-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 16px;">
-                                <button class="quality-btn active" data-format="png" onclick="setExportFormat('png')">
-                                    <span class="quality-name">PNG</span>
-                                    <span class="quality-size">Høyeste kvalitet</span>
-                                </button>
-                                <button class="quality-btn" data-format="jpeg" onclick="setExportFormat('jpeg')">
-                                    <span class="quality-name">JPEG</span>
-                                    <span class="quality-size">Mindre filstørrelse</span>
-                                </button>
+                    <div class="section-content">
+                        <div class="export-section">
+                            <!-- API Key Input -->
+                            <div class="input-group" style="margin-bottom: 16px;">
+                                <label class="input-label">Carto-Art API-nøkkel (Premium)</label>
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="password" id="apiKeyInput" class="text-input"
+                                        placeholder="Din Carto-Art nøkkel..." style="flex: 1; font-size: 12px;"
+                                        onchange="saveApiKey(this.value)">
+                                    <button class="toggle-btn" onclick="toggleApiKeyVisibility()" title="Vis/skjul">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <a href="https://cartoart.net/developer" target="_blank"
+                                    style="font-size: 11px; color: var(--accent); margin-top: 6px; display: inline-block;">
+                                    Få API-nøkkel for 6K Print →
+                                </a>
                             </div>
 
-                            <label class="input-label" style="margin-bottom: 10px; display: block;">Oppløsning</label>
-                            <div class="quality-grid">
-                                <button class="quality-btn active" data-scale="2" onclick="setExportScale(2)">
-                                    <span class="quality-name">Standard ✓</span>
-                                    <span class="quality-size">~2400×3600</span>
-                                </button>
-                                <button class="quality-btn" data-scale="4" onclick="setExportScale(4)">
-                                    <span class="quality-name">Høy ⚡</span>
-                                    <span class="quality-size">~4800×7200</span>
-                                </button>
-                                <button class="quality-btn" data-scale="6" onclick="setExportScale(6)">
-                                    <span class="quality-name">Print ⚡</span>
-                                    <span class="quality-size">~7200×10800</span>
-                                </button>
+                            <div class="export-quality">
+                                <label class="input-label" style="margin-bottom: 10px; display: block;">Filformat</label>
+                                <div class="quality-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 16px;">
+                                    <button class="quality-btn active" data-format="png" onclick="setExportFormat('png')">
+                                        <span class="quality-name">PNG</span>
+                                        <span class="quality-size">Høyeste kvalitet</span>
+                                    </button>
+                                    <button class="quality-btn" data-format="jpeg" onclick="setExportFormat('jpeg')">
+                                        <span class="quality-name">JPEG</span>
+                                        <span class="quality-size">Mindre filstørrelse</span>
+                                    </button>
+                                </div>
+
+                                <label class="input-label" style="margin-bottom: 10px; display: block;">Oppløsning</label>
+                                <div class="quality-grid">
+                                    <button class="quality-btn active" data-scale="2" onclick="setExportScale(2)">
+                                        <span class="quality-name">Standard ✓</span>
+                                        <span class="quality-size">~2400×3600</span>
+                                    </button>
+                                    <button class="quality-btn" data-scale="4" onclick="setExportScale(4)">
+                                        <span class="quality-name">Høy ⚡</span>
+                                        <span class="quality-size">~4800×7200</span>
+                                    </button>
+                                    <button class="quality-btn" data-scale="6" onclick="setExportScale(6)">
+                                        <span class="quality-name">Print ⚡</span>
+                                        <span class="quality-size">~7200×10800</span>
+                                    </button>
+                                </div>
+                                <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px; line-height: 1.4;">
+                                    💡 Standard fungerer uten API-nøkkel. Høy (4K) og Print (6K) krever API-nøkkel fra Carto Art.</p>
                             </div>
-                            <p style="font-size: 10px; color: var(--text-muted); margin-top: 8px; line-height: 1.4;">
-                                💡 Standard fungerer uten API-nøkkel. Høy (4K) og Print (6K) krever API-nøkkel fra Carto Art.</p>
+                            <button class="export-btn" onclick="exportPoster('png')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M12 15V3m0 12-4-4m4 4 4-4"></path>
+                                    <path d="M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"></path>
+                                </svg>
+                                Last ned (valgt kvalitet)
+                            </button>
+                            <button class="export-btn secondary" onclick="exportSimple()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M12 15V3m0 12-4-4m4 4 4-4"></path>
+                                    <path d="M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"></path>
+                                </svg>
+                                Rask eksport (uten API)
+                            </button>
                         </div>
-                        <button class="export-btn" onclick="exportPoster('png')">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M12 15V3m0 12-4-4m4 4 4-4"></path>
-                                <path d="M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"></path>
-                            </svg>
-                            Last ned (valgt kvalitet)
-                        </button>
-                        <button class="export-btn secondary" onclick="exportSimple()">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M12 15V3m0 12-4-4m4 4 4-4"></path>
-                                <path d="M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"></path>
-                            </svg>
-                            Rask eksport (uten API)
-                        </button>
                     </div>
                 </div>
             </div>
@@ -707,6 +919,12 @@
                         <div class="map-wrapper" id="mapWrapper">
                             <div id="map"></div>
                             <div class="map-glow-overlay" id="mapGlowOverlay"></div>
+                            <!-- Location Marker -->
+                            <div class="location-marker hidden" id="locationMarker">
+                                <svg viewBox="0 0 24 24" fill="currentColor" id="markerSvg">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                </svg>
+                            </div>
                         </div>
 
                         <div class="poster-overlay">

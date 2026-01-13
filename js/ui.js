@@ -2,6 +2,91 @@
    UI - User Interface and Event Handling
    ============================================ */
 
+// Toggle collapsible sections
+function toggleSection(sectionName) {
+    const section = document.querySelector(`[data-section="${sectionName}"]`);
+    if (section) {
+        section.classList.toggle('expanded');
+    }
+}
+
+// Marker SVG paths for different styles
+const MARKER_SVGS = {
+    pin: '<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>',
+    target: '<circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2"/>',
+    dot: '<circle cx="12" cy="12" r="8"/>',
+    ring: '<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="3"/>',
+    heart: '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>',
+    home: '<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>'
+};
+
+// Set marker style
+function setMarkerStyle(style) {
+    state.markerStyle = style;
+
+    // Update button states
+    document.querySelectorAll('[data-marker-style]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.markerStyle === style);
+    });
+
+    // Update marker SVG
+    renderMarker();
+}
+
+// Update marker color
+function updateMarkerColor(color) {
+    state.markerColor = color;
+    document.getElementById('markerColorPicker').value = color;
+    document.getElementById('markerColorHex').value = color.toUpperCase();
+    renderMarker();
+}
+
+// Update marker size
+function updateMarkerSize(size) {
+    state.markerSize = size;
+    document.getElementById('markerSizeValue').textContent = `${size}px`;
+    renderMarker();
+}
+
+// Render the location marker
+function renderMarker() {
+    const marker = document.getElementById('locationMarker');
+    const svg = document.getElementById('markerSvg');
+
+    if (!marker || !svg) return;
+
+    // Update SVG content based on style
+    svg.innerHTML = MARKER_SVGS[state.markerStyle] || MARKER_SVGS.pin;
+
+    // Update color
+    marker.style.color = state.markerColor;
+
+    // Update size
+    svg.style.width = `${state.markerSize}px`;
+    svg.style.height = `${state.markerSize}px`;
+
+    // Show/hide based on state
+    marker.classList.toggle('hidden', !state.showMarker);
+}
+
+// Toggle scale bar
+function toggleScaleBar(show) {
+    state.showScale = show;
+
+    if (!map) return;
+
+    if (show && !scaleControl) {
+        scaleControl = new maplibregl.ScaleControl({
+            maxWidth: 100,
+            unit: 'metric'
+        });
+        map.addControl(scaleControl, 'top-left');
+    } else if (!show && scaleControl) {
+        map.removeControl(scaleControl);
+        scaleControl = null;
+    }
+}
+
 function renderStyleGrid() {
     const grid = document.getElementById('styleGrid');
     grid.innerHTML = MAP_STYLES.map(category => `
@@ -327,6 +412,24 @@ function setupEventListeners() {
                 updateMapColors();
             }
         });
+    });
+
+    // Marker color picker
+    document.getElementById('markerColorPicker').addEventListener('input', (e) => {
+        updateMarkerColor(e.target.value);
+    });
+
+    document.getElementById('markerColorHex').addEventListener('input', (e) => {
+        let value = e.target.value;
+        if (!value.startsWith('#')) value = '#' + value;
+        if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+            updateMarkerColor(value);
+        }
+    });
+
+    // Marker size slider
+    document.getElementById('markerSizeSlider').addEventListener('input', (e) => {
+        updateMarkerSize(parseInt(e.target.value));
     });
 }
 

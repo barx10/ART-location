@@ -61,8 +61,18 @@ let state = {
     customParksColor: '#c8e6c9',
     customRoadsColor: '#757575',
     customBuildingsColor: '#eeeeee',
-    customTerrainColor: '#d7ccc8'
+    customTerrainColor: '#d7ccc8',
+    // Location marker
+    showMarker: false,
+    markerStyle: 'pin',
+    markerColor: '#2C2C2C',
+    markerSize: 40,
+    // Scale bar
+    showScale: false
 };
+
+// Scale control reference
+let scaleControl = null;
 
 // Map references
 let map = null;
