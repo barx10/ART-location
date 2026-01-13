@@ -91,7 +91,7 @@ function setAspect(aspect) {
     state.aspect = aspect;
     const frame = document.getElementById('posterFrame');
 
-    frame.classList.remove('portrait', 'square');
+    frame.classList.remove('portrait', 'landscape', 'square');
     if (aspect !== 'portrait') frame.classList.add(aspect);
 
     document.querySelectorAll('.perspective-btn').forEach(btn => {
