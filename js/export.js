@@ -393,7 +393,13 @@ async function exportPoster(format) {
     } catch (error) {
         console.error('Export error:', error);
         loading.classList.remove('active');
-        showNotification(`Feil: ${error.message}`, 'error');
+
+        // Check if it's a CORS/network error
+        if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+            showNotification('Kunne ikke koble til Carto-Art API (CORS-feil). Bruk "Rask eksport" i stedet, eller kontakt Carto-Art for å få domenet ditt hvitelistet.', 'error');
+        } else {
+            showNotification(`Feil: ${error.message}`, 'error');
+        }
     }
 }
 
