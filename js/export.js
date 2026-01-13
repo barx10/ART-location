@@ -395,7 +395,7 @@ async function exportSimple() {
         const originalTransform = poster.style.transform;
         poster.style.transform = 'none';
 
-        map.invalidateSize();
+        map.resize();
         await new Promise(resolve => setTimeout(resolve, 2000));
 
         loading.querySelector('.loading-text').textContent = 'Genererer bilde...';
@@ -443,7 +443,7 @@ async function copyToClipboard() {
         const originalTransform = poster.style.transform;
         poster.style.transform = 'none';
 
-        map.invalidateSize();
+        map.resize();
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         loading.classList.remove('active');
