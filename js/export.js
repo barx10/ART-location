@@ -1,6 +1,7 @@
 /* ============================================
    Export - Image Export and Share Functions
    ============================================ */
+console.log('=== EXPORT.JS VERSION 2 LOADED ===');
 
 // CORS Proxy URL - Set this to your Cloudflare Worker URL
 // Example: 'https://cartoart-proxy.your-subdomain.workers.dev'
@@ -137,14 +138,21 @@ async function exportPoster(format) {
 
         const apiEndpoint = getCartoArtEndpoint();
         console.log('Using endpoint:', apiEndpoint);
+        console.log('API Key:', CART_ART_API_KEY ? CART_ART_API_KEY.substring(0, 8) + '...' : 'MISSING');
+
+        // Send API key in body for proxy to use (avoids CORS header issues)
+        const proxyPayload = {
+            apiKey: CART_ART_API_KEY,
+            cartoArtRequest: payload
+        };
 
         const response = await fetch(apiEndpoint, {
             method: 'POST',
+            mode: 'cors',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${CART_ART_API_KEY}`
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(proxyPayload)
         });
 
         if (!response.ok) {
