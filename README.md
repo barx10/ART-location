@@ -42,20 +42,21 @@
 ### 🎨 Design & Tilpasning
 - **22 Google Fonts** (DM Sans, Playfair Display, Bebas Neue, osv.)
 - **Tekststørrelse & posisjon** (horisontal/vertikal kontroll)
-- **Bokstavmellomrom** (letter spacing slider)
+- **Bokstavmellomrom** (letter spacing slider) - *live preview*
 - **5 tekst-temaer**: None, Gradient, Box, Panel, Double
 - **6 rammestiler**: Thin, Thick, Double, Vintage, Ornate
 - **Fargetilpasning**:
   - Standard: Bakgrunn + tekst
-  - **Avansert**: Individuelle farger for vann, parker, veier, bygninger, terreng
+  - **Avansert**: Individuelle farger for vann, parker, veier, bygninger, terreng - *live preview*
 - **16 emoji-stickers** med drag-and-drop
 - **Kartjusteringer**: Saturasjon, kontrast, lysstyrke, vignette
 
 ### ⛰️ Terreng & 3D
-- **Terreng eksagering** (0.5x-5x) for dramatiske fjellvyer
-- **Hillshading kontroll**: Intensitet + solvinkel
+- **Terreng eksagering** (0.5x-5x) for dramatiske fjellvyer - *live preview*
+- **Hillshading kontroll**: Intensitet + solvinkel - *live preview*
 - **3D-bygninger** med dynamisk høyde
 - **Høydekurver** (contours)
+- **Live forhåndsvisning** av alle innstillinger
 
 ### 💾 Eksport & Deling
 - **Filformater**: PNG (tapsfri) eller JPEG (mindre filstørrelse)
@@ -175,10 +176,11 @@ For høyeste kvalitet (4K/6K) eksport:
 
 ### v2.0 (Januar 2026)
 - ✅ **JPEG-eksport** for mindre filstørrelse
-- ✅ **Letter spacing kontroll** (bokstavmellomrom)
-- ✅ **Terreng eksagering** (0.5x-5x dramatisering)
-- ✅ **Hillshading** (intensitet + solvinkel)
-- ✅ **Avansert fargetilpasning** (5 separate elementfarger)
+- ✅ **Letter spacing kontroll** (bokstavmellomrom) med live preview
+- ✅ **Terreng eksagering** (0.5x-5x dramatisering) med live preview
+- ✅ **Hillshading** (intensitet + solvinkel) med live preview
+- ✅ **Avansert fargetilpasning** (5 separate elementfarger) med live preview
+- ✅ **Live forhåndsvisning** av alle nye innstillinger
 - ✅ Forbedret API-integrasjon med Carto Art
 
 ### v1.0 (2025)

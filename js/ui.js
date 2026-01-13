@@ -286,21 +286,27 @@ function setupEventListeners() {
     document.getElementById('letterSpacingSlider').addEventListener('input', (e) => {
         state.letterSpacing = parseFloat(e.target.value);
         document.getElementById('letterSpacingValue').textContent = state.letterSpacing;
+        // Update live preview
+        updateLetterSpacing();
     });
 
     document.getElementById('terrainExaggerationSlider').addEventListener('input', (e) => {
         state.terrainExaggeration = parseFloat(e.target.value);
         document.getElementById('terrainExaggerationValue').textContent = state.terrainExaggeration + '×';
+        // Update live preview (if terrain is enabled)
+        updateTerrainExaggeration();
     });
 
     document.getElementById('hillshadeIntensitySlider').addEventListener('input', (e) => {
         state.hillshadeIntensity = parseFloat(e.target.value);
         document.getElementById('hillshadeIntensityValue').textContent = state.hillshadeIntensity;
+        updateHillshade();
     });
 
     document.getElementById('hillshadeSunAngleSlider').addEventListener('input', (e) => {
         state.hillshadeSunAngle = parseInt(e.target.value);
         document.getElementById('hillshadeSunAngleValue').textContent = state.hillshadeSunAngle + '°';
+        updateHillshade();
     });
 
     // Advanced color pickers
@@ -308,6 +314,8 @@ function setupEventListeners() {
     colorElements.forEach(element => {
         document.getElementById(`${element}ColorPicker`).addEventListener('input', (e) => {
             updateCustomColor(element, e.target.value);
+            // Update live preview
+            updateMapColors();
         });
 
         document.getElementById(`${element}ColorHex`).addEventListener('input', (e) => {
@@ -315,6 +323,8 @@ function setupEventListeners() {
             if (!value.startsWith('#')) value = '#' + value;
             if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
                 updateCustomColor(element, value);
+                // Update live preview
+                updateMapColors();
             }
         });
     });
@@ -421,6 +431,11 @@ function toggleAdvancedColors() {
 
     if (toggle) toggle.classList.toggle('active', state.advancedColors);
     if (panel) panel.style.display = state.advancedColors ? 'block' : 'none';
+
+    // Regenerate map style with new colors
+    if (typeof updateMapTiles === 'function') {
+        updateMapTiles();
+    }
 }
 
 // NEW: Update custom color functions
@@ -438,5 +453,65 @@ function updateCustomColor(element, hexValue) {
         state[stateKey] = hexValue;
         document.getElementById(`${element}ColorPicker`).value = hexValue;
         document.getElementById(`${element}ColorHex`).value = hexValue.toUpperCase();
+    }
+}
+
+// NEW: Update letter spacing live
+function updateLetterSpacing() {
+    const title = document.getElementById('posterTitle');
+    if (title) {
+        title.style.letterSpacing = `${state.letterSpacing}em`;
+    }
+}
+
+// NEW: Update map colors live
+function updateMapColors() {
+    if (!map || !state.advancedColors) return;
+
+    // Update water layer
+    if (map.getLayer('water-layer')) {
+        map.setPaintProperty('water-layer', 'fill-color', state.customWaterColor);
+    }
+
+    // Update parks layer
+    if (map.getLayer('parks')) {
+        map.setPaintProperty('parks', 'fill-color', state.customParksColor);
+    }
+
+    // Update roads layers
+    if (map.getLayer('roads-minor')) {
+        map.setPaintProperty('roads-minor', 'line-color', state.customRoadsColor);
+    }
+    if (map.getLayer('roads-major')) {
+        map.setPaintProperty('roads-major', 'line-color', state.customRoadsColor);
+    }
+
+    // Update buildings layer
+    if (map.getLayer('buildings')) {
+        map.setPaintProperty('buildings', 'fill-extrusion-color', state.customBuildingsColor);
+    }
+}
+
+// NEW: Update terrain exaggeration live
+function updateTerrainExaggeration() {
+    if (!map || !state.terrain) return;
+
+    const terrainSource = map.getSource('terrain-dem');
+    if (terrainSource) {
+        map.setTerrain({
+            source: 'terrain-dem',
+            exaggeration: state.terrainExaggeration
+        });
+    }
+}
+
+// NEW: Update hillshade live
+function updateHillshade() {
+    if (!map) return;
+
+    const hillshadeLayer = map.getLayer('hillshade');
+    if (hillshadeLayer) {
+        map.setPaintProperty('hillshade', 'hillshade-exaggeration', state.hillshadeIntensity);
+        map.setPaintProperty('hillshade', 'hillshade-illumination-direction', state.hillshadeSunAngle);
     }
 }
