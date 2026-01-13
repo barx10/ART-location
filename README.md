@@ -60,8 +60,9 @@
 
 ### 💾 Eksport & Deling
 - **Filformater**: PNG (tapsfri) eller JPEG (mindre filstørrelse)
+- **Poster-formater**: Portrett (2:3), Landskap (3:2), Kvadrat (1:1)
 - **Oppløsninger**:
-  - Standard: ~2400×3600px
+  - Standard: ~2400×3600px (portrett)
   - Høy (4K): ~4800×7200px ⚡
   - Print (6K): ~7200×10800px ⚡
 - **Rask eksport** (uten API) via html2canvas
@@ -176,11 +177,13 @@ For høyeste kvalitet (4K/6K) eksport:
 
 ### v2.0 (Januar 2026)
 - ✅ **JPEG-eksport** for mindre filstørrelse
+- ✅ **Landskapsorientering** (3:2) i tillegg til portrett og kvadrat
 - ✅ **Letter spacing kontroll** (bokstavmellomrom) med live preview
 - ✅ **Terreng eksagering** (0.5x-5x dramatisering) med live preview
 - ✅ **Hillshading** (intensitet + solvinkel) med live preview
 - ✅ **Avansert fargetilpasning** (5 separate elementfarger) med live preview
 - ✅ **Live forhåndsvisning** av alle nye innstillinger
+- ✅ **Standard kvalitet uten API-nøkkel** for enkel testing
 - ✅ Forbedret API-integrasjon med Carto Art
 
 ### v1.0 (2025)
