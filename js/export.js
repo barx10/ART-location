@@ -53,6 +53,16 @@ async function exportPoster(format) {
         loading.querySelector('.loading-text').textContent = 'Genererer kart hos Carto-Art (dette kan ta litt tid)...';
 
         // Construct API Payload
+        const palette = state.advancedColors ? {
+            background: state.style.colors.background,
+            text: state.style.colors.text,
+            water: state.customWaterColor,
+            parks: state.customParksColor,
+            roads: state.customRoadsColor,
+            buildings: state.customBuildingsColor,
+            terrain: state.customTerrainColor
+        } : state.style.colors;
+
         const payload = {
             location: {
                 lat: state.location.lat,
@@ -61,7 +71,7 @@ async function exportPoster(format) {
             // Use the category ID (e.g. 'blueprint', 'minimal')
             style: state.style.styleId,
             // Send specific palette colors
-            palette: state.style.colors,
+            palette: palette,
             camera: {
                 pitch: state.pitch || 0,
                 bearing: state.bearing || 0,
@@ -79,7 +89,12 @@ async function exportPoster(format) {
                 water: state.water,
                 parks: state.parks,
                 buildings: state.buildings,
-                background: state.background
+                background: state.background,
+                terrain_exaggeration: state.terrainExaggeration
+            },
+            hillshade: {
+                intensity: state.hillshadeIntensity,
+                sun_angle: state.hillshadeSunAngle
             },
             text: {
                 show_title: false,
@@ -257,7 +272,7 @@ async function exportPoster(format) {
         // Draw title
         ctx.fillStyle = textColorForTheme;
         ctx.font = `700 ${titleSize}px ${state.font.family.replace(/'/g, '')}`;
-        ctx.letterSpacing = `${titleSize * 0.08}px`;
+        ctx.letterSpacing = `${titleSize * state.letterSpacing}px`;
         const titleText = document.getElementById('titleInput').value || state.location.name;
         ctx.fillText(titleText.toUpperCase(), textX, textY);
 
@@ -348,8 +363,10 @@ async function exportPoster(format) {
 
         // Download
         const link = document.createElement('a');
-        link.download = `carto-art-poster-${state.location.name}-${posterWidth}x${posterHeight}.png`;
-        link.href = canvas.toDataURL('image/png', 1.0);
+        const mimeType = state.exportFormat === 'jpeg' ? 'image/jpeg' : 'image/png';
+        const extension = state.exportFormat === 'jpeg' ? 'jpg' : 'png';
+        link.download = `carto-art-poster-${state.location.name}-${posterWidth}x${posterHeight}.${extension}`;
+        link.href = canvas.toDataURL(mimeType, 0.95);
         link.click();
 
         loading.classList.remove('active');
@@ -395,8 +412,10 @@ async function exportSimple() {
         const height = canvas.height;
 
         const link = document.createElement('a');
-        link.download = `stedskart-${state.location.name.toLowerCase()}-${width}x${height}.png`;
-        link.href = canvas.toDataURL('image/png', 1.0);
+        const mimeType = state.exportFormat === 'jpeg' ? 'image/jpeg' : 'image/png';
+        const extension = state.exportFormat === 'jpeg' ? 'jpg' : 'png';
+        link.download = `stedskart-${state.location.name.toLowerCase()}-${width}x${height}.${extension}`;
+        link.href = canvas.toDataURL(mimeType, 0.95);
         link.click();
 
         showNotification(`Eksportert ${width}x${height}px (bruk API for høyere kvalitet)`, 'success');

@@ -86,6 +86,16 @@ function initializeSliders() {
     // Rammefarge
     document.getElementById('frameColorPicker').value = state.frameColor;
     document.getElementById('frameColorHex').value = state.frameColor.toUpperCase();
+
+    // New features
+    document.getElementById('letterSpacingSlider').value = state.letterSpacing;
+    document.getElementById('letterSpacingValue').textContent = state.letterSpacing;
+    document.getElementById('terrainExaggerationSlider').value = state.terrainExaggeration;
+    document.getElementById('terrainExaggerationValue').textContent = state.terrainExaggeration + '×';
+    document.getElementById('hillshadeIntensitySlider').value = state.hillshadeIntensity;
+    document.getElementById('hillshadeIntensityValue').textContent = state.hillshadeIntensity;
+    document.getElementById('hillshadeSunAngleSlider').value = state.hillshadeSunAngle;
+    document.getElementById('hillshadeSunAngleValue').textContent = state.hillshadeSunAngle + '°';
 }
 
 function setupEventListeners() {
@@ -271,6 +281,43 @@ function setupEventListeners() {
     document.getElementById('textYSlider').addEventListener('input', (e) => {
         updateTextY(e.target.value);
     });
+
+    // New feature sliders
+    document.getElementById('letterSpacingSlider').addEventListener('input', (e) => {
+        state.letterSpacing = parseFloat(e.target.value);
+        document.getElementById('letterSpacingValue').textContent = state.letterSpacing;
+    });
+
+    document.getElementById('terrainExaggerationSlider').addEventListener('input', (e) => {
+        state.terrainExaggeration = parseFloat(e.target.value);
+        document.getElementById('terrainExaggerationValue').textContent = state.terrainExaggeration + '×';
+    });
+
+    document.getElementById('hillshadeIntensitySlider').addEventListener('input', (e) => {
+        state.hillshadeIntensity = parseFloat(e.target.value);
+        document.getElementById('hillshadeIntensityValue').textContent = state.hillshadeIntensity;
+    });
+
+    document.getElementById('hillshadeSunAngleSlider').addEventListener('input', (e) => {
+        state.hillshadeSunAngle = parseInt(e.target.value);
+        document.getElementById('hillshadeSunAngleValue').textContent = state.hillshadeSunAngle + '°';
+    });
+
+    // Advanced color pickers
+    const colorElements = ['water', 'parks', 'roads', 'buildings', 'terrain'];
+    colorElements.forEach(element => {
+        document.getElementById(`${element}ColorPicker`).addEventListener('input', (e) => {
+            updateCustomColor(element, e.target.value);
+        });
+
+        document.getElementById(`${element}ColorHex`).addEventListener('input', (e) => {
+            let value = e.target.value;
+            if (!value.startsWith('#')) value = '#' + value;
+            if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                updateCustomColor(element, value);
+            }
+        });
+    });
 }
 
 // Info Modal functions
@@ -355,5 +402,41 @@ function updateCamera(param, value) {
     if (map) {
         if (param === 'pitch') map.setPitch(val);
         if (param === 'bearing') map.setBearing(val);
+    }
+}
+
+// NEW: Export Format Selection
+function setExportFormat(format) {
+    state.exportFormat = format;
+    document.querySelectorAll('[data-format]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.format === format);
+    });
+}
+
+// NEW: Advanced Colors Toggle
+function toggleAdvancedColors() {
+    state.advancedColors = !state.advancedColors;
+    const toggle = document.getElementById('toggleAdvancedColors');
+    const panel = document.getElementById('advancedColorsPanel');
+
+    if (toggle) toggle.classList.toggle('active', state.advancedColors);
+    if (panel) panel.style.display = state.advancedColors ? 'block' : 'none';
+}
+
+// NEW: Update custom color functions
+function updateCustomColor(element, hexValue) {
+    const colorMap = {
+        'water': 'customWaterColor',
+        'parks': 'customParksColor',
+        'roads': 'customRoadsColor',
+        'buildings': 'customBuildingsColor',
+        'terrain': 'customTerrainColor'
+    };
+
+    const stateKey = colorMap[element];
+    if (stateKey) {
+        state[stateKey] = hexValue;
+        document.getElementById(`${element}ColorPicker`).value = hexValue;
+        document.getElementById(`${element}ColorHex`).value = hexValue.toUpperCase();
     }
 }
