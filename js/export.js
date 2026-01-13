@@ -2,6 +2,19 @@
    Export - Image Export and Share Functions
    ============================================ */
 
+// CORS Proxy URL - Set this to your Cloudflare Worker URL
+// Example: 'https://cartoart-proxy.your-subdomain.workers.dev'
+// Leave empty to call Carto-Art API directly (only works if they allow your domain)
+const CARTOART_PROXY_URL = 'https://silent-limit-b175.barx1072.workers.dev/';
+
+// Get the API endpoint (proxy or direct)
+function getCartoArtEndpoint() {
+    if (CARTOART_PROXY_URL) {
+        return CARTOART_PROXY_URL;
+    }
+    return 'https://cartoart.net/api/v1/posters/generate';
+}
+
 function saveApiKey(key) {
     CART_ART_API_KEY = key;
     localStorage.setItem('carto_art_api_key', key);
@@ -122,7 +135,10 @@ async function exportPoster(format) {
 
         console.log('Fetching map from Carto-Art:', payload);
 
-        const response = await fetch('https://cartoart.net/api/v1/posters/generate', {
+        const apiEndpoint = getCartoArtEndpoint();
+        console.log('Using endpoint:', apiEndpoint);
+
+        const response = await fetch(apiEndpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -393,7 +409,13 @@ async function exportPoster(format) {
     } catch (error) {
         console.error('Export error:', error);
         loading.classList.remove('active');
-        showNotification(`Feil: ${error.message}`, 'error');
+
+        // Check if it's a CORS/network error
+        if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+            showNotification('Kunne ikke koble til Carto-Art API (CORS-feil). Bruk "Rask eksport" i stedet, eller kontakt Carto-Art for å få domenet ditt hvitelistet.', 'error');
+        } else {
+            showNotification(`Feil: ${error.message}`, 'error');
+        }
     }
 }
 
