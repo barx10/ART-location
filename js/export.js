@@ -21,6 +21,18 @@ function loadApiKey() {
     }
 }
 
+function setExportScale(scale) {
+    state.exportScale = scale;
+
+    // Update button states
+    document.querySelectorAll('.quality-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (parseInt(btn.dataset.scale) === scale) {
+            btn.classList.add('active');
+        }
+    });
+}
+
 async function exportPoster(format) {
     // If no API key and requesting high/print quality, show error
     if (!CART_ART_API_KEY && state.exportScale > 2) {
