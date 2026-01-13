@@ -240,6 +240,33 @@ Fokuser først på **enkle gevinster** (JPEG, letter spacing, terrain exaggerati
 
 ---
 
+## ✅ IMPLEMENTERT (2026-01-13)
+
+### Funksjoner som nå er lagt til:
+
+1. ✅ **JPEG Eksport** - Format-velger i eksportseksjonen (PNG/JPEG)
+2. ✅ **Letter Spacing Kontroll** - Slider for å justere bokstavmellomrom (0.0 - 0.3)
+3. ✅ **Terreng Eksagering** - Slider for å multiplisere terrengdybde (0.5x - 5x)
+4. ✅ **Hillshading Kontroll** - Intensitet (0-1) og solvinkel (0-360°)
+5. ✅ **Avansert Fargetilpasning** - Toggle for individuell farge på vann, parker, veier, bygninger og terreng
+
+### Tekniske detaljer:
+- Alle nye parametere sendes til Carto-Art API via `/api/v1/posters/generate`
+- JPEG-eksport bruker 95% kvalitet for optimal filstørrelse
+- Avanserte farger er valgfritt (toggle on/off)
+- UI er integrert i eksisterende sidebare-struktur
+
+### Gjenstående premium-funksjoner (ikke implementert):
+- ❌ Animert GIF eksport
+- ❌ MP4 video eksport
+- ❌ Orbit animasjoner
+- ❌ Kinematiske kamera-automations
+- ❌ STL 3D modell eksport
+
+Disse krever Carto Plus-abonnement og mer kompleks implementering.
+
+---
+
 ## 📚 Kilder
 - [Carto Art Website](https://cartoart.net)
 - [AlternativeTo - Carto Art Info](https://alternativeto.net/software/carto-art/about/)

@@ -48,7 +48,20 @@ let state = {
     canvasScale: 1,
     stickers: [],
     selectedSticker: null,
-    stickerSize: 40
+    stickerSize: 40,
+    // New features
+    exportFormat: 'png',
+    letterSpacing: 0.08,
+    terrainExaggeration: 1.0,
+    hillshadeIntensity: 0.7,
+    hillshadeSunAngle: 315,
+    // Advanced color customization
+    advancedColors: false,
+    customWaterColor: '#a8d5f2',
+    customParksColor: '#c8e6c9',
+    customRoadsColor: '#757575',
+    customBuildingsColor: '#eeeeee',
+    customTerrainColor: '#d7ccc8'
 };
 
 // Map references
