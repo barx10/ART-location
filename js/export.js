@@ -22,10 +22,16 @@ function loadApiKey() {
 }
 
 async function exportPoster(format) {
-    // Check if API key is available
-    if (!CART_ART_API_KEY) {
-        showNotification('Vennligst legg inn Carto-Art API-nøkkel for høykvalitetseksport', 'error');
+    // If no API key and requesting high/print quality, show error
+    if (!CART_ART_API_KEY && state.exportScale > 2) {
+        showNotification('Høy og Print kvalitet krever Carto-Art API-nøkkel. Bruk Standard kvalitet eller "Rask eksport" uten API.', 'error');
         document.getElementById('apiKeyInput').focus();
+        return;
+    }
+
+    // If scale is 2 (Standard) and no API key, use html2canvas method
+    if (state.exportScale === 2 && !CART_ART_API_KEY) {
+        await exportSimple();
         return;
     }
 
