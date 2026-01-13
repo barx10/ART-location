@@ -37,7 +37,7 @@ let state = {
     textTheme: 'none',
     themeSize: 30,
     showLabels: true,
-    exportScale: 4,
+    exportScale: 2,  // Default to Standard (no API required)
     labelShadow: 2,
     mapSaturation: 100,
     mapContrast: 100,

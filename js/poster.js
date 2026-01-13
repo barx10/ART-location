@@ -174,11 +174,11 @@ function updateThemeColors() {
     const overlay = document.querySelector('.poster-overlay');
     if (!overlay) return;
 
-    // Use map style's bgColor for theme background
+    // Use current background color for theme (from selected palette)
     // Use current state.textColor for text (which may have been customized by user)
-    const themeColor = state.style.bgColor || '#ffffff';
-    const themeBorderColor = state.textColor || state.style.textColor || '#2C2C2C';
-    const themeTextColor = state.textColor || state.style.textColor || '#2C2C2C';
+    const themeColor = state.bgColor || state.style.colors?.background || '#ffffff';
+    const themeBorderColor = state.textColor || state.style.colors?.text || '#2C2C2C';
+    const themeTextColor = state.textColor || state.style.colors?.text || '#2C2C2C';
 
     overlay.style.setProperty('--theme-color', themeColor);
     overlay.style.setProperty('--theme-border-color', themeBorderColor);
