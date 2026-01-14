@@ -14,13 +14,19 @@ const CARTOART_API = 'https://cartoart.net/api/v1/posters/generate';
 // Allowed origins (add your domains here)
 const ALLOWED_ORIGINS = [
     'https://barx10.github.io',
+    'https://art-location.vercel.app',  // Vercel deployment
     'http://localhost:3000',
     'http://localhost:5500',
     'http://127.0.0.1:5500'
 ];
 
 function getCorsHeaders(origin) {
-    const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+    // Check if origin is in allowed list or is a Vercel preview deployment
+    const isAllowed = ALLOWED_ORIGINS.includes(origin) ||
+                      (origin && origin.endsWith('.vercel.app'));
+
+    const allowedOrigin = isAllowed ? origin : ALLOWED_ORIGINS[0];
+
     return {
         'Access-Control-Allow-Origin': allowedOrigin,
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
