@@ -3,10 +3,9 @@
    ============================================ */
 console.log('=== EXPORT.JS VERSION 2 LOADED ===');
 
-// CORS Proxy URL - Set this to your Cloudflare Worker URL
-// Example: 'https://cartoart-proxy.your-subdomain.workers.dev'
-// Leave empty to call Carto-Art API directly (only works if they allow your domain)
-const CARTOART_PROXY_URL = 'https://carto-art-proxy-v2.barx1072.workers.dev/';
+// CORS Proxy URL - Using Vercel Serverless Function (api/cartoart-proxy.js)
+// This runs on the same domain, avoiding Cloudflare Worker issues
+const CARTOART_PROXY_URL = '/api/cartoart-proxy';
 
 // Get the API endpoint (proxy or direct)
 function getCartoArtEndpoint() {
