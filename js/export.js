@@ -127,7 +127,55 @@ async function generatePosterCanvas() {
         ctx.fillRect(mapX, mapY, mapAreaWidth, mapAreaHeight);
     }
 
-    // Draw text overlay
+    // Draw Location Marker
+    if (state.showMarker) {
+        const cx = mapX + mapAreaWidth / 2;
+        const cy = mapY + mapAreaHeight / 2;
+        // Marker size is typically 30-60px on screen. We scale it by 'scale' (export scale factor).
+        const size = (state.markerSize || 40) * scale;
+        const color = state.markerColor || '#e63946';
+        const style = state.markerStyle || 'pin';
+
+        ctx.save();
+        ctx.translate(cx, cy);
+
+        // Scale coordinate system so 24 units = size (SVG viewbox is 24x24)
+        const s = size / 24;
+        ctx.scale(s, s);
+        ctx.translate(-12, -12); // Move 0,0 to top-left of the 24x24 box
+
+        ctx.fillStyle = color;
+        ctx.strokeStyle = color;
+
+        if (style === 'pin') {
+            // Adjust visual center from middle (y=12) to tip (y=21.5)
+            // User requested further adjustment UP to -14.0
+            ctx.translate(0, -14.0);
+            const p = new Path2D("M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z");
+            ctx.fill(p);
+        } else if (style === 'target') {
+            ctx.lineWidth = 2;
+            // Outer circle
+            ctx.beginPath(); ctx.arc(12, 12, 10, 0, Math.PI * 2); ctx.stroke();
+            // Middle circle
+            ctx.beginPath(); ctx.arc(12, 12, 6, 0, Math.PI * 2); ctx.stroke();
+            // Inner dot
+            ctx.beginPath(); ctx.arc(12, 12, 2, 0, Math.PI * 2); ctx.fill();
+        } else if (style === 'dot') {
+            ctx.beginPath(); ctx.arc(12, 12, 8, 0, Math.PI * 2); ctx.fill();
+        } else if (style === 'ring') {
+            ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.arc(12, 12, 8, 0, Math.PI * 2); ctx.stroke();
+        } else if (style === 'heart') {
+            const p = new Path2D("M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z");
+            ctx.fill(p);
+        } else if (style === 'home') {
+            const p = new Path2D("M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z");
+            ctx.fill(p);
+        }
+
+        ctx.restore();
+    }
     const textScale = state.textSize / 100;
     const titleSize = 38 * scale * textScale;
     const subtitleSize = 13 * scale * textScale;
