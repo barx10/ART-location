@@ -17,7 +17,11 @@ function getMapStyle() {
         sources: {
             'openmaptiles': {
                 type: 'vector',
-                url: 'https://www.cartoart.net/api/tiles/openfreemap/planet?v=3d9821099af4b05076fb8a51beb3679fcc248ef8'
+                // Using OpenFreemap directly - free and open source!
+                // Docs: https://openfreemap.org/
+                tiles: ['https://tiles.openfreemap.org/planet/{z}/{x}/{y}.pbf'],
+                minzoom: 0,
+                maxzoom: 14
             }
         },
         layers: [
