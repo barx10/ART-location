@@ -84,17 +84,7 @@ async function exportPoster(format) {
 
         loading.querySelector('.loading-text').textContent = 'Genererer kart hos Carto-Art (dette kan ta litt tid)...';
 
-        // Construct API Payload
-        const palette = state.advancedColors ? {
-            background: state.style.colors.background,
-            text: state.style.colors.text,
-            water: state.customWaterColor,
-            parks: state.customParksColor,
-            roads: state.customRoadsColor,
-            buildings: state.customBuildingsColor,
-            terrain: state.customTerrainColor
-        } : state.style.colors;
-
+        // Construct API Payload (matching official SDK format)
         const payload = {
             location: {
                 lat: state.location.lat,
@@ -102,18 +92,14 @@ async function exportPoster(format) {
             },
             // Use the category ID (e.g. 'blueprint', 'minimal')
             style: state.style.styleId,
-            // Send specific palette colors
-            palette: palette,
             camera: {
                 pitch: state.pitch || 0,
                 bearing: state.bearing || 0,
                 zoom: state.zoom // Pass current zoom
             },
-
             options: {
-                width: mapAreaWidth,
-                height: mapAreaHeight,
-                scale: 1, // We already scaled width/height
+                // Use high_res flag instead of manual dimensions
+                high_res: state.exportScale >= 4,
                 buildings_3d: state.buildings3d,
                 terrain: state.terrain,
                 contours: state.contours,
@@ -121,12 +107,7 @@ async function exportPoster(format) {
                 water: state.water,
                 parks: state.parks,
                 buildings: state.buildings,
-                background: state.background,
-                terrain_exaggeration: state.terrainExaggeration
-            },
-            hillshade: {
-                intensity: state.hillshadeIntensity,
-                sun_angle: state.hillshadeSunAngle
+                background: state.background
             },
             text: {
                 show_title: false,
@@ -140,19 +121,15 @@ async function exportPoster(format) {
         console.log('Using endpoint:', apiEndpoint);
         console.log('API Key:', CART_ART_API_KEY ? CART_ART_API_KEY.substring(0, 8) + '...' : 'MISSING');
 
-        // Send API key in body for proxy to use (avoids CORS header issues)
-        const proxyPayload = {
-            apiKey: CART_ART_API_KEY,
-            cartoArtRequest: payload
-        };
-
+        // Use Bearer token authentication (official SDK format)
         const response = await fetch(apiEndpoint, {
             method: 'POST',
             mode: 'cors',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${CART_ART_API_KEY}`
             },
-            body: JSON.stringify(proxyPayload)
+            body: JSON.stringify(payload)
         });
 
         if (!response.ok) {
