@@ -51,19 +51,34 @@ export default {
         }
 
         try {
-            // Get the request body and headers
+            // Get the request body and Authorization header
             const body = await request.text();
             const authHeader = request.headers.get('Authorization');
 
-            // Forward request to Carto-Art API
+            // Validate Authorization header
+            if (!authHeader || !authHeader.startsWith('Bearer ')) {
+                return new Response(JSON.stringify({
+                    error: 'Missing or invalid Authorization header. Expected: Bearer <api_key>'
+                }), {
+                    status: 401,
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+                });
+            }
+
+            console.log('Forwarding request to CartoArt API...');
+            console.log('Auth header:', authHeader.substring(0, 20) + '...');
+
+            // Forward request to Carto-Art API with Bearer token
             const response = await fetch(CARTOART_API, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': authHeader || ''
+                    'Authorization': authHeader
                 },
                 body: body
             });
+
+            console.log('CartoArt API response status:', response.status);
 
             // Get response data
             const responseData = await response.text();
@@ -78,7 +93,10 @@ export default {
             });
 
         } catch (error) {
-            return new Response(JSON.stringify({ error: error.message }), {
+            console.error('Proxy error:', error);
+            return new Response(JSON.stringify({
+                error: error.message || 'Internal proxy error'
+            }), {
                 status: 500,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
