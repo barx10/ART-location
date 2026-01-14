@@ -122,14 +122,24 @@ async function exportPoster(format) {
         console.log('Using endpoint:', apiEndpoint);
         console.log('API Key:', CART_ART_API_KEY ? CART_ART_API_KEY.substring(0, 8) + '...' : 'MISSING');
 
-        // Use Bearer token authentication (official SDK format)
+        // If using proxy, send API key in header (custom header works better than Authorization)
+        // If calling directly, use Bearer token
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        if (CARTOART_PROXY_URL) {
+            // For proxy: use custom header (more reliable than Authorization in CORS)
+            headers['X-API-Key'] = CART_ART_API_KEY;
+        } else {
+            // For direct API calls: use Bearer token
+            headers['Authorization'] = `Bearer ${CART_ART_API_KEY}`;
+        }
+
         const response = await fetch(apiEndpoint, {
             method: 'POST',
             mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${CART_ART_API_KEY}`
-            },
+            headers: headers,
             body: JSON.stringify(payload)
         });
 
