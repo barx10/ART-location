@@ -3,37 +3,8 @@
    ============================================ */
 console.log('=== EXPORT.JS VERSION 2 LOADED ===');
 
-// CORS Proxy URL - Using Vercel Serverless Function (api/cartoart-proxy.js)
-// This runs on the same domain, avoiding Cloudflare Worker issues
-const CARTOART_PROXY_URL = '/api/cartoart-proxy';
+// No external API dependencies
 
-// Get the API endpoint (proxy or direct)
-function getCartoArtEndpoint() {
-    if (CARTOART_PROXY_URL) {
-        return CARTOART_PROXY_URL;
-    }
-    // Try calling API directly (official SDK approach)
-    return 'https://cartoart.net/api/v1/posters/generate';
-}
-
-function saveApiKey(key) {
-    CART_ART_API_KEY = key;
-    localStorage.setItem('carto_art_api_key', key);
-}
-
-function toggleApiKeyVisibility() {
-    const input = document.getElementById('apiKeyInput');
-    input.type = input.type === 'password' ? 'text' : 'password';
-}
-
-function loadApiKey() {
-    const savedKey = localStorage.getItem('carto_art_api_key');
-    if (savedKey) {
-        CART_ART_API_KEY = savedKey;
-        const input = document.getElementById('apiKeyInput');
-        if (input) input.value = savedKey;
-    }
-}
 
 function setExportScale(scale) {
     state.exportScale = scale;
@@ -66,26 +37,54 @@ function loadImage(src) {
 // Shared function to generate poster canvas (used by exportSimple and copyToClipboard)
 async function generatePosterCanvas() {
     // Get poster dimensions
+    // Get poster dimensions
     const poster = document.getElementById('posterFrame');
     const posterRect = poster.getBoundingClientRect();
-    const scale = state.exportScale;
+    const aspectRatio = posterRect.width / posterRect.height;
 
-    const posterWidth = Math.round(posterRect.width * scale);
-    const posterHeight = Math.round(posterRect.height * scale);
+    // Determine Target Resolution (Independent of Screen Size)
+    let posterHeight, posterWidth;
+
+    if (state.exportScale >= 6) {
+        // Print Quality (Aiming for ~50x70cm @ 200dpi or A3 @ 300dpi)
+        // Capped at 5500px to be safe with WebGL texture limits on most devices
+        posterHeight = 5500;
+        posterWidth = Math.round(posterHeight * aspectRatio);
+    } else if (state.exportScale >= 4) {
+        // High Quality (Aiming for ~A3 @ 200dpi)
+        posterHeight = 3500;
+        posterWidth = Math.round(posterHeight * aspectRatio);
+    } else {
+        // Standard (Screen multiplier)
+        posterHeight = Math.round(posterRect.height * state.exportScale);
+        posterWidth = Math.round(posterRect.width * state.exportScale);
+    }
+
+    // Calculate scale factor for text/UI elements
+    // This ensures text remains proportional regardless of export resolution
+    const scale = posterHeight / posterRect.height;
 
     // Map dimensions (accounting for margin)
     const marginPercent = state.margin / 100;
     const mapAreaWidth = Math.round(posterWidth * (1 - marginPercent * 2));
     const mapAreaHeight = Math.round(posterHeight * (1 - marginPercent * 2));
 
-    // Ensure map is ready
-    map.resize();
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // --- High-Resolution Render Pipeline ---
+    console.log('Starting High-Res Render:', mapAreaWidth, 'x', mapAreaHeight);
 
-    // Capture map canvas directly (requires preserveDrawingBuffer: true)
+    // 1. Resize map container to full target resolution
+    window.resizeMapForExport(mapAreaWidth, mapAreaHeight);
+
+    // 2. Wait for MapLibre to render fresh tiles at this new size
+    await window.waitForMapIdle();
+
+    // 3. Capture high-res canvas
     const mapCanvas = map.getCanvas();
     const mapDataUrl = mapCanvas.toDataURL('image/png');
     const mapImg = await loadImage(mapDataUrl);
+
+    // 4. Restore map container availability
+    window.restoreMapAfterExport();
 
     // Create final canvas
     const canvas = document.createElement('canvas');
@@ -101,8 +100,16 @@ async function generatePosterCanvas() {
     const mapX = Math.round(posterWidth * marginPercent);
     const mapY = Math.round(posterHeight * marginPercent);
 
-    // Draw map
+    // Draw map with filters
+    // We apply CSS filters manually because toDataURL ignores them
+    const saturation = state.mapSaturation || 100;
+    const contrast = state.mapContrast || 100;
+    const brightness = state.mapBrightness || 100;
+
+    ctx.save();
+    ctx.filter = `saturate(${saturation}%) contrast(${contrast}%) brightness(${brightness}%)`;
     ctx.drawImage(mapImg, 0, 0, mapImg.width, mapImg.height, mapX, mapY, mapAreaWidth, mapAreaHeight);
+    ctx.restore();
 
     // Draw vignette effect if enabled
     if (state.labelShadow > 0) {
@@ -152,8 +159,10 @@ async function generatePosterCanvas() {
     textY = Math.min(textY, maxTextY);
 
     // Theme colors
-    const themeColor = state.style.bgColor || '#ffffff';
-    const themeBorderColor = state.style.textColor || '#2C2C2C';
+    // Use user selected gradient color (for theme background/gradient)
+    const themeColor = state.gradientColor || state.style.colors?.background || '#ffffff';
+    // Use user selected text color (for text and borders)
+    const themeBorderColor = state.textColor || state.style.colors?.text || '#2C2C2C';
 
     const hexToRgba = (hex, alpha) => {
         const r = parseInt(hex.slice(1, 3), 16);

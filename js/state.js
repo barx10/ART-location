@@ -2,8 +2,6 @@
    State - Application State Management
    ============================================ */
 
-// Carto-Art API key - get your key at https://cartoart.net
-let CART_ART_API_KEY = localStorage.getItem('carto_art_api_key') || '';
 
 // Application state
 let state = {
@@ -36,6 +34,7 @@ let state = {
     frameStyle: 'none',
     textTheme: 'none',
     themeSize: 30,
+    gradientColor: '#FFFFFF',
     showLabels: true,
     exportScale: 2,  // Default to Standard (no API required)
     labelShadow: 2,

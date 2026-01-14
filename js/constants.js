@@ -7,96 +7,196 @@
    Derived from /api/v1/styles
 */
 const MAP_STYLES = [
-    // MINIMAL
+    // CLASSIC BLACK & WHITE
     {
         id: 'minimal',
-        name: 'Minimal Line Art',
-        desc: 'Clean, monochromatic street maps',
+        name: 'Classic',
+        desc: 'Tidløs sort-hvit estetikk',
         palettes: [
-            { id: 'minimal-ink', name: 'Ink & Paper', colors: { background: '#F7F5F0', text: '#2C2C2C' } },
-            { id: 'minimal-charcoal', name: 'Charcoal', colors: { background: '#F5F5F0', text: '#2D2D2D' } },
-            { id: 'minimal-navy', name: 'Navy & Cream', colors: { background: '#FDF6E3', text: '#1E3A5F' } },
-            { id: 'minimal-midnight-sun', name: 'Midnight Sun', colors: { background: '#0D1520', text: '#E8DDD0' } },
-            { id: 'minimal-void', name: 'Void', colors: { background: '#000000', text: '#FFFFFF' } }
+            {
+                id: 'minimal-ink',
+                name: 'Ink & Paper',
+                colors: {
+                    background: '#F7F5F0',
+                    text: '#2C2C2C',
+                    water: '#2C2C2C',
+                    parks: '#2C2C2C',
+                    roads: '#2C2C2C',
+                    buildings: '#2C2C2C'
+                }
+            },
+            {
+                id: 'minimal-void',
+                name: 'Void',
+                colors: {
+                    background: '#000000',
+                    text: '#FFFFFF',
+                    water: '#FFFFFF',
+                    parks: '#FFFFFF',
+                    roads: '#FFFFFF',
+                    buildings: '#FFFFFF'
+                }
+            }
         ]
     },
-    // DARK MODE
+    // DARK & DRAMATIC
     {
         id: 'dark-mode',
-        name: 'Dark Mode / Noir',
-        desc: 'Dramatic dark maps with luminous streets',
+        name: 'Dark Mode',
+        desc: 'Dramatiske mørke kart',
         palettes: [
-            { id: 'dark-gold', name: 'Gold Standard', colors: { background: '#0A0A0F', text: '#D4AF37' } },
-            { id: 'dark-silver', name: 'Silver City', colors: { background: '#0C0C10', text: '#C0C0C8' } },
-            { id: 'dark-neon', name: 'Neon Noir', colors: { background: '#0B0B1A', text: '#FFFFFF' } },
-            { id: 'dark-navy', name: 'Deep Navy', colors: { background: '#0B1929', text: '#F5F5F5' } },
-            { id: 'dark-aurora', name: 'Aurora', colors: { background: '#080C10', text: '#40E8B0' } }
+            {
+                id: 'dark-gold',
+                name: 'Gold Standard',
+                colors: {
+                    background: '#0A0A0F',
+                    text: '#D4AF37',
+                    water: '#1A4D7A',
+                    parks: '#2D5016',
+                    roads: '#D4AF37',
+                    buildings: '#C9A961'
+                }
+            },
+            {
+                id: 'dark-neon',
+                name: 'Neon City',
+                colors: {
+                    background: '#0B0B1A',
+                    text: '#FFFFFF',
+                    water: '#1E3A8A',
+                    parks: '#065F46',
+                    roads: '#F0F0F0',
+                    buildings: '#E0E0E0'
+                }
+            }
         ]
     },
-    // MIDNIGHT
-    {
-        id: 'midnight',
-        name: 'Midnight Noir',
-        desc: 'Deep navy and ivory technical maps',
-        palettes: [
-            { id: 'midnight-classic', name: 'Midnight', colors: { background: '#0D1B2A', text: '#E0E1DD' } }
-        ]
-    },
-    // BLUEPRINT
+    // BLUEPRINT TECHNICAL
     {
         id: 'blueprint',
-        name: 'Blueprint / Technical',
-        desc: 'Architectural style with high-contrast lines',
+        name: 'Blueprint',
+        desc: 'Teknisk arkitektstil',
         palettes: [
-            { id: 'blueprint-classic', name: 'Classic Blueprint', colors: { background: '#0A2647', text: '#E8F1F5' } },
-            { id: 'blueprint-architect', name: 'Architect', colors: { background: '#1C2833', text: '#D4E6F1' } },
-            { id: 'blueprint-cyan', name: 'Cyan Line', colors: { background: '#001F3F', text: '#5DD4E8' } },
-            { id: 'blueprint-white', name: 'Whiteprint', colors: { background: '#F5F8FA', text: '#0A2647' } }
+            {
+                id: 'blueprint-classic',
+                name: 'Classic Blueprint',
+                colors: {
+                    background: '#0A2647',
+                    text: '#E8F1F5',
+                    water: '#5DD4E8',
+                    parks: '#7BE495',
+                    roads: '#E8F1F5',
+                    buildings: '#B8D4E8'
+                }
+            },
+            {
+                id: 'blueprint-white',
+                name: 'Whiteprint',
+                colors: {
+                    background: '#F5F8FA',
+                    text: '#0A2647',
+                    water: '#3B82F6',
+                    parks: '#10B981',
+                    roads: '#0A2647',
+                    buildings: '#1E3A5F'
+                }
+            }
         ]
     },
-    // VINTAGE
+    // VINTAGE WARM
     {
         id: 'vintage',
-        name: 'Vintage / Antique',
-        desc: 'Warm, nostalgic maps with aged tones',
+        name: 'Vintage',
+        desc: 'Varme, nostalgiske toner',
         palettes: [
-            { id: 'vintage-parchment', name: 'Parchment', colors: { background: '#F4E4C8', text: '#3C2F1F' } },
-            { id: 'vintage-sepia', name: 'Sepia Deep', colors: { background: '#E8D8B8', text: '#2A1810' } },
-            { id: 'vintage-maritime', name: 'Maritime', colors: { background: '#F0E8D8', text: '#1E3040' } },
-            { id: 'vintage-colonial', name: 'Colonial', colors: { background: '#F2E8D4', text: '#1A2A20' } }
+            {
+                id: 'vintage-parch',
+                name: 'Parchment',
+                colors: {
+                    background: '#F4E4C8',
+                    text: '#3C2F1F',
+                    water: '#6B9AC4',
+                    parks: '#8B9556',
+                    roads: '#5C4033',
+                    buildings: '#8B6F47'
+                }
+            },
+            {
+                id: 'vintage-sepia',
+                name: 'Sepia',
+                colors: {
+                    background: '#E8D8B8',
+                    text: '#2A1810',
+                    water: '#7A9CAD',
+                    parks: '#6B7D43',
+                    roads: '#4A3728',
+                    buildings: '#6B5238'
+                }
+            }
         ]
     },
-    // TOPOGRAPHIC
-    {
-        id: 'topographic',
-        name: 'Topographic',
-        desc: 'Terrain-focused maps with contours',
-        palettes: [
-            { id: 'topo-survey', name: 'Survey', colors: { background: '#F5F2E8', text: '#3C3020' } },
-            { id: 'topo-night', name: 'Terrain Night', colors: { background: '#1A1A2E', text: '#B8C5D0' } },
-            { id: 'topo-earth', name: 'Earth Tone', colors: { background: '#F0E8D8', text: '#3A3028' } }
-        ]
-    },
-    // RETRO
+    // RETRO VIBRANT
     {
         id: 'retro',
-        name: 'Retro / Nostalgic',
-        desc: 'Bold 70s, 80s and 90s vibes',
+        name: 'Retro',
+        desc: '70s, 80s og 90s vibes',
         palettes: [
-            { id: 'retro-70s-earth', name: '70s Earth', colors: { background: '#F5E6D3', text: '#6B4423' } },
-            { id: 'retro-80s-synthwave', name: '80s Synthwave', colors: { background: '#1A0A30', text: '#FF6EC7' } },
-            { id: 'retro-90s-teal', name: '90s Teal', colors: { background: '#E0F0F0', text: '#006666' } }
+            {
+                id: 'retro-synthwave',
+                name: '80s Synthwave',
+                colors: {
+                    background: '#1A0A30',
+                    text: '#FF6EC7',
+                    water: '#7B2CBF',
+                    parks: '#240046',
+                    roads: '#FF6EC7',
+                    buildings: '#C77DFF'
+                }
+            },
+            {
+                id: 'retro-90s',
+                name: '90s Teal',
+                colors: {
+                    background: '#E0F0F0',
+                    text: '#006666',
+                    water: '#0891B2',
+                    parks: '#059669',
+                    roads: '#006666',
+                    buildings: '#0D9488'
+                }
+            }
         ]
     },
-    // ORGANIC
+    // NATURE ORGANIC
     {
         id: 'organic',
-        name: 'Organic / Nature',
-        desc: 'Forest greens, earths and ocean depths',
+        name: 'Nature',
+        desc: 'Organiske natur-toner',
         palettes: [
-            { id: 'organic-abyss', name: 'Abyss', colors: { background: '#030810', text: '#4AC8E8' } },
-            { id: 'organic-rainforest', name: 'Rainforest', colors: { background: '#0F1A14', text: '#8BD4A0' } },
-            { id: 'organic-red-earth', name: 'Red Earth', colors: { background: '#F2E6DC', text: '#7B3F00' } }
+            {
+                id: 'organic-abyss',
+                name: 'Ocean Abyss',
+                colors: {
+                    background: '#030810',
+                    text: '#4AC8E8',
+                    water: '#0891B2',
+                    parks: '#064E3B',
+                    roads: '#67E8F9',
+                    buildings: '#22D3EE'
+                }
+            },
+            {
+                id: 'organic-forest',
+                name: 'Rainforest',
+                colors: {
+                    background: '#0F1A14',
+                    text: '#8BD4A0',
+                    water: '#3B82F6',
+                    parks: '#10B981',
+                    roads: '#A7F3D0',
+                    buildings: '#6EE7B7'
+                }
+            }
         ]
     }
 ];

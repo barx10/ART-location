@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePoster();
     updateMapFilters();
     updateThemeColors();
-    loadApiKey();
 
     // Initialize new features
     updateLetterSpacing();

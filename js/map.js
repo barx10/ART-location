@@ -6,11 +6,11 @@
 function getMapStyle() {
     const colors = state.style.colors;
 
-    // Use custom colors if advanced mode is enabled
-    const waterColor = state.advancedColors ? state.customWaterColor : colors.text;
-    const parksColor = state.advancedColors ? state.customParksColor : colors.text;
-    const roadsColor = state.advancedColors ? state.customRoadsColor : colors.text;
-    const buildingsColor = state.advancedColors ? state.customBuildingsColor : colors.text;
+    // Use palette colors if available, otherwise fall back to text color
+    const waterColor = state.advancedColors ? state.customWaterColor : (colors.water || colors.text);
+    const parksColor = state.advancedColors ? state.customParksColor : (colors.parks || colors.text);
+    const roadsColor = state.advancedColors ? state.customRoadsColor : (colors.roads || colors.text);
+    const buildingsColor = state.advancedColors ? state.customBuildingsColor : (colors.buildings || colors.text);
 
     const style = {
         version: 8,
@@ -37,7 +37,7 @@ function getMapStyle() {
                 'source-layer': 'water',
                 paint: {
                     'fill-color': waterColor,
-                    'fill-opacity': 0.15
+                    'fill-opacity': 0.25
                 }
             },
             // Landuse/Parks (Green areas)
@@ -49,7 +49,7 @@ function getMapStyle() {
                 layout: { visibility: state.parks ? 'visible' : 'none' },
                 paint: {
                     'fill-color': parksColor,
-                    'fill-opacity': 0.05
+                    'fill-opacity': 0.15
                 }
             },
             // Roads (Lines)
@@ -67,7 +67,7 @@ function getMapStyle() {
                 paint: {
                     'line-color': roadsColor,
                     'line-width': ['interpolate', ['linear'], ['zoom'], 12, 0.5, 16, 2],
-                    'line-opacity': 0.3
+                    'line-opacity': 0.4
                 }
             },
             {
@@ -84,7 +84,7 @@ function getMapStyle() {
                 paint: {
                     'line-color': roadsColor,
                     'line-width': ['interpolate', ['linear'], ['zoom'], 12, 1, 16, 4],
-                    'line-opacity': 0.8
+                    'line-opacity': 0.6
                 }
             },
             // Buildings (Extrusion / 3D)
@@ -98,7 +98,7 @@ function getMapStyle() {
                     'fill-extrusion-color': buildingsColor,
                     'fill-extrusion-height': state.buildings3d ? ['get', 'render_height'] : 0,
                     'fill-extrusion-base': state.buildings3d ? ['get', 'render_min_height'] : 0,
-                    'fill-extrusion-opacity': 0.6
+                    'fill-extrusion-opacity': 0.4
                 }
             }
         ]
@@ -259,6 +259,106 @@ function toggleLayer(layerName) {
 }
 
 // Add a specific listener for layer updates (called from ui.js)
+// Add a specific listener for layer updates (called from ui.js)
 window.updateLayerVisibility = function () {
     updateMapTiles();
+}
+
+// --- High-Resolution Export Helpers ---
+
+let originalMapStyle = { width: '', height: '', position: '', zIndex: '' };
+
+window.resizeMapForExport = function (width, height) {
+    const mapContainer = document.getElementById('map');
+
+    // Save original computed dimensions for scale calculation
+    const rect = mapContainer.getBoundingClientRect();
+    const originalComputedWidth = rect.width;
+
+    // Save original styles to restore later
+    originalMapStyle.width = mapContainer.style.width;
+    originalMapStyle.height = mapContainer.style.height;
+    originalMapStyle.position = mapContainer.style.position;
+    originalMapStyle.zIndex = mapContainer.style.zIndex;
+
+    // Force strict dimensions
+    // We use fixed positioning to allow the map to grow beyond the viewport without affecting layout flow
+    mapContainer.style.position = 'fixed';
+    mapContainer.style.top = '0';
+    mapContainer.style.left = '0';
+    mapContainer.style.width = width + 'px';
+    mapContainer.style.height = height + 'px';
+    mapContainer.style.zIndex = '-9999'; // Hide behind everything
+
+    // Store state before resize
+    const originalCenter = map.getCenter();
+    originalMapStyle.zoom = map.getZoom();
+    originalMapStyle.center = originalCenter;
+
+    // Resize map engine to new container size
+    map.resize();
+
+    // Calculate scale factor and adjust zoom to keep the same geographic bounds
+    if (originalComputedWidth > 0) {
+        const scaleFactor = width / originalComputedWidth;
+        const zoomOffset = Math.log2(scaleFactor);
+        const newZoom = originalMapStyle.zoom + zoomOffset;
+
+        console.log(`Export Resize: ${originalComputedWidth}px -> ${width}px (Scale: ${scaleFactor.toFixed(2)})`);
+        console.log(`Zoom Adjust: ${originalMapStyle.zoom.toFixed(2)} -> ${newZoom.toFixed(2)} (+${zoomOffset.toFixed(2)})`);
+
+        // Apply new zoom and ensure center stays exactly the same
+        map.jumpTo({
+            center: originalCenter,
+            zoom: newZoom,
+            animate: false
+        });
+    }
+}
+
+window.restoreMapAfterExport = function () {
+    const mapContainer = document.getElementById('map');
+
+    // Restore styles
+    mapContainer.style.width = originalMapStyle.width;
+    mapContainer.style.height = originalMapStyle.height;
+    mapContainer.style.position = originalMapStyle.position;
+    mapContainer.style.zIndex = originalMapStyle.zIndex;
+    mapContainer.style.top = '';
+    mapContainer.style.left = '';
+
+    // Restore zoom and center
+    if (originalMapStyle.zoom !== undefined) {
+        map.jumpTo({
+            center: originalMapStyle.center || map.getCenter(),
+            zoom: originalMapStyle.zoom,
+            animate: false
+        });
+    }
+
+    map.resize();
+    console.log('Map restored to original size');
+}
+
+window.waitForMapIdle = function () {
+    return new Promise((resolve) => {
+        // If map is already loaded and idle, resolve immediately (with small delay to be safe)
+        if (map.loaded()) {
+            setTimeout(resolve, 500);
+            return;
+        }
+
+        // Otherwise wait for idle event
+        const onIdle = () => {
+            map.off('idle', onIdle);
+            resolve();
+        };
+        map.on('idle', onIdle);
+
+        // Safety timeout (5 seconds)
+        setTimeout(() => {
+            map.off('idle', onIdle);
+            resolve();
+        }, 5000);
+    });
 }

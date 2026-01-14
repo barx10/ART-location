@@ -146,15 +146,22 @@ function setTextTheme(theme) {
         btn.classList.toggle('active', btn.dataset.theme === theme);
     });
 
-    // Show/hide size slider (not applicable for none or box)
+    // Show/hide size slider and color picker (not applicable for none)
     const sizeContainer = document.getElementById('themeSizeContainer');
+    const colorContainer = document.getElementById('themeColorContainer');
     const posYContainer = document.getElementById('textYContainer');
 
     if (theme === 'gradient' || theme === 'panel' || theme === 'double') {
         sizeContainer.style.display = 'block';
+        colorContainer.style.display = 'flex'; // Show color picker
         if (posYContainer) posYContainer.style.display = 'none'; // Hide Y position when theme controls it
+    } else if (theme === 'box') {
+        sizeContainer.style.display = 'none';
+        colorContainer.style.display = 'flex'; // Show color picker for box too
+        if (posYContainer) posYContainer.style.display = 'block';
     } else {
         sizeContainer.style.display = 'none';
+        colorContainer.style.display = 'none';
         if (posYContainer) posYContainer.style.display = 'block';
     }
 
@@ -174,11 +181,17 @@ function updateThemeColors() {
     const overlay = document.querySelector('.poster-overlay');
     if (!overlay) return;
 
-    // Use current background color for theme (from selected palette)
-    // Use current state.textColor for text (which may have been customized by user)
-    const themeColor = state.bgColor || state.style.colors?.background || '#ffffff';
-    const themeBorderColor = state.textColor || state.style.colors?.text || '#2C2C2C';
-    const themeTextColor = state.textColor || state.style.colors?.text || '#2C2C2C';
+    // Use user selected gradient color (defaulting to white if not set)
+    // Fallback to state.bgColor only if we wanted "auto" mode, but user specifically asked for an option.
+    // We initialized state.gradientColor to '#FFFFFF' in state.js
+    const themeColor = state.gradientColor || state.bgColor || '#ffffff';
+
+    // For text color on the theme/gradient:
+    // If it's a dark panel/gradient, we might want light text, or vice versa.
+    // Currently users can customize text color manually via the text color picker.
+    // But for the box border/text, we reuse state.textColor.
+    const themeBorderColor = state.textColor || '#2C2C2C';
+    const themeTextColor = state.textColor || '#2C2C2C';
 
     overlay.style.setProperty('--theme-color', themeColor);
     overlay.style.setProperty('--theme-border-color', themeBorderColor);

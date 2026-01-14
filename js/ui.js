@@ -175,12 +175,6 @@ function initializeSliders() {
     // New features
     document.getElementById('letterSpacingSlider').value = state.letterSpacing;
     document.getElementById('letterSpacingValue').textContent = state.letterSpacing;
-    document.getElementById('terrainExaggerationSlider').value = state.terrainExaggeration;
-    document.getElementById('terrainExaggerationValue').textContent = state.terrainExaggeration + '×';
-    document.getElementById('hillshadeIntensitySlider').value = state.hillshadeIntensity;
-    document.getElementById('hillshadeIntensityValue').textContent = state.hillshadeIntensity;
-    document.getElementById('hillshadeSunAngleSlider').value = state.hillshadeSunAngle;
-    document.getElementById('hillshadeSunAngleValue').textContent = state.hillshadeSunAngle + '°';
 }
 
 function setupEventListeners() {
@@ -358,7 +352,27 @@ function setupEventListeners() {
         updateThemeSize(parseInt(e.target.value));
     });
 
-    // Text position sliders
+    // Theme/Gradient color picker
+    const themeColorPicker = document.getElementById('themeColorPicker');
+    const themeColorHex = document.getElementById('themeColorHex');
+
+    themeColorPicker.addEventListener('input', (e) => {
+        const color = e.target.value;
+        themeColorHex.value = color;
+        state.gradientColor = color;
+        updateThemeColors();
+    });
+
+    themeColorHex.addEventListener('input', (e) => {
+        const color = e.target.value;
+        if (isValidHex(color)) {
+            themeColorPicker.value = color;
+            state.gradientColor = color;
+            updateThemeColors();
+        }
+    });
+
+    // Helper functions sliders
     document.getElementById('textXSlider').addEventListener('input', (e) => {
         updateTextX(e.target.value);
     });
@@ -373,25 +387,6 @@ function setupEventListeners() {
         document.getElementById('letterSpacingValue').textContent = state.letterSpacing;
         // Update live preview
         updateLetterSpacing();
-    });
-
-    document.getElementById('terrainExaggerationSlider').addEventListener('input', (e) => {
-        state.terrainExaggeration = parseFloat(e.target.value);
-        document.getElementById('terrainExaggerationValue').textContent = state.terrainExaggeration + '×';
-        // Update live preview (if terrain is enabled)
-        updateTerrainExaggeration();
-    });
-
-    document.getElementById('hillshadeIntensitySlider').addEventListener('input', (e) => {
-        state.hillshadeIntensity = parseFloat(e.target.value);
-        document.getElementById('hillshadeIntensityValue').textContent = state.hillshadeIntensity;
-        updateHillshade();
-    });
-
-    document.getElementById('hillshadeSunAngleSlider').addEventListener('input', (e) => {
-        state.hillshadeSunAngle = parseInt(e.target.value);
-        document.getElementById('hillshadeSunAngleValue').textContent = state.hillshadeSunAngle + '°';
-        updateHillshade();
     });
 
     // Advanced color pickers
