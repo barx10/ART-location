@@ -51,8 +51,8 @@ export default async function handler(req, res) {
 
         console.log('✅ Forwarding to Carto-Art API...');
 
-        // Forward to Carto-Art API
-        const response = await fetch('https://cartoart.net/api/v1/posters/generate', {
+        // Forward to Carto-Art API (use www subdomain to avoid redirect)
+        const response = await fetch('https://www.cartoart.net/api/v1/posters/generate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
