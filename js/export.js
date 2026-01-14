@@ -13,6 +13,7 @@ function getCartoArtEndpoint() {
     if (CARTOART_PROXY_URL) {
         return CARTOART_PROXY_URL;
     }
+    // Try calling API directly (official SDK approach)
     return 'https://cartoart.net/api/v1/posters/generate';
 }
 

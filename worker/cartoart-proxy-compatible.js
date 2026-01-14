@@ -1,12 +1,6 @@
 /**
  * Cloudflare Worker - CORS Proxy for Carto-Art API
- *
- * Deploy instructions:
- * 1. Go to https://workers.cloudflare.com/
- * 2. Create a new worker
- * 3. Paste this code
- * 4. Deploy and get your worker URL (e.g., https://cartoart-proxy.YOUR-SUBDOMAIN.workers.dev)
- * 5. Update PROXY_URL in js/export.js with your worker URL
+ * BACKWARD COMPATIBLE VERSION - works with both old and new request formats
  */
 
 const CARTOART_API = 'https://cartoart.net/api/v1/posters/generate';
@@ -14,7 +8,7 @@ const CARTOART_API = 'https://cartoart.net/api/v1/posters/generate';
 // Allowed origins (add your domains here)
 const ALLOWED_ORIGINS = [
     'https://barx10.github.io',
-    'https://art-location.vercel.app',  // Vercel deployment
+    'https://art-location.vercel.app',
     'http://localhost:3000',
     'http://localhost:5500',
     'http://127.0.0.1:5500'
@@ -57,31 +51,45 @@ export default {
         }
 
         try {
-            // Get the request body and Authorization header
-            const body = await request.text();
             const authHeader = request.headers.get('Authorization');
+            const bodyText = await request.text();
 
-            // Validate Authorization header
-            if (!authHeader || !authHeader.startsWith('Bearer ')) {
-                return new Response(JSON.stringify({
-                    error: 'Missing or invalid Authorization header. Expected: Bearer <api_key>'
-                }), {
-                    status: 401,
-                    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-                });
+            let apiKey;
+            let payload;
+
+            // Try new format first (Authorization header + direct payload)
+            if (authHeader && authHeader.startsWith('Bearer ')) {
+                console.log('Using NEW format (Authorization header)');
+                apiKey = authHeader.replace('Bearer ', '');
+                payload = bodyText;
+            } else {
+                // Fallback to old format (apiKey in body)
+                console.log('Using OLD format (apiKey in body)');
+                const data = JSON.parse(bodyText);
+                apiKey = data.apiKey;
+                payload = JSON.stringify(data.cartoArtRequest);
+
+                if (!apiKey || !data.cartoArtRequest) {
+                    return new Response(JSON.stringify({
+                        error: 'Missing apiKey or cartoArtRequest in body (old format) or Authorization header (new format)'
+                    }), {
+                        status: 400,
+                        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+                    });
+                }
             }
 
             console.log('Forwarding request to CartoArt API...');
-            console.log('Auth header:', authHeader.substring(0, 20) + '...');
+            console.log('API Key:', apiKey.substring(0, 8) + '...');
 
             // Forward request to Carto-Art API with Bearer token
             const response = await fetch(CARTOART_API, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': authHeader
+                    'Authorization': `Bearer ${apiKey}`
                 },
-                body: body
+                body: payload
             });
 
             console.log('CartoArt API response status:', response.status);
