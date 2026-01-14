@@ -6,7 +6,7 @@ console.log('=== EXPORT.JS VERSION 2 LOADED ===');
 // CORS Proxy URL - Set this to your Cloudflare Worker URL
 // Example: 'https://cartoart-proxy.your-subdomain.workers.dev'
 // Leave empty to call Carto-Art API directly (only works if they allow your domain)
-const CARTOART_PROXY_URL = 'https://silent-limit-b175.barx1072.workers.dev/';
+const CARTOART_PROXY_URL = ''; // DISABLED - Testing direct API call first
 
 // Get the API endpoint (proxy or direct)
 function getCartoArtEndpoint() {
