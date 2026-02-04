@@ -15,9 +15,9 @@
 ![Stedskart Interface](screenshots/screenshot-1.png)
 *Intuitiv sidebar med 6 kartstiler, 22 fonter og avanserte tilpasninger*
 
-### 🌍 3D Terreng & Kamera
-![3D Terrain View](screenshots/screenshot-2.png)
-*3D-bygninger, terrengvisning med hillshading og 360° rotasjon*
+### 🌍 Kart & Kamera
+![Map View](screenshots/screenshot-2.png)
+*Kamerautsnitt med zoom, tilt og 360° rotasjon*
 
 ### 🖼️ Ferdig Plakat
 ![Final Poster](screenshots/screenshot-3.png)
@@ -38,9 +38,7 @@
   - Vintage (Parchment, Sepia)
   - Retro (80s Synthwave, 90s Teal)
   - Nature (Ocean Abyss, Rainforest)
-- **3D-kamera**: Pitch (0-60°), Bearing (0-360°), Zoom (8-16)
-- **3D-bygninger** med høydedata
-- **Terreng & konturlinjer**
+- **Kamerakontroll**: Zoom (8-16), Tilt (0-60°), Rotasjon (0-360°)
 - **Tilfeldig lokasjonsgenerator**
 
 ### 🎨 Design & Tilpasning
@@ -135,7 +133,6 @@ python -m http.server 8000
 - Plasser emoji-stickers på kartet
 
 ### 3. Avanserte innstillinger
-- **Kartlag & 3D**: Aktiver 3D-bygninger, terreng, høydekurver
 - **Avanserte farger**: Tilpass vann, parker, veier, bygninger individuelt
 - **Kartjusteringer**: Finjuster saturasjon, kontrast, lysstyrke
 
@@ -181,7 +178,7 @@ python -m http.server 8000
 - 🗺️ Grunnleggende kartfunksjoner med MapLibre
 - 🎨 Kartstiler og fargepaletter
 - 🔤 22 fonter og teksttilpasning
-- 📐 3D-kamera med pitch/bearing/zoom
+- 📐 Kamerakontroll med zoom/tilt/rotasjon
 - 🖼️ Ramme- og temasystem
 - 💾 PNG-eksport i 3 kvaliteter
 
